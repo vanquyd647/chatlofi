@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "901109384021",
+    "project_id": "chatlofi-9c2c8",
+    "storage_bucket": "chatlofi-9c2c8.appspot.com",
+    "firebase_url": "https://chatlofi-9c2c8-default-rtdb.asia-southeast1.firebasedatabase.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901109384021:android:2629dcf8cb8350ac9625dc",
+        "android_client_info": {
+          "package_name": "com.quy001.jolo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVrQjFgqLHMxH0FGqBMeCofgEfHE7iQoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901109384021:android:ee0168ab354101f09625dc",
+        "android_client_info": {
+          "package_name": "com.yourdomain.chatlofi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVrQjFgqLHMxH0FGqBMeCofgEfHE7iQoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

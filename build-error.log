@@ -1,0 +1,1773 @@
+﻿> Task :gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:inspectClassesForKotlinIC UP-TO-DATE
+
+> Configure project :expo
+
+Using expo modules
+  - [32mexpo-application[0m (5.8.4)
+  - [32mexpo-av[0m (13.10.5)
+  - [32mexpo-constants[0m (15.4.6)
+  - [32mexpo-device[0m (5.9.4)
+  - [32mexpo-document-picker[0m (11.10.1)
+  - [32mexpo-file-system[0m (16.0.9)
+  - [32mexpo-font[0m (11.10.3)
+  - [32mexpo-image-loader[0m (4.6.0)
+  - [32mexpo-image-manipulator[0m (11.8.0)
+  - [32mexpo-image-picker[0m (14.7.1)
+  - [32mexpo-keep-awake[0m (12.8.2)
+  - [32mexpo-modules-core$android-annotation[0m (1.11.13)
+  - [32mexpo-modules-core[0m (1.11.13)
+  - [32mexpo-modules-core$android-annotation-processor[0m (1.11.13)
+  - [32mexpo-notifications[0m (0.27.8)
+
+
+> Configure project :react-native-firebase_app
+:react-native-firebase_app package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:firebase.bom using default value: 33.1.0
+:react-native-firebase_app:play.play-services-auth using default value: 21.1.1
+:react-native-firebase_app package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:version set from package.json: 20.1.0 (20,1,0 - 20001000)
+:react-native-firebase_app:android.compileSdk using custom value: 34
+:react-native-firebase_app:android.targetSdk using custom value: 34
+:react-native-firebase_app:android.minSdk using custom value: 23
+:react-native-firebase_app:reactNativeAndroidDir D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\react-native\android
+
+> Configure project :react-native-firebase_auth
+:react-native-firebase_auth package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_app package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_auth:firebase.bom using default value: 33.1.0
+:react-native-firebase_auth package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_auth:version set from package.json: 20.1.0 (20,1,0 - 20001000)
+:react-native-firebase_auth:android.compileSdk using custom value: 34
+:react-native-firebase_auth:android.targetSdk using custom value: 34
+:react-native-firebase_auth:android.minSdk using custom value: 23
+:react-native-firebase_auth:reactNativeAndroidDir D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\react-native\android
+
+> Configure project :react-native-firebase_database
+:react-native-firebase_database package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\database\package.json
+:react-native-firebase_app package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_database:firebase.bom using default value: 33.1.0
+:react-native-firebase_database package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\database\package.json
+:react-native-firebase_database:version set from package.json: 20.1.0 (20,1,0 - 20001000)
+:react-native-firebase_database:android.compileSdk using custom value: 34
+:react-native-firebase_database:android.targetSdk using custom value: 34
+:react-native-firebase_database:android.minSdk using custom value: 23
+:react-native-firebase_database:reactNativeAndroidDir D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\react-native\android
+
+> Configure project :react-native-firebase_messaging
+:react-native-firebase_messaging package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\messaging\package.json
+:react-native-firebase_app package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_messaging:firebase.bom using default value: 33.1.0
+:react-native-firebase_messaging package.json found at D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\@react-native-firebase\messaging\package.json
+:react-native-firebase_messaging:version set from package.json: 20.1.0 (20,1,0 - 20001000)
+:react-native-firebase_messaging:android.compileSdk using custom value: 34
+:react-native-firebase_messaging:android.targetSdk using custom value: 34
+:react-native-firebase_messaging:android.minSdk using custom value: 23
+:react-native-firebase_messaging:reactNativeAndroidDir D:\CNM_Project\Project_Mobile\ChatApp_alo2_no_otp_dev\node_modules\react-native\android
+
+> Task :react-native-async-storage_async-storage:preBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:preReleaseBuild UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-async-storage_async-storage:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-async-storage_async-storage:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseResValues UP-TO-DATE
+> Task :react-native-async-storage_async-storage:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageReleaseResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:processReleaseManifest UP-TO-DATE
+> Task :react-native-async-storage_async-storage:generateReleaseRFile UP-TO-DATE
+> Task :react-native-async-storage_async-storage:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-async-storage_async-storage:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-async-storage_async-storage:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-async-storage_async-storage:compileReleaseShaders NO-SOURCE
+> Task :react-native-async-storage_async-storage:generateReleaseAssets UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageReleaseAssets UP-TO-DATE
+> Task :react-native-async-storage_async-storage:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-async-storage_async-storage:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-async-storage_async-storage:processReleaseJavaRes NO-SOURCE
+> Task :react-native-async-storage_async-storage:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-async-storage_async-storage:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-async-storage_async-storage:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-async-storage_async-storage:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-community_datetimepicker:preBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:preReleaseBuild UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-community_datetimepicker:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-community_datetimepicker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-community_datetimepicker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:packageReleaseResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:processReleaseManifest UP-TO-DATE
+> Task :react-native-community_datetimepicker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-community_datetimepicker:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-community_datetimepicker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-community_datetimepicker:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-community_datetimepicker:compileReleaseShaders NO-SOURCE
+> Task :react-native-community_datetimepicker:generateReleaseAssets UP-TO-DATE
+> Task :react-native-community_datetimepicker:packageReleaseAssets UP-TO-DATE
+> Task :react-native-community_datetimepicker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-community_datetimepicker:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-community_datetimepicker:processReleaseJavaRes NO-SOURCE
+> Task :react-native-community_datetimepicker:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-community_datetimepicker:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-community_datetimepicker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-community_datetimepicker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-firebase_auth:preBuild UP-TO-DATE
+> Task :react-native-firebase_auth:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_auth:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_auth:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_auth:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_auth:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_auth:generateReleaseResValues UP-TO-DATE
+> Task :react-native-firebase_auth:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_app:preBuild UP-TO-DATE
+> Task :react-native-firebase_app:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseResValues UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_app:processReleaseManifest UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_app:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_app:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-firebase_auth:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_auth:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_auth:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_auth:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_auth:processReleaseManifest UP-TO-DATE
+> Task :react-native-firebase_auth:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_auth:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-firebase_auth:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_auth:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_auth:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_auth:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_auth:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-firebase_auth:compileReleaseShaders NO-SOURCE
+> Task :react-native-firebase_auth:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_auth:packageReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_auth:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-firebase_auth:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-firebase_auth:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_auth:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_auth:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_auth:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_auth:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-firebase_database:preBuild UP-TO-DATE
+> Task :react-native-firebase_database:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_database:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_database:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_database:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_database:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_database:generateReleaseResValues UP-TO-DATE
+> Task :react-native-firebase_database:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_database:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_database:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_database:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_database:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_database:processReleaseManifest UP-TO-DATE
+> Task :react-native-firebase_database:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_database:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-firebase_database:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_database:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_database:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_database:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_database:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-firebase_database:compileReleaseShaders NO-SOURCE
+> Task :react-native-firebase_database:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_database:packageReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_database:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-firebase_database:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-firebase_database:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_database:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_database:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_database:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_database:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-firebase_messaging:preBuild UP-TO-DATE
+> Task :react-native-firebase_messaging:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_messaging:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_messaging:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseResValues UP-TO-DATE
+> Task :react-native-firebase_messaging:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_messaging:processReleaseManifest UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_messaging:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-firebase_messaging:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-firebase_messaging:compileReleaseShaders NO-SOURCE
+> Task :react-native-firebase_messaging:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_messaging:packageReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_messaging:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-firebase_messaging:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-firebase_messaging:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_messaging:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_messaging:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_messaging:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_app:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_app:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_app:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_app:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-firebase_app:compileReleaseShaders NO-SOURCE
+> Task :react-native-firebase_app:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_app:packageReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_app:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-firebase_app:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-firebase_app:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_app:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_app:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_app:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_app:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-picker_picker:preBuild UP-TO-DATE
+> Task :react-native-picker_picker:preReleaseBuild UP-TO-DATE
+> Task :react-native-picker_picker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-picker_picker:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-picker_picker:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-picker_picker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-picker_picker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-picker_picker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-picker_picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-picker_picker:generateReleaseResources UP-TO-DATE
+> Task :react-native-picker_picker:packageReleaseResources UP-TO-DATE
+> Task :react-native-picker_picker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-picker_picker:processReleaseManifest UP-TO-DATE
+> Task :react-native-picker_picker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-picker_picker:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-picker_picker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-picker_picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-picker_picker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-picker_picker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-picker_picker:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-picker_picker:compileReleaseShaders NO-SOURCE
+> Task :react-native-picker_picker:generateReleaseAssets UP-TO-DATE
+> Task :react-native-picker_picker:packageReleaseAssets UP-TO-DATE
+> Task :react-native-picker_picker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-picker_picker:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-picker_picker:processReleaseJavaRes NO-SOURCE
+> Task :react-native-picker_picker:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-picker_picker:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-picker_picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-picker_picker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:preBuild UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:preReleaseBuild UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseNativeLibs NO-SOURCE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:stripReleaseDebugSymbols NO-SOURCE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:generateReleaseResValues UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:generateReleaseBuildConfig UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:generateReleaseResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:packageReleaseResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:parseReleaseLocalResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:processReleaseManifest UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:generateReleaseRFile UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:extractReleaseAnnotations UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:javaPreCompileRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseShaders UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:compileReleaseShaders NO-SOURCE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:generateReleaseAssets UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:packageReleaseAssets UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:prepareLintJarForPublish UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:prepareReleaseArtProfile UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:processReleaseJavaRes NO-SOURCE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:mergeReleaseJavaResource UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:syncReleaseLibJars UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:writeReleaseAarMetadata UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:preBuild UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:preReleaseBuild UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseNativeLibs NO-SOURCE
+> Task :zegocloud_zego-uikit-rn:stripReleaseDebugSymbols NO-SOURCE
+> Task :zegocloud_zego-uikit-rn:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:generateReleaseResValues UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:generateReleaseBuildConfig UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:generateReleaseResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:packageReleaseResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:parseReleaseLocalResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:processReleaseManifest UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:generateReleaseRFile UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:extractReleaseAnnotations UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:javaPreCompileRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseShaders UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:compileReleaseShaders NO-SOURCE
+> Task :zegocloud_zego-uikit-rn:generateReleaseAssets UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:packageReleaseAssets UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:prepareLintJarForPublish UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:prepareReleaseArtProfile UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:processReleaseJavaRes NO-SOURCE
+> Task :zegocloud_zego-uikit-rn:mergeReleaseJavaResource UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:syncReleaseLibJars UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:writeReleaseAarMetadata UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo:generateExpoModulesPackageList
+> Task :expo:preBuild
+> Task :expo:preReleaseBuild
+> Task :expo:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo:generateReleaseResValues UP-TO-DATE
+> Task :expo:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-modules-core$android-annotation:compileKotlin UP-TO-DATE
+> Task :expo-modules-core$android-annotation:compileJava NO-SOURCE
+> Task :expo-modules-core$android-annotation:processResources NO-SOURCE
+> Task :expo-modules-core$android-annotation:classes UP-TO-DATE
+> Task :expo-modules-core$android-annotation:jar UP-TO-DATE
+> Task :expo-modules-core$android-annotation:inspectClassesForKotlinIC UP-TO-DATE
+> Task :expo-modules-core$android-annotation-processor:compileKotlin UP-TO-DATE
+> Task :expo-modules-core$android-annotation-processor:compileJava NO-SOURCE
+> Task :expo-modules-core$android-annotation-processor:processResources UP-TO-DATE
+> Task :expo-modules-core$android-annotation-processor:classes UP-TO-DATE
+> Task :expo-modules-core$android-annotation-processor:jar UP-TO-DATE
+> Task :expo-modules-core$android-annotation-processor:inspectClassesForKotlinIC UP-TO-DATE
+> Task :expo:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo:generateReleaseResources UP-TO-DATE
+> Task :expo:packageReleaseResources UP-TO-DATE
+> Task :expo:parseReleaseLocalResources UP-TO-DATE
+> Task :expo:processReleaseManifest UP-TO-DATE
+> Task :expo:generateReleaseRFile UP-TO-DATE
+> Task :expo-application:preBuild UP-TO-DATE
+> Task :expo-application:preReleaseBuild UP-TO-DATE
+> Task :expo-application:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-application:generateReleaseResValues UP-TO-DATE
+> Task :expo-application:generateReleaseResources UP-TO-DATE
+> Task :expo-application:packageReleaseResources UP-TO-DATE
+> Task :expo-application:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-application:processReleaseManifest UP-TO-DATE
+> Task :expo-application:generateReleaseRFile UP-TO-DATE
+> Task :expo-modules-core:preBuild UP-TO-DATE
+> Task :expo-modules-core:preReleaseBuild UP-TO-DATE
+> Task :expo-modules-core:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-modules-core:generateReleaseResValues UP-TO-DATE
+> Task :expo-modules-core:generateReleaseResources UP-TO-DATE
+> Task :expo-modules-core:packageReleaseResources UP-TO-DATE
+> Task :expo-modules-core:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-modules-core:processReleaseManifest UP-TO-DATE
+> Task :expo-modules-core:generateReleaseRFile UP-TO-DATE
+> Task :expo-modules-core:compileReleaseKotlin UP-TO-DATE
+> Task :expo-modules-core:javaPreCompileRelease UP-TO-DATE
+> Task :expo-modules-core:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-modules-core:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-application:compileReleaseKotlin UP-TO-DATE
+> Task :expo-application:javaPreCompileRelease UP-TO-DATE
+> Task :expo-application:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-application:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-av:preBuild UP-TO-DATE
+> Task :expo-av:preReleaseBuild UP-TO-DATE
+> Task :expo-av:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-av:generateReleaseResValues UP-TO-DATE
+> Task :expo-av:generateReleaseResources UP-TO-DATE
+> Task :expo-av:packageReleaseResources UP-TO-DATE
+> Task :expo-av:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-av:processReleaseManifest UP-TO-DATE
+> Task :expo-av:generateReleaseRFile UP-TO-DATE
+> Task :expo-av:compileReleaseKotlin UP-TO-DATE
+> Task :expo-av:javaPreCompileRelease UP-TO-DATE
+> Task :expo-av:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-av:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-constants:createExpoConfig UP-TO-DATE
+> Task :expo-constants:preBuild UP-TO-DATE
+> Task :expo-constants:preReleaseBuild UP-TO-DATE
+> Task :expo-constants:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-constants:generateReleaseResValues UP-TO-DATE
+> Task :expo-constants:generateReleaseResources UP-TO-DATE
+> Task :expo-constants:packageReleaseResources UP-TO-DATE
+> Task :expo-constants:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-constants:processReleaseManifest UP-TO-DATE
+> Task :expo-constants:generateReleaseRFile UP-TO-DATE
+> Task :expo-constants:compileReleaseKotlin UP-TO-DATE
+> Task :expo-constants:javaPreCompileRelease UP-TO-DATE
+> Task :expo-constants:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-constants:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-device:preBuild UP-TO-DATE
+> Task :expo-device:preReleaseBuild UP-TO-DATE
+> Task :expo-device:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-device:generateReleaseResValues UP-TO-DATE
+> Task :expo-device:generateReleaseResources UP-TO-DATE
+> Task :expo-device:packageReleaseResources UP-TO-DATE
+> Task :expo-device:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-device:processReleaseManifest UP-TO-DATE
+> Task :expo-device:generateReleaseRFile UP-TO-DATE
+> Task :expo-device:compileReleaseKotlin UP-TO-DATE
+> Task :expo-device:javaPreCompileRelease UP-TO-DATE
+> Task :expo-device:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-device:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-document-picker:preBuild UP-TO-DATE
+> Task :expo-document-picker:preReleaseBuild UP-TO-DATE
+> Task :expo-document-picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-document-picker:generateReleaseResValues UP-TO-DATE
+> Task :expo-document-picker:generateReleaseResources UP-TO-DATE
+> Task :expo-document-picker:packageReleaseResources UP-TO-DATE
+> Task :expo-document-picker:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-document-picker:processReleaseManifest UP-TO-DATE
+> Task :expo-document-picker:generateReleaseRFile UP-TO-DATE
+> Task :expo-document-picker:compileReleaseKotlin UP-TO-DATE
+> Task :expo-document-picker:javaPreCompileRelease UP-TO-DATE
+> Task :expo-document-picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-document-picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-file-system:preBuild UP-TO-DATE
+> Task :expo-file-system:preReleaseBuild UP-TO-DATE
+> Task :expo-file-system:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-file-system:generateReleaseResValues UP-TO-DATE
+> Task :expo-file-system:generateReleaseResources UP-TO-DATE
+> Task :expo-file-system:packageReleaseResources UP-TO-DATE
+> Task :expo-file-system:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-file-system:processReleaseManifest UP-TO-DATE
+> Task :expo-file-system:generateReleaseRFile UP-TO-DATE
+> Task :expo-file-system:compileReleaseKotlin UP-TO-DATE
+> Task :expo-file-system:javaPreCompileRelease UP-TO-DATE
+> Task :expo-file-system:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-file-system:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-font:preBuild UP-TO-DATE
+> Task :expo-font:preReleaseBuild UP-TO-DATE
+> Task :expo-font:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-font:generateReleaseResValues UP-TO-DATE
+> Task :expo-font:generateReleaseResources UP-TO-DATE
+> Task :expo-font:packageReleaseResources UP-TO-DATE
+> Task :expo-font:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-font:processReleaseManifest UP-TO-DATE
+> Task :expo-font:generateReleaseRFile UP-TO-DATE
+> Task :expo-font:compileReleaseKotlin UP-TO-DATE
+> Task :expo-font:javaPreCompileRelease UP-TO-DATE
+> Task :expo-font:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-font:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-image-loader:preBuild UP-TO-DATE
+> Task :expo-image-loader:preReleaseBuild UP-TO-DATE
+> Task :expo-image-loader:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-image-loader:generateReleaseResValues UP-TO-DATE
+> Task :expo-image-loader:generateReleaseResources UP-TO-DATE
+> Task :expo-image-loader:packageReleaseResources UP-TO-DATE
+> Task :expo-image-loader:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-image-loader:processReleaseManifest UP-TO-DATE
+> Task :expo-image-loader:generateReleaseRFile UP-TO-DATE
+> Task :expo-image-loader:compileReleaseKotlin UP-TO-DATE
+> Task :expo-image-loader:javaPreCompileRelease UP-TO-DATE
+> Task :expo-image-loader:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-image-loader:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-image-manipulator:preBuild UP-TO-DATE
+> Task :expo-image-manipulator:preReleaseBuild UP-TO-DATE
+> Task :expo-image-manipulator:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-image-manipulator:generateReleaseResValues UP-TO-DATE
+> Task :expo-image-manipulator:generateReleaseResources UP-TO-DATE
+> Task :expo-image-manipulator:packageReleaseResources UP-TO-DATE
+> Task :expo-image-manipulator:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-image-manipulator:processReleaseManifest UP-TO-DATE
+> Task :expo-image-manipulator:generateReleaseRFile UP-TO-DATE
+> Task :expo-image-manipulator:compileReleaseKotlin UP-TO-DATE
+> Task :expo-image-manipulator:javaPreCompileRelease UP-TO-DATE
+> Task :expo-image-manipulator:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-image-manipulator:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-image-picker:preBuild UP-TO-DATE
+> Task :expo-image-picker:preReleaseBuild UP-TO-DATE
+> Task :expo-image-picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-image-picker:generateReleaseResValues UP-TO-DATE
+> Task :expo-image-picker:generateReleaseResources UP-TO-DATE
+> Task :expo-image-picker:packageReleaseResources UP-TO-DATE
+> Task :expo-image-picker:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-image-picker:processReleaseManifest UP-TO-DATE
+> Task :expo-image-picker:generateReleaseRFile UP-TO-DATE
+> Task :expo-image-picker:compileReleaseKotlin UP-TO-DATE
+> Task :expo-image-picker:javaPreCompileRelease UP-TO-DATE
+> Task :expo-image-picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-image-picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-keep-awake:preBuild UP-TO-DATE
+> Task :expo-keep-awake:preReleaseBuild UP-TO-DATE
+> Task :expo-keep-awake:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-keep-awake:generateReleaseResValues UP-TO-DATE
+> Task :expo-keep-awake:generateReleaseResources UP-TO-DATE
+> Task :expo-keep-awake:packageReleaseResources UP-TO-DATE
+> Task :expo-keep-awake:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-keep-awake:processReleaseManifest UP-TO-DATE
+> Task :expo-keep-awake:generateReleaseRFile UP-TO-DATE
+> Task :expo-keep-awake:compileReleaseKotlin UP-TO-DATE
+> Task :expo-keep-awake:javaPreCompileRelease UP-TO-DATE
+> Task :expo-keep-awake:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-keep-awake:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo-notifications:preBuild UP-TO-DATE
+> Task :expo-notifications:preReleaseBuild UP-TO-DATE
+> Task :expo-notifications:generateReleaseBuildConfig UP-TO-DATE
+> Task :expo-notifications:generateReleaseResValues UP-TO-DATE
+> Task :expo-notifications:generateReleaseResources UP-TO-DATE
+> Task :expo-notifications:packageReleaseResources UP-TO-DATE
+> Task :expo-notifications:parseReleaseLocalResources UP-TO-DATE
+> Task :expo-notifications:processReleaseManifest UP-TO-DATE
+> Task :expo-notifications:generateReleaseRFile UP-TO-DATE
+> Task :expo-notifications:compileReleaseKotlin UP-TO-DATE
+> Task :expo-notifications:javaPreCompileRelease UP-TO-DATE
+> Task :expo-notifications:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo-notifications:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :expo:javaPreCompileRelease UP-TO-DATE
+> Task :expo:mergeReleaseShaders UP-TO-DATE
+> Task :expo:compileReleaseShaders NO-SOURCE
+> Task :expo:generateReleaseAssets UP-TO-DATE
+> Task :expo:packageReleaseAssets UP-TO-DATE
+> Task :expo:prepareLintJarForPublish UP-TO-DATE
+> Task :expo:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-encrypted-storage:preBuild UP-TO-DATE
+> Task :react-native-encrypted-storage:preReleaseBuild UP-TO-DATE
+> Task :react-native-encrypted-storage:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-encrypted-storage:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-encrypted-storage:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-encrypted-storage:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-encrypted-storage:generateReleaseResValues UP-TO-DATE
+> Task :react-native-encrypted-storage:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-encrypted-storage:generateReleaseResources UP-TO-DATE
+> Task :react-native-encrypted-storage:packageReleaseResources UP-TO-DATE
+> Task :react-native-encrypted-storage:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-encrypted-storage:processReleaseManifest UP-TO-DATE
+> Task :react-native-encrypted-storage:generateReleaseRFile UP-TO-DATE
+> Task :react-native-encrypted-storage:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-encrypted-storage:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-encrypted-storage:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-encrypted-storage:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-encrypted-storage:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-encrypted-storage:compileReleaseShaders NO-SOURCE
+> Task :react-native-encrypted-storage:generateReleaseAssets UP-TO-DATE
+> Task :react-native-encrypted-storage:packageReleaseAssets UP-TO-DATE
+> Task :react-native-encrypted-storage:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-encrypted-storage:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-encrypted-storage:processReleaseJavaRes NO-SOURCE
+> Task :react-native-encrypted-storage:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-encrypted-storage:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-encrypted-storage:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-encrypted-storage:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-gesture-handler:preBuild UP-TO-DATE
+> Task :react-native-gesture-handler:preReleaseBuild UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-gesture-handler:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-gesture-handler:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-gesture-handler:generateReleaseResValues UP-TO-DATE
+> Task :react-native-gesture-handler:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-gesture-handler:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-gesture-handler:generateReleaseResources UP-TO-DATE
+> Task :react-native-gesture-handler:packageReleaseResources UP-TO-DATE
+> Task :react-native-gesture-handler:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-gesture-handler:processReleaseManifest UP-TO-DATE
+> Task :react-native-gesture-handler:generateReleaseRFile UP-TO-DATE
+> Task :react-native-gesture-handler:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-gesture-handler:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-gesture-handler:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-gesture-handler:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-gesture-handler:compileReleaseShaders NO-SOURCE
+> Task :react-native-gesture-handler:generateReleaseAssets UP-TO-DATE
+> Task :react-native-gesture-handler:packageReleaseAssets UP-TO-DATE
+> Task :react-native-gesture-handler:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-gesture-handler:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-gesture-handler:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-gesture-handler:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-gesture-handler:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-gesture-handler:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-gesture-handler:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-image-crop-picker:preBuild UP-TO-DATE
+> Task :react-native-image-crop-picker:preReleaseBuild UP-TO-DATE
+> Task :react-native-image-crop-picker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-image-crop-picker:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-image-crop-picker:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-image-crop-picker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-image-crop-picker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-image-crop-picker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-image-crop-picker:generateReleaseResources UP-TO-DATE
+> Task :react-native-image-crop-picker:packageReleaseResources UP-TO-DATE
+> Task :react-native-image-crop-picker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-image-crop-picker:processReleaseManifest UP-TO-DATE
+> Task :react-native-image-crop-picker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-image-crop-picker:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-image-crop-picker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-image-crop-picker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-image-crop-picker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-image-crop-picker:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-image-crop-picker:compileReleaseShaders NO-SOURCE
+> Task :react-native-image-crop-picker:generateReleaseAssets UP-TO-DATE
+> Task :react-native-image-crop-picker:packageReleaseAssets UP-TO-DATE
+> Task :react-native-image-crop-picker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-image-crop-picker:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-image-crop-picker:processReleaseJavaRes NO-SOURCE
+> Task :react-native-image-crop-picker:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-image-crop-picker:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-image-crop-picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-image-crop-picker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-image-picker:preBuild UP-TO-DATE
+> Task :react-native-image-picker:preReleaseBuild UP-TO-DATE
+> Task :react-native-image-picker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-image-picker:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-image-picker:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-image-picker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseResValues UP-TO-DATE
+> Task :react-native-image-picker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseResources UP-TO-DATE
+> Task :react-native-image-picker:packageReleaseResources UP-TO-DATE
+> Task :react-native-image-picker:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-image-picker:processReleaseManifest UP-TO-DATE
+> Task :react-native-image-picker:generateReleaseRFile UP-TO-DATE
+> Task :react-native-image-picker:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-image-picker:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-image-picker:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-image-picker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-image-picker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-image-picker:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-image-picker:compileReleaseShaders NO-SOURCE
+> Task :react-native-image-picker:generateReleaseAssets UP-TO-DATE
+> Task :react-native-image-picker:packageReleaseAssets UP-TO-DATE
+> Task :react-native-image-picker:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-image-picker:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-image-picker:processReleaseJavaRes NO-SOURCE
+> Task :react-native-image-picker:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-image-picker:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-image-picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-image-picker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-keep-awake:preBuild UP-TO-DATE
+> Task :react-native-keep-awake:preReleaseBuild UP-TO-DATE
+> Task :react-native-keep-awake:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-keep-awake:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-keep-awake:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-keep-awake:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-keep-awake:generateReleaseResValues UP-TO-DATE
+> Task :react-native-keep-awake:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-keep-awake:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-keep-awake:generateReleaseResources UP-TO-DATE
+> Task :react-native-keep-awake:packageReleaseResources UP-TO-DATE
+> Task :react-native-keep-awake:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-keep-awake:processReleaseManifest UP-TO-DATE
+> Task :react-native-keep-awake:generateReleaseRFile UP-TO-DATE
+> Task :react-native-keep-awake:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-keep-awake:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-keep-awake:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-keep-awake:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-keep-awake:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-keep-awake:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-keep-awake:compileReleaseShaders NO-SOURCE
+> Task :react-native-keep-awake:generateReleaseAssets UP-TO-DATE
+> Task :react-native-keep-awake:packageReleaseAssets UP-TO-DATE
+> Task :react-native-keep-awake:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-keep-awake:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-keep-awake:processReleaseJavaRes NO-SOURCE
+> Task :react-native-keep-awake:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-keep-awake:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-keep-awake:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-keep-awake:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-pager-view:preBuild UP-TO-DATE
+> Task :react-native-pager-view:preReleaseBuild UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-pager-view:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-pager-view:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-pager-view:generateReleaseResValues UP-TO-DATE
+> Task :react-native-pager-view:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-pager-view:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-pager-view:generateReleaseResources UP-TO-DATE
+> Task :react-native-pager-view:packageReleaseResources UP-TO-DATE
+> Task :react-native-pager-view:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-pager-view:processReleaseManifest UP-TO-DATE
+> Task :react-native-pager-view:generateReleaseRFile UP-TO-DATE
+> Task :react-native-pager-view:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-pager-view:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-pager-view:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-pager-view:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-pager-view:compileReleaseShaders NO-SOURCE
+> Task :react-native-pager-view:generateReleaseAssets UP-TO-DATE
+> Task :react-native-pager-view:packageReleaseAssets UP-TO-DATE
+> Task :react-native-pager-view:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-pager-view:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-pager-view:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-pager-view:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-pager-view:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-pager-view:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-pager-view:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preReleaseBuild UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-safe-area-context:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResValues UP-TO-DATE
+> Task :react-native-safe-area-context:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseManifest UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseRFile UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-safe-area-context:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-safe-area-context:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseShaders NO-SOURCE
+> Task :react-native-safe-area-context:generateReleaseAssets UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseAssets UP-TO-DATE
+> Task :react-native-safe-area-context:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-safe-area-context:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-safe-area-context:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-safe-area-context:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preReleaseBuild UP-TO-DATE
+> Task :react-native-screens:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-screens:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-screens:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-screens:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-screens:generateReleaseResValues UP-TO-DATE
+> Task :react-native-screens:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-screens:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-screens:generateReleaseResources UP-TO-DATE
+> Task :react-native-screens:packageReleaseResources UP-TO-DATE
+> Task :react-native-screens:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-screens:processReleaseManifest UP-TO-DATE
+> Task :react-native-screens:generateReleaseRFile UP-TO-DATE
+> Task :react-native-screens:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-screens:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-screens:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-screens:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-screens:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-screens:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-screens:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-screens:compileReleaseShaders NO-SOURCE
+> Task :react-native-screens:generateReleaseAssets UP-TO-DATE
+> Task :react-native-screens:packageReleaseAssets UP-TO-DATE
+> Task :react-native-screens:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-screens:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-screens:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-screens:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-screens:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-screens:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-screens:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-vector-icons:preBuild UP-TO-DATE
+> Task :react-native-vector-icons:preReleaseBuild UP-TO-DATE
+> Task :react-native-vector-icons:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-vector-icons:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-vector-icons:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-vector-icons:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseResValues UP-TO-DATE
+> Task :react-native-vector-icons:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseResources UP-TO-DATE
+> Task :react-native-vector-icons:packageReleaseResources UP-TO-DATE
+> Task :react-native-vector-icons:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-vector-icons:processReleaseManifest UP-TO-DATE
+> Task :react-native-vector-icons:generateReleaseRFile UP-TO-DATE
+> Task :react-native-vector-icons:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-vector-icons:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-vector-icons:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-vector-icons:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-vector-icons:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-vector-icons:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-vector-icons:compileReleaseShaders NO-SOURCE
+> Task :react-native-vector-icons:generateReleaseAssets UP-TO-DATE
+> Task :react-native-vector-icons:packageReleaseAssets UP-TO-DATE
+> Task :react-native-vector-icons:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-vector-icons:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-vector-icons:processReleaseJavaRes NO-SOURCE
+> Task :react-native-vector-icons:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-vector-icons:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-vector-icons:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-vector-icons:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-webrtc:preBuild UP-TO-DATE
+> Task :react-native-webrtc:preReleaseBuild UP-TO-DATE
+> Task :react-native-webrtc:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-webrtc:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-webrtc:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-webrtc:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-webrtc:generateReleaseResValues UP-TO-DATE
+> Task :react-native-webrtc:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-webrtc:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-webrtc:generateReleaseResources UP-TO-DATE
+> Task :react-native-webrtc:packageReleaseResources UP-TO-DATE
+> Task :react-native-webrtc:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-webrtc:processReleaseManifest UP-TO-DATE
+> Task :react-native-webrtc:generateReleaseRFile UP-TO-DATE
+> Task :react-native-webrtc:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-webrtc:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-webrtc:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-webrtc:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-webrtc:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-webrtc:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-webrtc:compileReleaseShaders NO-SOURCE
+> Task :react-native-webrtc:generateReleaseAssets UP-TO-DATE
+> Task :react-native-webrtc:packageReleaseAssets UP-TO-DATE
+> Task :react-native-webrtc:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-webrtc:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-webrtc:processReleaseJavaRes NO-SOURCE
+> Task :react-native-webrtc:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-webrtc:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-webrtc:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-webrtc:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :zego-express-engine-reactnative:preBuild UP-TO-DATE
+> Task :zego-express-engine-reactnative:preReleaseBuild UP-TO-DATE
+> Task :zego-express-engine-reactnative:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :zego-express-engine-reactnative:mergeReleaseNativeLibs NO-SOURCE
+> Task :zego-express-engine-reactnative:stripReleaseDebugSymbols NO-SOURCE
+> Task :zego-express-engine-reactnative:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :zego-express-engine-reactnative:generateReleaseResValues UP-TO-DATE
+> Task :zego-express-engine-reactnative:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:generateReleaseBuildConfig UP-TO-DATE
+> Task :zego-express-engine-reactnative:generateReleaseResources UP-TO-DATE
+> Task :zego-express-engine-reactnative:packageReleaseResources UP-TO-DATE
+> Task :zego-express-engine-reactnative:parseReleaseLocalResources UP-TO-DATE
+> Task :zego-express-engine-reactnative:processReleaseManifest UP-TO-DATE
+> Task :zego-express-engine-reactnative:generateReleaseRFile UP-TO-DATE
+> Task :zego-express-engine-reactnative:extractReleaseAnnotations UP-TO-DATE
+> Task :zego-express-engine-reactnative:javaPreCompileRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :zego-express-engine-reactnative:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :zego-express-engine-reactnative:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :zego-express-engine-reactnative:mergeReleaseShaders UP-TO-DATE
+> Task :zego-express-engine-reactnative:compileReleaseShaders NO-SOURCE
+> Task :zego-express-engine-reactnative:generateReleaseAssets UP-TO-DATE
+> Task :zego-express-engine-reactnative:packageReleaseAssets UP-TO-DATE
+> Task :zego-express-engine-reactnative:prepareLintJarForPublish UP-TO-DATE
+> Task :zego-express-engine-reactnative:prepareReleaseArtProfile UP-TO-DATE
+> Task :zego-express-engine-reactnative:processReleaseJavaRes NO-SOURCE
+> Task :zego-express-engine-reactnative:mergeReleaseJavaResource UP-TO-DATE
+> Task :zego-express-engine-reactnative:syncReleaseLibJars UP-TO-DATE
+> Task :zego-express-engine-reactnative:writeReleaseAarMetadata UP-TO-DATE
+> Task :zego-express-engine-reactnative:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :zego-zim-react-native:preBuild UP-TO-DATE
+> Task :zego-zim-react-native:preReleaseBuild UP-TO-DATE
+> Task :zego-zim-react-native:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :zego-zim-react-native:mergeReleaseNativeLibs NO-SOURCE
+> Task :zego-zim-react-native:stripReleaseDebugSymbols NO-SOURCE
+> Task :zego-zim-react-native:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :zego-zim-react-native:generateReleaseResValues UP-TO-DATE
+> Task :zego-zim-react-native:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :zego-zim-react-native:generateReleaseBuildConfig UP-TO-DATE
+> Task :zego-zim-react-native:generateReleaseResources UP-TO-DATE
+> Task :zego-zim-react-native:packageReleaseResources UP-TO-DATE
+> Task :zego-zim-react-native:parseReleaseLocalResources UP-TO-DATE
+> Task :zego-zim-react-native:processReleaseManifest UP-TO-DATE
+> Task :zego-zim-react-native:generateReleaseRFile UP-TO-DATE
+> Task :zego-zim-react-native:extractReleaseAnnotations UP-TO-DATE
+> Task :zego-zim-react-native:javaPreCompileRelease UP-TO-DATE
+> Task :zego-zim-react-native:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :zego-zim-react-native:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :zego-zim-react-native:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :zego-zim-react-native:mergeReleaseShaders UP-TO-DATE
+> Task :zego-zim-react-native:compileReleaseShaders NO-SOURCE
+> Task :zego-zim-react-native:generateReleaseAssets UP-TO-DATE
+> Task :zego-zim-react-native:packageReleaseAssets UP-TO-DATE
+> Task :zego-zim-react-native:prepareLintJarForPublish UP-TO-DATE
+> Task :zego-zim-react-native:prepareReleaseArtProfile UP-TO-DATE
+> Task :zego-zim-react-native:processReleaseJavaRes NO-SOURCE
+> Task :zego-zim-react-native:mergeReleaseJavaResource UP-TO-DATE
+> Task :zego-zim-react-native:syncReleaseLibJars UP-TO-DATE
+> Task :zego-zim-react-native:writeReleaseAarMetadata UP-TO-DATE
+> Task :zego-zim-react-native:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :zego-zpns-react-native:preBuild UP-TO-DATE
+> Task :zego-zpns-react-native:preReleaseBuild UP-TO-DATE
+> Task :zego-zpns-react-native:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :zego-zpns-react-native:mergeReleaseNativeLibs NO-SOURCE
+> Task :zego-zpns-react-native:stripReleaseDebugSymbols NO-SOURCE
+> Task :zego-zpns-react-native:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :zego-zpns-react-native:generateReleaseResValues UP-TO-DATE
+> Task :zego-zpns-react-native:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :zego-zpns-react-native:generateReleaseBuildConfig UP-TO-DATE
+> Task :zego-zpns-react-native:generateReleaseResources UP-TO-DATE
+> Task :zego-zpns-react-native:packageReleaseResources UP-TO-DATE
+> Task :zego-zpns-react-native:parseReleaseLocalResources UP-TO-DATE
+> Task :zego-zpns-react-native:processReleaseManifest UP-TO-DATE
+> Task :zego-zpns-react-native:generateReleaseRFile UP-TO-DATE
+> Task :zego-zpns-react-native:extractReleaseAnnotations UP-TO-DATE
+> Task :zego-zpns-react-native:javaPreCompileRelease UP-TO-DATE
+> Task :zego-zpns-react-native:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :zego-zpns-react-native:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :zego-zpns-react-native:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :zego-zpns-react-native:mergeReleaseShaders UP-TO-DATE
+> Task :zego-zpns-react-native:compileReleaseShaders NO-SOURCE
+> Task :zego-zpns-react-native:generateReleaseAssets UP-TO-DATE
+> Task :zego-zpns-react-native:packageReleaseAssets UP-TO-DATE
+> Task :zego-zpns-react-native:prepareLintJarForPublish UP-TO-DATE
+> Task :zego-zpns-react-native:prepareReleaseArtProfile UP-TO-DATE
+> Task :zego-zpns-react-native:processReleaseJavaRes NO-SOURCE
+> Task :zego-zpns-react-native:mergeReleaseJavaResource UP-TO-DATE
+> Task :zego-zpns-react-native:syncReleaseLibJars UP-TO-DATE
+> Task :zego-zpns-react-native:writeReleaseAarMetadata UP-TO-DATE
+> Task :zego-zpns-react-native:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-application:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-application:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-application:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-application:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-application:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-application:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-application:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-application:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-application:mergeReleaseShaders UP-TO-DATE
+> Task :expo-application:compileReleaseShaders NO-SOURCE
+> Task :expo-application:generateReleaseAssets UP-TO-DATE
+> Task :expo-application:packageReleaseAssets UP-TO-DATE
+> Task :expo-application:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-application:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-application:processReleaseJavaRes UP-TO-DATE
+> Task :expo-application:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-application:syncReleaseLibJars UP-TO-DATE
+> Task :expo-application:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-application:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-av:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :expo-av:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :expo-av:configureCMakeRelWithDebInfo[armeabi-v7a]
+> Task :expo-av:buildCMakeRelWithDebInfo[armeabi-v7a]
+> Task :expo-av:configureCMakeRelWithDebInfo[x86]
+> Task :expo-av:buildCMakeRelWithDebInfo[x86]
+> Task :expo-av:configureCMakeRelWithDebInfo[x86_64]
+> Task :expo-av:buildCMakeRelWithDebInfo[x86_64]
+> Task :expo-av:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-av:mergeReleaseNativeLibs UP-TO-DATE
+> Task :expo-av:stripReleaseDebugSymbols UP-TO-DATE
+> Task :expo-av:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-av:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-av:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-av:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-av:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-av:mergeReleaseShaders UP-TO-DATE
+> Task :expo-av:compileReleaseShaders NO-SOURCE
+> Task :expo-av:generateReleaseAssets UP-TO-DATE
+> Task :expo-av:packageReleaseAssets UP-TO-DATE
+> Task :expo-av:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-av:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-av:processReleaseJavaRes UP-TO-DATE
+> Task :expo-av:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-av:syncReleaseLibJars UP-TO-DATE
+> Task :expo-av:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-av:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-constants:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-constants:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-constants:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-constants:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-constants:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-constants:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-constants:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-constants:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-constants:mergeReleaseShaders UP-TO-DATE
+> Task :expo-constants:compileReleaseShaders NO-SOURCE
+> Task :expo-constants:generateReleaseAssets UP-TO-DATE
+> Task :expo-constants:packageReleaseAssets UP-TO-DATE
+> Task :expo-constants:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-constants:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-constants:processReleaseJavaRes UP-TO-DATE
+> Task :expo-constants:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-constants:syncReleaseLibJars UP-TO-DATE
+> Task :expo-constants:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-constants:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-device:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-device:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-device:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-device:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-device:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-device:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-device:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-device:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-device:mergeReleaseShaders UP-TO-DATE
+> Task :expo-device:compileReleaseShaders NO-SOURCE
+> Task :expo-device:generateReleaseAssets UP-TO-DATE
+> Task :expo-device:packageReleaseAssets UP-TO-DATE
+> Task :expo-device:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-device:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-device:processReleaseJavaRes UP-TO-DATE
+> Task :expo-device:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-device:syncReleaseLibJars UP-TO-DATE
+> Task :expo-device:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-device:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-document-picker:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-document-picker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-document-picker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-document-picker:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseShaders UP-TO-DATE
+> Task :expo-document-picker:compileReleaseShaders NO-SOURCE
+> Task :expo-document-picker:generateReleaseAssets UP-TO-DATE
+> Task :expo-document-picker:packageReleaseAssets UP-TO-DATE
+> Task :expo-document-picker:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-document-picker:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-document-picker:processReleaseJavaRes UP-TO-DATE
+> Task :expo-document-picker:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-document-picker:syncReleaseLibJars UP-TO-DATE
+> Task :expo-document-picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-document-picker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-file-system:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-file-system:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-file-system:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-file-system:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-file-system:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-file-system:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-file-system:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-file-system:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-file-system:mergeReleaseShaders UP-TO-DATE
+> Task :expo-file-system:compileReleaseShaders NO-SOURCE
+> Task :expo-file-system:generateReleaseAssets UP-TO-DATE
+> Task :expo-file-system:packageReleaseAssets UP-TO-DATE
+> Task :expo-file-system:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-file-system:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-file-system:processReleaseJavaRes UP-TO-DATE
+> Task :expo-file-system:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-file-system:syncReleaseLibJars UP-TO-DATE
+> Task :expo-file-system:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-file-system:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-font:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-font:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-font:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-font:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-font:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-font:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-font:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-font:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-font:mergeReleaseShaders UP-TO-DATE
+> Task :expo-font:compileReleaseShaders NO-SOURCE
+> Task :expo-font:generateReleaseAssets UP-TO-DATE
+> Task :expo-font:packageReleaseAssets UP-TO-DATE
+> Task :expo-font:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-font:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-font:processReleaseJavaRes UP-TO-DATE
+> Task :expo-font:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-font:syncReleaseLibJars UP-TO-DATE
+> Task :expo-font:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-font:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-image-loader:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-image-loader:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-image-loader:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-image-loader:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseShaders UP-TO-DATE
+> Task :expo-image-loader:compileReleaseShaders NO-SOURCE
+> Task :expo-image-loader:generateReleaseAssets UP-TO-DATE
+> Task :expo-image-loader:packageReleaseAssets UP-TO-DATE
+> Task :expo-image-loader:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-image-loader:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-image-loader:processReleaseJavaRes UP-TO-DATE
+> Task :expo-image-loader:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-image-loader:syncReleaseLibJars UP-TO-DATE
+> Task :expo-image-loader:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-image-loader:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-image-manipulator:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-image-manipulator:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-image-manipulator:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-image-manipulator:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseShaders UP-TO-DATE
+> Task :expo-image-manipulator:compileReleaseShaders NO-SOURCE
+> Task :expo-image-manipulator:generateReleaseAssets UP-TO-DATE
+> Task :expo-image-manipulator:packageReleaseAssets UP-TO-DATE
+> Task :expo-image-manipulator:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-image-manipulator:prepareReleaseArtProfile UP-TO-DATE
+
+> Task :expo:compileReleaseKotlin
+w: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/node_modules/expo/android/src/main/java/expo/modules/ReactActivityDelegateWrapper.kt:139:50 No cast needed
+
+> Task :expo-image-manipulator:processReleaseJavaRes UP-TO-DATE
+> Task :expo:extractReleaseAnnotations
+> Task :expo:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :expo:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo:processReleaseJavaRes UP-TO-DATE
+> Task :expo:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo:syncReleaseLibJars UP-TO-DATE
+> Task :expo:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-image-manipulator:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-image-manipulator:syncReleaseLibJars UP-TO-DATE
+> Task :expo-image-manipulator:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-image-manipulator:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-image-picker:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-image-picker:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-image-picker:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-image-picker:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseShaders UP-TO-DATE
+> Task :expo-image-picker:compileReleaseShaders NO-SOURCE
+> Task :expo-image-picker:generateReleaseAssets UP-TO-DATE
+> Task :expo-image-picker:packageReleaseAssets UP-TO-DATE
+> Task :expo-image-picker:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-image-picker:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-image-picker:processReleaseJavaRes UP-TO-DATE
+> Task :expo-image-picker:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-image-picker:syncReleaseLibJars UP-TO-DATE
+> Task :expo-image-picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-image-picker:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-keep-awake:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-keep-awake:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-keep-awake:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-keep-awake:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseShaders UP-TO-DATE
+> Task :expo-keep-awake:compileReleaseShaders NO-SOURCE
+> Task :expo-keep-awake:generateReleaseAssets UP-TO-DATE
+> Task :expo-keep-awake:packageReleaseAssets UP-TO-DATE
+> Task :expo-keep-awake:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-keep-awake:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-keep-awake:processReleaseJavaRes UP-TO-DATE
+> Task :expo-keep-awake:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-keep-awake:syncReleaseLibJars UP-TO-DATE
+> Task :expo-keep-awake:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-keep-awake:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-notifications:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-notifications:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-notifications:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-notifications:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-notifications:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-notifications:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-notifications:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-notifications:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-notifications:mergeReleaseShaders UP-TO-DATE
+> Task :expo-notifications:compileReleaseShaders NO-SOURCE
+> Task :expo-notifications:generateReleaseAssets UP-TO-DATE
+> Task :expo-notifications:packageReleaseAssets UP-TO-DATE
+> Task :expo-notifications:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-notifications:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-notifications:processReleaseJavaRes UP-TO-DATE
+> Task :expo-notifications:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-notifications:syncReleaseLibJars UP-TO-DATE
+> Task :expo-notifications:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-notifications:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[armeabi-v7a]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[armeabi-v7a]
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[x86]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[x86]
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[x86_64]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[x86_64]
+> Task :expo-modules-core:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo-modules-core:mergeReleaseNativeLibs UP-TO-DATE
+> Task :expo-modules-core:stripReleaseDebugSymbols UP-TO-DATE
+> Task :expo-modules-core:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :expo-modules-core:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :expo-modules-core:extractReleaseAnnotations UP-TO-DATE
+> Task :expo-modules-core:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :expo-modules-core:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :expo-modules-core:mergeReleaseShaders UP-TO-DATE
+> Task :expo-modules-core:compileReleaseShaders NO-SOURCE
+> Task :expo-modules-core:generateReleaseAssets UP-TO-DATE
+> Task :expo-modules-core:packageReleaseAssets UP-TO-DATE
+> Task :expo-modules-core:prepareLintJarForPublish UP-TO-DATE
+> Task :expo-modules-core:prepareReleaseArtProfile UP-TO-DATE
+> Task :expo-modules-core:processReleaseJavaRes UP-TO-DATE
+> Task :expo-modules-core:mergeReleaseJavaResource UP-TO-DATE
+> Task :expo-modules-core:syncReleaseLibJars UP-TO-DATE
+> Task :expo-modules-core:writeReleaseAarMetadata UP-TO-DATE
+> Task :expo-modules-core:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-sound:preBuild UP-TO-DATE
+> Task :react-native-sound:preReleaseBuild UP-TO-DATE
+> Task :react-native-sound:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-sound:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-sound:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-sound:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-sound:generateReleaseResValues UP-TO-DATE
+> Task :react-native-sound:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-sound:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-sound:generateReleaseResources UP-TO-DATE
+> Task :react-native-sound:packageReleaseResources UP-TO-DATE
+> Task :react-native-sound:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-sound:processReleaseManifest UP-TO-DATE
+> Task :react-native-sound:generateReleaseRFile UP-TO-DATE
+> Task :react-native-sound:extractReleaseAnnotations UP-TO-DATE
+> Task :react-native-sound:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-sound:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-sound:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-sound:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-sound:mergeReleaseShaders UP-TO-DATE
+> Task :react-native-sound:compileReleaseShaders NO-SOURCE
+> Task :react-native-sound:generateReleaseAssets UP-TO-DATE
+> Task :react-native-sound:packageReleaseAssets UP-TO-DATE
+> Task :react-native-sound:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-sound:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-sound:processReleaseJavaRes NO-SOURCE
+> Task :react-native-sound:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-sound:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-sound:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-sound:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generatePackageList
+> Task :app:preBuild
+> Task :app:preReleaseBuild
+> Task :app:generateReleaseBuildConfig UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:createBundleReleaseJsAndAssets UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:processReleaseGoogleServices UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :expo:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-application:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-av:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-constants:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-device:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-document-picker:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-file-system:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-font:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-image-loader:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-image-manipulator:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-image-picker:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-keep-awake:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-modules-core:extractDeepLinksRelease UP-TO-DATE
+> Task :expo-notifications:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_app:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_auth:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_database:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-gesture-handler:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-image-picker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-keep-awake:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-pager-view:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-picker_picker:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-safe-area-context:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-screens:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-sound:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-vector-icons:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-webrtc:extractDeepLinksRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:extractDeepLinksRelease UP-TO-DATE
+> Task :zego-zim-react-native:extractDeepLinksRelease UP-TO-DATE
+> Task :zego-zpns-react-native:extractDeepLinksRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:extractDeepLinksRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :expo:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-application:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-av:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-constants:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-device:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-document-picker:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-file-system:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-font:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-image-loader:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-image-manipulator:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-image-picker:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-keep-awake:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-modules-core:compileReleaseLibraryResources UP-TO-DATE
+> Task :expo-notifications:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-async-storage_async-storage:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-community_datetimepicker:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-encrypted-storage:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-firebase_app:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-firebase_auth:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-firebase_database:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-firebase_messaging:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-gesture-handler:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-image-crop-picker:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-image-picker:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-keep-awake:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-pager-view:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-picker_picker:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-screens:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-sound:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-vector-icons:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-webrtc:compileReleaseLibraryResources UP-TO-DATE
+> Task :zego-express-engine-reactnative:compileReleaseLibraryResources UP-TO-DATE
+> Task :zego-zim-react-native:compileReleaseLibraryResources UP-TO-DATE
+> Task :zego-zpns-react-native:compileReleaseLibraryResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:compileReleaseLibraryResources UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:compileReleaseLibraryResources UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :expo:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-firebase_auth:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-firebase_database:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-gesture-handler:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-image-picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-keep-awake:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-pager-view:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-picker_picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-screens:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-sound:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-vector-icons:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-webrtc:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :zego-zim-react-native:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :zego-zpns-react-native:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :expo:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo:createFullJarRelease UP-TO-DATE
+> Task :expo:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-application:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-application:createFullJarRelease UP-TO-DATE
+> Task :expo-application:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-av:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-av:createFullJarRelease UP-TO-DATE
+> Task :expo-av:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-constants:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-constants:createFullJarRelease UP-TO-DATE
+> Task :expo-constants:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-device:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-device:createFullJarRelease UP-TO-DATE
+> Task :expo-device:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-document-picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-document-picker:createFullJarRelease UP-TO-DATE
+> Task :expo-document-picker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-file-system:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-file-system:createFullJarRelease UP-TO-DATE
+> Task :expo-file-system:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-font:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-font:createFullJarRelease UP-TO-DATE
+> Task :expo-font:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-image-loader:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-image-loader:createFullJarRelease UP-TO-DATE
+> Task :expo-image-loader:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-image-manipulator:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-image-manipulator:createFullJarRelease UP-TO-DATE
+> Task :expo-image-manipulator:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-image-picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-image-picker:createFullJarRelease UP-TO-DATE
+> Task :expo-image-picker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-keep-awake:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-keep-awake:createFullJarRelease UP-TO-DATE
+> Task :expo-keep-awake:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-modules-core:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-modules-core:createFullJarRelease UP-TO-DATE
+> Task :expo-modules-core:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :expo-notifications:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :expo-notifications:createFullJarRelease UP-TO-DATE
+> Task :expo-notifications:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-async-storage_async-storage:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:createFullJarRelease UP-TO-DATE
+> Task :react-native-async-storage_async-storage:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-community_datetimepicker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:createFullJarRelease UP-TO-DATE
+> Task :react-native-community_datetimepicker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-encrypted-storage:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:createFullJarRelease UP-TO-DATE
+> Task :react-native-encrypted-storage:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_app:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_app:createFullJarRelease UP-TO-DATE
+> Task :react-native-firebase_app:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_auth:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_auth:createFullJarRelease UP-TO-DATE
+> Task :react-native-firebase_auth:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_database:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_database:createFullJarRelease UP-TO-DATE
+> Task :react-native-firebase_database:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:createFullJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-gesture-handler:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-gesture-handler:createFullJarRelease UP-TO-DATE
+> Task :react-native-gesture-handler:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-image-crop-picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:createFullJarRelease UP-TO-DATE
+> Task :react-native-image-crop-picker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-image-picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-image-picker:createFullJarRelease UP-TO-DATE
+> Task :react-native-image-picker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-keep-awake:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-keep-awake:createFullJarRelease UP-TO-DATE
+> Task :react-native-keep-awake:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-pager-view:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-pager-view:createFullJarRelease UP-TO-DATE
+> Task :react-native-pager-view:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-picker_picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-picker_picker:createFullJarRelease UP-TO-DATE
+> Task :react-native-picker_picker:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:createFullJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-screens:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-screens:createFullJarRelease UP-TO-DATE
+> Task :react-native-screens:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-sound:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-sound:createFullJarRelease UP-TO-DATE
+> Task :react-native-sound:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-vector-icons:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-vector-icons:createFullJarRelease UP-TO-DATE
+> Task :react-native-vector-icons:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-webrtc:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-webrtc:createFullJarRelease UP-TO-DATE
+> Task :react-native-webrtc:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :zego-express-engine-reactnative:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:createFullJarRelease UP-TO-DATE
+> Task :zego-express-engine-reactnative:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :zego-zim-react-native:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :zego-zim-react-native:createFullJarRelease UP-TO-DATE
+> Task :zego-zim-react-native:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :zego-zpns-react-native:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :zego-zpns-react-native:createFullJarRelease UP-TO-DATE
+> Task :zego-zpns-react-native:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:createFullJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:createFullJarRelease UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :expo:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-application:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-av:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-constants:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-device:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-document-picker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-file-system:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-font:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-image-loader:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-image-manipulator:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-image-picker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-keep-awake:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-modules-core:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :expo-notifications:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-async-storage_async-storage:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-community_datetimepicker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-encrypted-storage:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-firebase_app:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-firebase_auth:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-firebase_database:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-firebase_messaging:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-gesture-handler:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-image-crop-picker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-image-picker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-keep-awake:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-pager-view:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-picker_picker:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-screens:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-sound:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-vector-icons:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-webrtc:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :zego-express-engine-reactnative:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :zego-zim-react-native:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :zego-zpns-react-native:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :zegocloud_zego-uikit-prebuilt-call-rn:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :zegocloud_zego-uikit-rn:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs UP-TO-DATE
+> Task :app:stripReleaseDebugSymbols UP-TO-DATE
+> Task :app:extractReleaseNativeSymbolTables UP-TO-DATE
+> Task :app:mergeReleaseNativeDebugMetadata UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:desugarReleaseFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexRelease UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :app:mergeReleaseShaders UP-TO-DATE
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:compressReleaseAssets UP-TO-DATE
+> Task :app:optimizeReleaseResources UP-TO-DATE
+
+> Task :app:compileReleaseKotlin FAILED
+.\gradlew : e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainActivity.kt:18:14 
+Unresolved reference: R
+At line:1 char:13
++ cd android; .\gradlew app:assembleRelease --stacktrace 2>&1 | Out-Fil ...
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e: file:///D:/C...ed reference: R:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainActivity.kt:35:11 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:35:60 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:37:52 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:38:51 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:48:10 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:51:9 Unresolved 
+reference: BuildConfig
+e: file:///D:/CNM_Project/Project_Mobile/ChatApp_alo2_no_otp_dev/android/app/src/main/java/com/yourdomain/chatlofi/MainApplication.kt:55:9 Unresolved 
+reference: BuildConfig
+
+> Task :app:collectReleaseDependencies
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:compileReleaseKotlin'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:149)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:282)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:147)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:135)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:80)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:463)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:380)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing 
+org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:283)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:130)
+	at org.gradle.internal.Factories$1.create(Factories.java:31)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:336)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:319)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withoutLock(DefaultWorkerLeaseService.java:324)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:126)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:92)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:78)
+	at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:66)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:256)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java:68)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:233)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:216)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:199)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:166)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:105)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:59)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:56)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:56)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:67)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:37)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:41)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:74)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.CreateOutputsStep.execute(CreateOutputsStep.java:50)
+	at org.gradle.internal.execution.steps.CreateOutputsStep.execute(CreateOutputsStep.java:28)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.executeDelegateBroadcastingChanges(CaptureStateAfterExecutionStep.java:100)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.execute(CaptureStateAfterExecutionStep.java:72)
+	at org.gradle.internal.execution.steps.CaptureStateAfterExecutionStep.execute(CaptureStateAfterExecutionStep.java:50)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:40)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:29)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:179)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:70)
+	at org.gradle.internal.Either$Right.fold(Either.java:175)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:59)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:68)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:25)
+	at org.gradle.internal.execution.steps.RecordOutputsStep.execute(RecordOutputsStep.java:36)
+	at org.gradle.internal.execution.steps.RecordOutputsStep.execute(RecordOutputsStep.java:22)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:91)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:55)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:55)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:37)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:65)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveCachingStateStep.execute(ResolveCachingStateStep.java:77)
+	at org.gradle.internal.execution.steps.ResolveCachingStateStep.execute(ResolveCachingStateStep.java:38)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:94)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:49)
+	at org.gradle.internal.execution.steps.CaptureStateBeforeExecutionStep.execute(CaptureStateBeforeExecutionStep.java:71)
+	at org.gradle.internal.execution.steps.CaptureStateBeforeExecutionStep.execute(CaptureStateBeforeExecutionStep.java:45)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.executeWithNonEmptySources(SkipEmptyWorkStep.java:177)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:86)
+	at org.gradle.internal.execution.steps.SkipEmptyWorkStep.execute(SkipEmptyWorkStep.java:53)
+	at org.gradle.internal.execution.steps.RemoveUntrackedExecutionStateStep.execute(RemoveUntrackedExecutionStateStep.java:32)
+	at org.gradle.internal.execution.steps.RemoveUntrackedExecutionStateStep.execute(RemoveUntrackedExecutionStateStep.java:21)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.CleanupStaleOutputsStep.execute(CleanupStaleOutputsStep.java:75)
+	at org.gradle.internal.execution.steps.CleanupStaleOutputsStep.execute(CleanupStaleOutputsStep.java:41)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:66)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:66)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:38)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.lambda$execute$0(AssignWorkspaceStep.java:32)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:293)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.AssignWorkspaceStep.execute(AssignWorkspaceStep.java:21)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:37)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:27)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:47)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:34)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:64)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:146)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:135)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:80)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:463)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:380)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Compilation error. See log for more details
+	at org.jetbrains.kotlin.gradle.tasks.TasksUtilsKt.throwExceptionIfCompilationFailed(tasksUtils.kt:22)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:128)
+	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:74)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:199)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:170)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:187)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:120)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:162)
+	at org.gradle.internal.Factories$1.create(Factories.java:31)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:264)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:133)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:157)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:126)
+	... 2 more
+
+
+BUILD FAILED in 21s
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+1177 actionable tasks: 22 executed, 1155 up-to-date
