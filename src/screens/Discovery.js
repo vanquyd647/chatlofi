@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
-  Pressable,
   StyleSheet,
   Text,
   View,
-  Image,
   FlatList,
   TouchableOpacity,
   Modal,
@@ -14,12 +12,10 @@ import {
   ScrollView
 } from 'react-native';
 import { AntDesign, MaterialCommunityIcons, Feather, FontAwesome5, Ionicons, MaterialIcons, Entypo } from '@expo/vector-icons';
-import dataApp from "../../data/Nameapp.js";
 import { useNavigation } from "@react-navigation/native";
 
 const Discovery = () => {
   const navigation = useNavigation();
-  const [input, setInput] = useState("");
   const [showQRModal, setShowQRModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
@@ -62,20 +58,6 @@ const Discovery = () => {
         <Animated.View style={[styles.skeletonText, { opacity }]} />
       </View>
     );
-  };
-
-  const handleInputChange = (text) => {
-    setInput(text);
-  };
-
-  const [state, SetState] = useState(dataApp);
-
-  const truncateName = (name, maxLength) => {
-    if (name.length > maxLength) {
-      return name.substring(0, maxLength) + '...';
-    } else {
-      return name;
-    }
   };
 
   const miniGames = [

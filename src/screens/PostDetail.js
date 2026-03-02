@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { Video } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AntDesign, Ionicons, Feather, MaterialIcons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
     getFirestore,
@@ -30,10 +30,7 @@ import {
     orderBy,
     onSnapshot,
     serverTimestamp,
-    getDoc,
-    getDocs,
-    where,
-    writeBatch
+    getDoc
 } from 'firebase/firestore';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { vi } from 'date-fns/locale';

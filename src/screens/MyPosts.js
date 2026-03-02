@@ -19,7 +19,6 @@ import {
   collection,
   query,
   where,
-  orderBy,
   onSnapshot,
   deleteDoc,
   doc
@@ -120,28 +119,8 @@ const MyPosts = () => {
   const getReactionSummary = (reactions) => {
     if (!reactions) return { count: 0, types: [] };
 
-    const reactionCounts = {};
-    Object.values(reactions).forEach(reaction => {
-      if (reaction && reaction.type) {
-        reactionCounts[reaction.type] = (reactionCounts[reaction.type] || 0) + 1;
-      }
-    });
-
     const count = Object.keys(reactions).filter(key => reactions[key]).length;
     return { count };
-  };
-
-  // Render reaction icon
-  const renderReactionIcon = (type, size = 16) => {
-    const icons = {
-      like: '👍',
-      love: '❤️',
-      haha: '😆',
-      wow: '😮',
-      sad: '😢',
-      angry: '😠'
-    };
-    return <Text style={{ fontSize: size }}>{icons[type] || '👍'}</Text>;
   };
 
   // Render post item

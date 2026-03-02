@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from "@react-navigation/native";
+import React from 'react';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { AntDesign, Feather } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
 import { getAuth, signOut } from "firebase/auth";
 import { useNotifications } from '../contextApi/NotificationContext';
 // Native Firebase Auth for syncing with Realtime Database
@@ -9,7 +9,6 @@ import nativeAuth from '@react-native-firebase/auth';
 
 const Setting_app = () => {
   const navigation = useNavigation();
-  const route = useRoute();
   const auth = getAuth();
   const { removePushToken, clearAllNotifications } = useNotifications();
 
@@ -28,9 +27,8 @@ const Setting_app = () => {
       // SYNC: Also sign out Native Firebase Auth
       try {
         await nativeAuth().signOut();
-        console.log('✅ Native Firebase Auth signed out');
       } catch (nativeError) {
-        console.log('⚠️ Native Firebase Auth signout failed:', nativeError.message);
+        // Native Auth signout failed silently
       }
       
       Alert.alert('Bạn đã đăng xuất thành công!');

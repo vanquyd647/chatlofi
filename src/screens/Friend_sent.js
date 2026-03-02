@@ -74,7 +74,6 @@ const Friend_sents = () => {
 
   // Hàm hủy lời mời kết bạn
   const handleCancel = async (friend) => {
-    console.log('friend', friend);
     try {
       const db = getFirestore();
       const auth = getAuth();
@@ -94,7 +93,6 @@ const Friend_sents = () => {
           querySnapshot.forEach(async (docSnapshot) => {
             await deleteDoc(docSnapshot.ref);
           });
-          console.log("Friend request canceled successfully!");
         } else {
           console.error("User document does not exist!");
         }
@@ -148,24 +146,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
   },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
-  },
-  searchInput: {
-    flex: 1,
-    justifyContent: "center",
-    height: 48,
-    marginLeft: 10,
-  },
-  textSearch: {
-    color: "white",
-    fontWeight: '500'
-  },
+
   itemContainer: {
     marginTop: 5,
     flex: 1,
@@ -184,15 +165,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     flex: 1,
   },
-  view1: {
-    flexDirection: 'row',
-    margin: 10,
-  },
-  text1: {
-    fontSize: 15,
-    justifyContent: "center",
-    marginLeft: 10
-  },
+
   addButton: {
     marginLeft: 20,
     backgroundColor: '#006AF5',

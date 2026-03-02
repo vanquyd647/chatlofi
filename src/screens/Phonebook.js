@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
-import dataApp from "../../data/Nameapp.js";
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import Friends from '../screens/Friends';
 import Groups from '../screens/Groups';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
+const TabTop = createMaterialTopTabNavigator();
+
 const Phonebook = () => {
   const navigation = useNavigation();
-  const [input, setInput] = useState("");
-  const TabTop = createMaterialTopTabNavigator();
 
   return (
     <View style={styles.container}>

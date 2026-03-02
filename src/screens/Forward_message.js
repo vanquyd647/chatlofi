@@ -2,8 +2,7 @@ import { StyleSheet, Text, View, FlatList, Pressable, Image, TouchableOpacity, T
 import React, { useEffect, useState, useMemo } from 'react'
 import { Ionicons, AntDesign, Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getFirestore, collection, onSnapshot, doc, addDoc, query, orderBy, getDoc, deleteDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getFirestore, collection, doc, addDoc, query, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { useToast } from '../contextApi/ToastContext';
 

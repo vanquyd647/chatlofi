@@ -79,11 +79,9 @@ const Friend_received = () => {
           };
           // thêm bạn bè vào friendData Firebase will automatically create a unique ID
           await addDoc(collection(userDocRef, "friendData"), friendData);
-          console.log("Friend added successfully!");
           // Xóa hồ sơ đã nhận 
           const friendReceivedDocRef = doc(userDocRef, "friend_Receiveds", friend.id);
           await deleteDoc(friendReceivedDocRef);
-          console.log("Friend request removed from friend_Receiveds");
           // Cập nhật bạn bè vào thông tin người gửi
           const friendDocRef = doc(db, "users", friend.UID);
 
@@ -97,7 +95,6 @@ const Friend_received = () => {
               ID_roomChat: ID_roomChat
             };
             await addDoc(collection(friendDocRef, "friendData"), friendData);
-            console.log("Profile information added to friendData of the sender");
 
             // xóa hồ sơ dã gửi lời mời , từ người gửi
             const friendSentCollectionRef = collection(friendDocRef, "friend_Sents");
@@ -105,7 +102,6 @@ const Friend_received = () => {
             const friendSentQuerySnapshot = await getDocs(friendSentQuery);
             friendSentQuerySnapshot.forEach(async (friendSentDoc) => {
               await deleteDoc(friendSentDoc.ref);
-              console.log("Từ người gửi xóa hồ sơ đã gửi lời mời kết bạn thành công!");
             });
 
             // Send notification to the person who sent the friend request
@@ -134,7 +130,6 @@ const Friend_received = () => {
 
   // Hàm từ chối kết bạn
   const handleCancel = async (friend) => {
-    console.log('friend', friend);
     try {
       const db = getFirestore();
       const auth = getAuth();
@@ -154,7 +149,6 @@ const Friend_received = () => {
           querySnapshot.forEach(async (docSnapshot) => {
             await deleteDoc(docSnapshot.ref);
           });
-          console.log("Tu choi ket ban thanh cong!");
         } else {
           console.error("User document does not exist!");
         }

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, TouchableOpacity } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import React from 'react';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, orderBy, where, updateDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
 
 const Setting_group = () => {
   const navigation = useNavigation();
@@ -13,7 +13,6 @@ const Setting_group = () => {
   const db = getFirestore();
   const auth = getAuth();
   const user = auth.currentUser;
-  const [userData, setUserData] = useState(null);
   const RoomID = RoomID1;
 
   const dissolveGroup = async () => {
@@ -23,7 +22,6 @@ const Setting_group = () => {
       await deleteDoc(groupDocRef);
       const chatDocRef = doc(db, 'Chats', RoomID);
       await deleteDoc(chatDocRef);
-      console.log("Giai tan nhom thanh cong")
       navigation.navigate("Main");
     } catch (error) {
       console.error("Error dissolving group:", error);

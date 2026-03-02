@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { getAuth, updateProfile } from 'firebase/auth';
 import { getFirestore, onSnapshot, doc, updateDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { RadioButton } from 'react-native-paper';
@@ -27,21 +27,18 @@ const Edit_in4Personal = () => {
     const unsubscribe = onSnapshot(userDocRef, (doc) => {
       if (doc.exists()) {
         const userData = doc.data();
-        console.log('User data:', userData.name);
         setUserData(userData);
         setName(userData.name);
         setBirthdate(moment(userData.birthdate, 'DD/MM/YYYY').toDate());
         setGender(userData.gender);
       } else {
-        console.log('User not found');
+        // User not found
       }
     });
     return () => {
       unsubscribe();
     };
   }, [db, user]);
-
-  console.log('userDat222a:', userData);
 
   const handleConfirm = (selectedDate) => {
     setBirthdate(selectedDate);
@@ -138,7 +135,6 @@ const Edit_in4Personal = () => {
 
         if (updateCount > 0) {
           await batch.commit();
-          console.log(`Đã cập nhật ${updateCount} bài post với thông tin mới`);
         }
 
         // Cập nhật thông tin trong tất cả comments (trong subcollection của mỗi post)
@@ -159,7 +155,6 @@ const Edit_in4Personal = () => {
               });
             });
             await commentsBatch.commit();
-            console.log(`Đã cập nhật ${commentsSnapshot.size} comments trong post ${postDoc.id}`);
           }
         }
       }

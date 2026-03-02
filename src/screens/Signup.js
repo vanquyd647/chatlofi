@@ -92,7 +92,6 @@ export default function Signup({ navigation, setIsLoggedIn }) {
       // Save FCM token for push notifications
       if (fcmToken) {
         await savePushToken(userCredential.user.uid, fcmToken);
-        console.log('FCM token saved for new user');
       }
 
       // Sign out ngay sau khi đăng ký vì email chưa xác thực

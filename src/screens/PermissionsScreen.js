@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Platform,
   Alert,
   Linking,
 } from 'react-native';

@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+﻿import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import { Platform, AppState, Vibration } from 'react-native';
-import { getFirestore, doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
+import { Platform } from 'react-native';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import messaging from '@react-native-firebase/messaging';
-import { getDatabase, ref, onValue, onChildAdded, set, query, orderByChild, equalTo } from '@react-native-firebase/database';
+import { getDatabase, ref, onChildAdded } from '@react-native-firebase/database';
 
 // Note: Notification handler is set in index.js to ensure it runs before app starts
 
@@ -71,7 +70,6 @@ async function setupNotificationChannels() {
       sound: 'default',
     });
 
-    console.log('✅ Notification channels setup complete');
   }
 }
 
@@ -94,17 +92,14 @@ export const NotificationProvider = ({ children }) => {
   // Lắng nghe cuộc gọi đến
   const startListeningForCalls = (userId) => {
     if (!userId) {
-      console.log('⚠️ Không có userId để lắng nghe cuộc gọi');
       return;
     }
     
     // Tránh tạo listener trùng lặp
     if (callListenerRef.current) {
-      console.log('⚠️ Listener đã tồn tại, bỏ qua');
       return;
     }
     
-    console.log('🎧 Bắt đầu lắng nghe cuộc gọi đến cho:', userId);
     const database = getDatabase();
 
     // Lắng nghe TẤT CẢ cuộc gọi (vì query không work với onChildAdded)
@@ -116,18 +111,15 @@ export const NotificationProvider = ({ children }) => {
       const callData = snapshot.val();
       if (!callData) return;
       
-      console.log('📡 ChildAdded call:', callId, 'status:', callData.status, 'recipient:', callData.recipientId, 'myUserId:', userId);
       
       // FIX: Ignore old calls (older than 60 seconds) to prevent stale calls on app restart
       const callAge = Date.now() - (callData.createdAt || 0);
       if (callAge > 60000) {
-        console.log('⚠️ Ignoring old call (age:', Math.round(callAge/1000), 'seconds)');
         return;
       }
       
       // Filter: Chỉ xử lý cuộc gọi tới mình
       if (callData.recipientId === userId && callData.status === 'ringing') {
-        console.log('📞 📞 📞 CÓ CUỘC GỌI ĐẾN từ:', callData.callerName, 'roomId:', callId);
         setIncomingCall({
           roomId: callId,
           callerId: callData.callerId,
@@ -156,7 +148,6 @@ export const NotificationProvider = ({ children }) => {
   // Dừng lắng nghe cuộc gọi
   const stopListeningForCalls = () => {
     if (callListenerRef.current) {
-      console.log('🛑 Dừng lắng nghe cuộc gọi');
       // Gọi unsubscribe function
       if (typeof callListenerRef.current === 'function') {
         callListenerRef.current();
@@ -182,13 +173,11 @@ export const NotificationProvider = ({ children }) => {
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
       if (!enabled) {
-        console.log('Permission not granted for notifications');
         return;
       }
 
       // Get FCM token
       token = await messaging().getToken();
-      console.log('FCM Token:', token);
       
       return token;
     } catch (error) {
@@ -207,7 +196,6 @@ export const NotificationProvider = ({ children }) => {
         fcmToken: token,
         lastTokenUpdate: new Date(),
       });
-      console.log('FCM token saved to Firestore');
     } catch (error) {
       console.error('Error saving FCM token:', error);
     }
@@ -222,7 +210,6 @@ export const NotificationProvider = ({ children }) => {
       await updateDoc(userRef, {
         fcmToken: null,
       });
-      console.log('FCM token removed from Firestore');
     } catch (error) {
       console.error('Error removing FCM token:', error);
     }
@@ -249,7 +236,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -274,7 +260,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Message notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending message notification:', error);
@@ -298,7 +283,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Friend request notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending friend request notification:', error);
@@ -322,7 +306,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('New post notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending new post notification:', error);
@@ -346,7 +329,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Friend request accepted notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending friend request accepted notification:', error);
@@ -372,7 +354,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Post comment notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending post comment notification:', error);
@@ -398,7 +379,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Post reaction notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending post reaction notification:', error);
@@ -423,7 +403,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Post share notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending post share notification:', error);
@@ -449,7 +428,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Comment reply notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending comment reply notification:', error);
@@ -475,7 +453,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Comment like notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending comment like notification:', error);
@@ -501,7 +478,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Group invite notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending group invite notification:', error);
@@ -528,7 +504,6 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log('Mention notification sent:', result);
       return result;
     } catch (error) {
       console.error('Error sending mention notification:', error);
@@ -582,21 +557,18 @@ export const NotificationProvider = ({ children }) => {
 
     // Listen for token refresh (FCM token can change)
     const unsubscribeTokenRefresh = messaging().onTokenRefresh(async newToken => {
-      console.log('FCM Token refreshed:', newToken);
       if (isMounted) {
         setFcmToken(newToken);
         // Update token in Firestore if user is logged in
         const currentUser = auth.currentUser;
         if (currentUser) {
           await savePushToken(currentUser.uid, newToken);
-          console.log('Refreshed FCM token saved to Firestore');
         }
       }
     });
 
     // Listen for foreground messages - Show local notification like Facebook
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
-      console.log('Foreground notification:', remoteMessage);
       if (isMounted) {
         setNotification(remoteMessage);
         
@@ -604,13 +576,11 @@ export const NotificationProvider = ({ children }) => {
         
         // Xử lý đặc biệt cho video call - navigate trực tiếp đến màn hình VideoCall
         if (data?.type === 'video_call') {
-          console.log('📞 VIDEO CALL NOTIFICATION received via FCM');
           
           // NOTE: onChildAdded listener on Firebase RTD also triggers setIncomingCall
           // To avoid duplicate navigation, we rely on onChildAdded listener for real-time detection
           // FCM notification is just a backup for when app is killed
           // So we skip setting incomingCall here if app is in foreground
-          console.log('📞 Skipping FCM setIncomingCall - onChildAdded listener will handle it');
           
           // Không hiện notification vì sẽ navigate trực tiếp
           return;
@@ -643,7 +613,6 @@ export const NotificationProvider = ({ children }) => {
               },
               trigger: null, // Show immediately
             });
-            console.log('Local notification scheduled successfully');
           } catch (error) {
             console.error('Error scheduling notification:', error);
           }
@@ -655,7 +624,6 @@ export const NotificationProvider = ({ children }) => {
 
     // Listen for notification taps when app is in background
     const unsubscribeOnOpen = messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification opened app:', remoteMessage);
       // Handle navigation based on notification data
       const data = remoteMessage.data;
       if (data?.screen) {
@@ -668,7 +636,6 @@ export const NotificationProvider = ({ children }) => {
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          console.log('Notification opened app from quit state:', remoteMessage);
         }
       });
 

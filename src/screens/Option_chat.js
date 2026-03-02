@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, TouchableOpacity, ScrollView, Modal, Alert, Switch } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons, Entypo, FontAwesome } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, orderBy, where, updateDoc, arrayRemove, arrayUnion, deleteDoc } from 'firebase/firestore';
@@ -31,16 +31,10 @@ const Option_chat = () => {
 
   // Tính toán friendUID từ UID array nếu không được truyền trực tiếp
   const calculatedFriendUID = React.useMemo(() => {
-    console.log('Option_chat - friendUID from params:', friendUID);
-    console.log('Option_chat - UID from params:', UID);
-    console.log('Option_chat - Admin_group1:', Admin_group1);
-    console.log('Option_chat - user.uid:', user?.uid);
-
     if (friendUID && friendUID !== user?.uid) return friendUID;
     // Nếu là chat 1-1 (không phải group) và có UID array
     if (!Admin_group1 && UID && Array.isArray(UID) && UID.length === 2) {
       const otherUID = UID.find(uid => uid !== user?.uid);
-      console.log('Option_chat - calculated otherUID from UID array:', otherUID);
       return otherUID;
     }
     return null;
@@ -166,27 +160,17 @@ const Option_chat = () => {
 
   // Xem trang cá nhân bạn bè
   const handleViewProfile = () => {
-    // Sử dụng calculatedFriendUID đã được tính toán
     const targetUID = calculatedFriendUID;
-
-    console.log('handleViewProfile - targetUID:', targetUID);
-    console.log('handleViewProfile - user.uid:', user?.uid);
-    console.log('handleViewProfile - friendUserData:', friendUserData);
 
     // Kiểm tra targetUID có phải là UID của chính mình không
     if (!targetUID || targetUID === user?.uid) {
-      console.log('handleViewProfile - navigating to own Profile');
-      // Nếu là chính mình hoặc không tìm được, navigate tới Profile
       navigation.navigate('Profile');
       return;
     }
 
     if (friendUserData) {
-      console.log('handleViewProfile - navigating to Personal_page with friendUserData');
       navigation.navigate('Personal_page', { friendData: friendUserData });
     } else if (targetUID) {
-      console.log('handleViewProfile - navigating to Personal_page with targetUID');
-      // Nếu chưa có data, navigate với UID và để Personal_page tự fetch
       navigation.navigate('Personal_page', { friendData: { UID: targetUID } });
     } else {
       showToast('Không thể xem trang cá nhân', 'error');

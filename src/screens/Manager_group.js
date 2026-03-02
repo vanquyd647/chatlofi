@@ -122,7 +122,6 @@ const Manager_group = () => {
     }, [mergedUIDs]);
 
     const setModalVisibility = (isVisible, item) => {
-        console.log('item', item);
         if (item) {
             setModalData(item);
             setModalVisible(isVisible);
@@ -181,7 +180,6 @@ const Manager_group = () => {
             await updateDoc(groupRef, {
                 Sub_Admin: arrayUnion(uid) // Add the UID to the Sub_Admin array
             });
-            console.log("phó nhóm đã được thêm thành công!");
             setModalVisible(false);
         } catch (error) {
             console.error("Error appointing sub-admin: ", error);
@@ -193,7 +191,6 @@ const Manager_group = () => {
             await updateDoc(chatGroupRef, {
                 Sub_Admin: arrayUnion(uid) // Add the UID to the Sub_Admin array
             });
-            console.log("phó nhóm đã được thêm thành công vào chat nhóm!");
             setModalVisible(false);
         } catch (error) {
             console.error("Error appointing sub-admin: ", error);
@@ -208,7 +205,6 @@ const Manager_group = () => {
             await updateDoc(groupRef, {
                 Sub_Admin: arrayRemove(uid)
             });
-            console.log("xóa phó nhóm thành công!");
             setModalVisible(false);
         } catch (error) {
             console.error("Error deleting member: ", error);
@@ -219,7 +215,6 @@ const Manager_group = () => {
             await updateDoc(chatGroupRef, {
                 Sub_Admin: arrayRemove(uid)
             });
-            console.log("xóa phó nhóm chat thành công!");
             setModalVisible(false);
         } catch (error) {
             console.error("Error deleting member: ", error);

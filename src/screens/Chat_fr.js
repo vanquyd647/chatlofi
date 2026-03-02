@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, TouchableWithoutFeedback, Modal, TouchableOpacity, ActivityIndicator, Alert, Clipboard, Dimensions, Animated, PanResponder, FlatList, ScrollView } from 'react-native';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, TouchableWithoutFeedback, Modal, TouchableOpacity, ActivityIndicator, Alert, Clipboard, Dimensions, Animated, PanResponder } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, Entypo, FontAwesome, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Video, Audio } from 'expo-av';
@@ -8,7 +8,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Linking } from 'react-native';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import * as FileSystem from 'expo-file-system';
 import { useChats } from '../contextApi/ChatContext';
 import { useNotifications } from '../contextApi/NotificationContext';
 import { useToast } from '../contextApi/ToastContext';
@@ -194,7 +193,6 @@ const ModernAudioMessage = ({ audioUri, duration, onPress, onLongPress, time, is
         setIsPlaying(true);
       } else {
         // Load và play audio
-        console.log('🎵 Loading audio from:', audioUri);
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: audioUri },
           { shouldPlay: true },
@@ -213,7 +211,6 @@ const ModernAudioMessage = ({ audioUri, duration, onPress, onLongPress, time, is
         );
         setSound(newSound);
         setIsPlaying(true);
-        console.log('🎵 Audio playing');
       }
     } catch (err) {
       console.error('Error playing audio:', err);
@@ -474,30 +471,19 @@ const Chat_fr = () => {
   // State để lưu UID của friend (dùng cho xem trang cá nhân)
   // Tính toán friendUID từ nhiều nguồn
   const [friendUID, setFriendUID] = useState(() => {
-    console.log('=== Initializing friendUID ===');
-    console.log('friendId:', friendId);
-    console.log('friendData:', friendData);
-    console.log('friendData2:', friendData2);
-    console.log('chatDataParam:', chatDataParam);
-    console.log('GroupData:', GroupData);
-    console.log('user.uid:', auth.currentUser?.uid);
 
     // Ưu tiên các giá trị đã được truyền rõ ràng
     if (friendId) {
-      console.log('Using friendId:', friendId);
       return friendId;
     }
     if (friendData?.UID) {
-      console.log('Using friendData.UID:', friendData.UID);
       return friendData.UID;
     }
     if (friendData2?.UID_fr) {
-      console.log('Using friendData2.UID_fr:', friendData2.UID_fr);
       return friendData2.UID_fr;
     }
     // Nếu có chatDataParam với otherUser (từ Chat.js)
     if (chatDataParam?.otherUser?.UID) {
-      console.log('Using chatDataParam.otherUser.UID:', chatDataParam.otherUser.UID);
       return chatDataParam.otherUser.UID;
     }
     // Nếu có UID array và không phải group, tìm UID của người khác
@@ -505,10 +491,8 @@ const Chat_fr = () => {
     if (uidArray && Array.isArray(uidArray) && uidArray.length === 2 && !GroupData?.Name_group && !chatDataParam?.Name_group) {
       const currentUserUid = auth.currentUser?.uid;
       const otherUid = uidArray.find(uid => uid !== currentUserUid);
-      console.log('Calculated from UID array:', otherUid);
       return otherUid || null;
     }
-    console.log('No friendUID found');
     return null;
   });
 
@@ -527,13 +511,11 @@ const Chat_fr = () => {
       if (RoomID && !chatDataParam && !GroupData && !friendData2) {
         setIsLoadingChat(true);
         try {
-          console.log('Fetching chat data for room:', RoomID);
           const chatRef = doc(db, 'Chats', RoomID);
           const chatSnap = await getDoc(chatRef);
 
           if (chatSnap.exists()) {
             const data = chatSnap.data();
-            console.log('Fetched chat data:', data);
 
             // If this is a 1-1 chat (not group), get the other user's info
             let senderName = friendNameParam;
@@ -554,10 +536,8 @@ const Chat_fr = () => {
                     const otherUserData = userSnap.data();
                     senderName = senderName || otherUserData.name;
                     senderPhoto = senderPhoto || otherUserData.profileImageUrl || otherUserData.photoURL;
-                    console.log('Got other user info:', senderName, senderPhoto);
                   }
                 } catch (e) {
-                  console.log('Error fetching other user:', e);
                 }
               }
             }
@@ -570,7 +550,6 @@ const Chat_fr = () => {
             });
             setUID(data.UID || []);
           } else {
-            console.log('Chat room not found:', RoomID);
           }
         } catch (error) {
           console.error('Error fetching chat data:', error);
@@ -583,10 +562,6 @@ const Chat_fr = () => {
     fetchChatDataFromRoom();
   }, [RoomID, chatDataParam, GroupData, friendData2, db, user?.uid, friendId, friendNameParam, friendPhoto]);
 
-  console.log("UIDdddd", UID);
-  console.log("screen chatfr");
-  console.log("chatData", chatData);
-  console.log("RoomID", RoomID);
 
   // Avatar: try all possible sources including notification params
   const avatar = chatData?.Photo_group
@@ -619,9 +594,7 @@ const Chat_fr = () => {
         const userData = userDocSnap.data();
         if (userDocSnap.exists()) {
           setUserData(userData);
-          console.log("userData", userData);
         } else {
-          console.log('User not found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -636,7 +609,6 @@ const Chat_fr = () => {
   useEffect(() => {
     const fetchChatMessages = async () => {
       try {
-        console.log("RoomID", RoomID)
         const chatRoomId = RoomID;
         const chatRoomRef = doc(db, 'Chats', chatRoomId);
         const chatRoomSnapshot = await getDoc(chatRoomRef);
@@ -651,7 +623,6 @@ const Chat_fr = () => {
             if (detail.uidDelete === user?.uid) {
               if (!latestDeleteDetail || detail.timeDelete.toDate() > latestDeleteDetail.timeDelete.toDate()) {
                 latestDeleteDetail = detail;
-                console.log('1');
               }
             }
           });
@@ -689,8 +660,6 @@ const Chat_fr = () => {
               }
             });
             setMessages(messages);
-            console.log('2');
-            console.log("danh sach tin nhan", messages);
           });
           return unsubscribe;
         }
@@ -750,9 +719,7 @@ const Chat_fr = () => {
       }
       // Upload audio file nếu có
       if (audio) {
-        console.log('🎵 Uploading audio file:', audio);
         audioDownloadURL = await uploadFileToFirebaseStorage(audio, auth.currentUser?.uid, 'audio/m4a', `voice_${Date.now()}.m4a`);
-        console.log('🎵 Audio uploaded:', audioDownloadURL);
       }
 
       // Nếu replyingToMessage có video, ảnh và tài liệu, cập nhật trường tương ứng
@@ -771,12 +738,6 @@ const Chat_fr = () => {
         }
       }
 
-      console.log('📝 Saving message to Firestore:', {
-        _id,
-        text: text || '',
-        audio: audioDownloadURL,
-        audioDuration: audioDuration || 0,
-      });
 
       const docRef = await addDoc(chatMessRef, {
         _id,
@@ -793,20 +754,12 @@ const Chat_fr = () => {
         documentContentType
       });
 
-      console.log('✅ Message saved to Firestore with ID:', docRef.id);
 
       // Gửi notification thủ công nếu không dùng Cloud Functions
       const currentUserId = auth.currentUser?.uid;
       if (RoomID && currentUserId) {
-        console.log('sendMessageNotification params:', {
-          chatId: RoomID,
-          senderId: currentUserId,
-          senderName: userData?.name || auth.currentUser?.displayName,
-          text: text || '[Media]'
-        });
         sendMessageNotification(RoomID, currentUserId, userData?.name || auth.currentUser?.displayName, text || '[Media]');
       } else {
-        console.warn('Cannot send notification: RoomID or currentUserId is missing', { RoomID, uid: currentUserId });
       }
     } catch (error) {
       console.error('Lỗi khi gửi tin nhắn:', error);
@@ -835,7 +788,6 @@ const Chat_fr = () => {
 
     const storageRef = ref(storage, storagePath);
     await uploadBytes(storageRef, blob);
-    console.log("Upload complete");
     const downloadURL = await getDownloadURL(storageRef);
     return downloadURL;
   };
@@ -855,7 +807,6 @@ const Chat_fr = () => {
         quality: 1,
       });
       if (!result.cancelled) {
-        console.log(result);
         const type = result.assets[0].type;
         const text = type.startsWith('video') ? '[Video]' : '[Hình ảnh]';
         const media = type.startsWith('video') ? 'video' : 'image';
@@ -872,18 +823,14 @@ const Chat_fr = () => {
         }]);
       }
     } catch {
-      console.log('Error picking file:');
     }
   };
 
   const pickDocument = async () => {
     const result = await DocumentPicker.getDocumentAsync();
-    console.log(result);
     if (!result.cancelled) {
       const uri = result.assets[0].uri;
-      console.log(uri);
       const nameFile = result.assets[0].name;
-      console.log(nameFile);
       const fileName = nameFile;  // Lấy tên tệp từ đường dẫn URI uri.split('/').pop();
       const message = nameFile; //'[Tài liệu]'
       const extension = getFileExtension(fileName); // Lấy phần mở rộng của tên tệp
@@ -903,10 +850,8 @@ const Chat_fr = () => {
           }
         ]);
       } else {
-        console.log("Selected file is an image or video. Please select a document.");
       }
     } else {
-      console.log("No document selected");
     }
   };
 
@@ -940,12 +885,10 @@ const Chat_fr = () => {
   const handleImagePress = (imageUri) => {
     setSelectedImage(imageUri);
     setImageViewerVisible(true);
-    console.log(imageUri);
   };
 
   const handleVideoPress = (videoUri) => {
     navigation.navigate('PlayVideo', { uri: videoUri });
-    console.log(videoUri);
   };
 
   // Pick image only
@@ -980,7 +923,6 @@ const Chat_fr = () => {
         }
       }
     } catch (err) {
-      console.log('Error picking image:', err);
     }
   };
 
@@ -1012,7 +954,6 @@ const Chat_fr = () => {
         }]);
       }
     } catch (err) {
-      console.log('Error picking video:', err);
     }
   };
 
@@ -1038,7 +979,6 @@ const Chat_fr = () => {
         }]);
       }
     } catch (err) {
-      console.log('Error picking audio:', err);
     }
   };
 
@@ -1152,7 +1092,6 @@ const Chat_fr = () => {
   };
 
   const handleDocumentPress = (documentUri) => {
-    console.log("Document URI:", documentUri);
     Linking.openURL(documentUri).catch(err => console.error('An error occurred', err));
   };
 
@@ -1285,7 +1224,6 @@ const Chat_fr = () => {
   };
 
   const setModalVisibility = (isVisible, messageData) => {
-    console.log('messageData', messageData)
     setModalData(messageData);
     setModalVisible(isVisible);
   };
@@ -1346,7 +1284,6 @@ const Chat_fr = () => {
                 recalledBy: auth.currentUser?.uid,
               });
               showToast('Đã thu hồi tin nhắn', 'success');
-              console.log("Message recalled successfully");
               setModalVisible(false);
             }
           }
@@ -1360,7 +1297,6 @@ const Chat_fr = () => {
 
 
   const handleDeleteMeseage = async (messageId) => {
-    console.log('messageId', messageId)
     try {
       const chatRoomId = RoomID;
       const timeDelete_mess = new Date();
@@ -1384,9 +1320,7 @@ const Chat_fr = () => {
           deleteDetail_mess: detailDelete_mess_Array
         });
         setModalVisible(false);
-        console.log("Successfully added timeDelete to Chat with chatRoomId:", chatRoomId);
       } else {
-        console.log("Chat with chatRoomId:", chatRoomId, "does not exist.");
       }
     } catch (error) {
       console.error("Error adding timeDelete to Chat:", error);
@@ -1394,7 +1328,6 @@ const Chat_fr = () => {
   };
 
   const handleForwardMessage = (messageData) => {
-    console.log("Forwarding message:", messageData);
     setModalVisible(false);
     // Chuyển đổi createdAt thành chuỗi thời gian
     const createdAtString = messageData.createdAt.toISOString();
@@ -1418,7 +1351,6 @@ const Chat_fr = () => {
   };
 
   const handleReply = (message) => {
-    console.log('message', message)
     // Set the replied message as the text input
     setReplyingToMessage(message);
     setModalVisible(false);
@@ -1462,17 +1394,8 @@ const Chat_fr = () => {
     return null;
   }, [friendUID, uid, chatDataParam, UID, user?.uid]);
 
-  console.log('=== Final UID calculation ===');
-  console.log('friendUID state:', friendUID);
-  console.log('uid variable:', uid);
-  console.log('finalFriendUID:', finalFriendUID);
-  console.log('UID state:', UID);
 
   const handleVideoCall = async (callerUid, recipientUid, callerName) => {
-    console.log('=== Starting Video Call ===');
-    console.log('Caller UID:', callerUid);
-    console.log('Recipient UID:', recipientUid);
-    console.log('Caller Name:', callerName);
 
     // Kiểm tra đầy đủ
     if (!callerUid || !recipientUid || callerUid === recipientUid) {
@@ -1490,7 +1413,6 @@ const Chat_fr = () => {
     // Tạo roomId ổn định cho cặp người dùng (giống Messenger: reuse khi cùng cặp)
     const sortedUids = [callerUid, recipientUid].sort();
     const videoCallRoomId = `call_${sortedUids[0]}_${sortedUids[1]}`;
-    console.log('Video Call Room ID (stable):', videoCallRoomId);
 
     // Gửi push notification đến người nhận qua server
     try {
@@ -1508,7 +1430,6 @@ const Chat_fr = () => {
       });
 
       const result = await response.json();
-      console.log('Video call notification sent:', result);
     } catch (error) {
       console.error('Failed to send video call notification:', error);
       // Vẫn tiếp tục gọi dù notification fail
@@ -1553,9 +1474,6 @@ const Chat_fr = () => {
               <MaterialIcons name="video-call" size={30} color="white" />
             </TouchableOpacity>
             <Pressable onPress={() => {
-              console.log('=== Navigating to Option_chat ===');
-              console.log('finalFriendUID:', finalFriendUID);
-              console.log('UID:', UID);
               navigation.navigate("Option_chat", {
                 RoomID,
                 avatar,

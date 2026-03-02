@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect, useRef } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import { StatusBar, SafeAreaView, View, ActivityIndicator } from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native"
@@ -207,7 +207,6 @@ function RootNavigator() {
   useEffect(() => {
     if (user && navigationRef.current && global.pendingVideoCall) {
       const pendingCall = global.pendingVideoCall;
-      console.log('📞 Xử lý pending video call:', pendingCall);
       
       // Clear pending call
       global.pendingVideoCall = null;
@@ -230,7 +229,6 @@ function RootNavigator() {
   // Lắng nghe cuộc gọi đến khi user đăng nhập
   useEffect(() => {
     if (user && user.uid) {
-      console.log('🎧 Bắt đầu lắng nghe cuộc gọi cho user:', user.uid);
       startListeningForCalls(user.uid);
     } else {
       stopListeningForCalls();
@@ -244,12 +242,10 @@ function RootNavigator() {
   // Xử lý khi có cuộc gọi đến - điều hướng đến màn hình VideoCall
   useEffect(() => {
     if (incomingCall && navigationRef.current && user) {
-      console.log('📞 Nhận được cuộc gọi đến, điều hướng đến VideoCall:', incomingCall);
       
       // Check if VideoCall screen is already open to prevent duplicates
       const currentRoute = navigationRef.current.getCurrentRoute();
       if (currentRoute && currentRoute.name === 'VideoCall') {
-        console.log('⚠️ VideoCall screen already open, skipping navigation');
         setIncomingCall(null);
         return;
       }
@@ -325,19 +321,15 @@ function RootNavigator() {
                 const idToken = await authenticatedUser.getIdToken();
                 if (idToken) {
                   // Use custom token approach - sign in with credential
-                  console.log('🔄 Syncing Native Firebase Auth...');
                   // Note: For full sync, we need stored credentials
                   // This is a best-effort sync
                 }
-              } else {
-                console.log('✅ Native Firebase Auth already signed in:', nativeUser.uid);
               }
             } catch (syncError) {
-              console.log('⚠️ Failed to check/sync Native Auth:', syncError.message);
+              // Failed to check/sync Native Auth
             }
           } else {
             // Email chưa xác thực - không cho vào app
-            console.log('Email chưa được xác thực, giữ ở màn hình đăng nhập');
             setUser(null);
             setIsLoggedIn(false);
             await AsyncStorage.removeItem(LOGIN_STATE_KEY);

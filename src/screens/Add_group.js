@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { RadioButton } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
@@ -25,24 +24,21 @@ const Add_group = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (!user) {
-                console.log("Người dùng không đăng nhập");
+                // User not logged in
             }
         });
         return unsubscribe;
     }, []);
     // Hàm kiểm tra tình trạng kết bạn
     const checkFriendshipStatus = async (UID) => {
-        console.log(UID);
         try {
             const db = getFirestore();
             const currentUser = auth.currentUser;
-            console.log(currentUser);
             const currentUserDocRef = doc(db, "users", currentUser.uid);
             const friendDataQuery = query(collection(currentUserDocRef, "friendData"), where("UID_fr", "==", UID));
             const friendDataSnapshot = await getDocs(friendDataQuery);
             return !friendDataSnapshot.empty; // Trả về true nếu có dữ liệu, ngược lại trả về false
         } catch {
-            console.log("Lỗi kiểm tra trạng thái bạn bè:");
             return false; // Trả về false nếu có lỗi xảy ra
         }
     };
@@ -58,7 +54,6 @@ const Add_group = () => {
                 const currentUser = auth.currentUser;
                 userSnapshot.forEach(doc => {
                     const userData = doc.data();
-                    console.log(userData)
                     if (userData.UID !== currentUser.uid) {
                         foundFriends.push({
                             id: doc.id,
@@ -76,7 +71,7 @@ const Add_group = () => {
                 }
                 setFriendsList(updatedFriendsList);
             } catch {
-                console.log("Lỗi truy vấn người dùng:");
+                // Error querying users
             } finally {
                 setLoading(false);
             }
@@ -109,20 +104,19 @@ const Add_group = () => {
                     });
                     setUserFriendsList(userFriends);
                 } else {
-                    console.log("User document does not exist!");
+                    // User document does not exist
                 }
             } else {
-                console.log("No user signed in!");
+                // No user signed in
             }
         } catch {
-            console.log("Lỗi truy vấn bạn bè người dùng:");
+            // Error fetching user friends
         }
     };
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log(user);
                 fetchUserFriends(); // Fetch friends when user is authenticated
                 const db = getFirestore();
                 const userDocRef = doc(db, "users", user.uid);
@@ -140,12 +134,11 @@ const Add_group = () => {
                             UID: friendData.UID_fr
                         });
                     });
-                    console.log(userFriends);
                     setUserFriendsList(userFriends);
                 });
                 return () => unsubscribe();
             } else {
-                console.log("No user signed in!");
+                // No user signed in
             }
         });
         return unsubscribe;
@@ -161,11 +154,9 @@ const Add_group = () => {
                 const userData = userDocSnapshot.data();
                 return { photoURL: userData.photoURL, name: userData.name };
             } else {
-                console.log(`User document does not exist for UID ${UID}`);
                 return null;
             }
         } catch {
-            console.log("Lỗi  user data:", error);
             return null;
         }
     };
@@ -195,12 +186,8 @@ const Add_group = () => {
         fetchUserDataForFriends().then(updatedFriendsData => {
             // Cập nhật danh sách bạn bè đã được cập nhật vào state listFriend
             setListFriend(updatedFriendsData);
-            console.log('userFriendsList', userFriendsList)
-            console.log('listFriend', listFriend)
         });
     }, [userFriendsList]); // Thêm userFriendsList vào dependency array
-
-    console.log('listFriend', listFriend)
 
     // sắp xếp danh sách bạn bè theo tên
     const sortedUserFriendsList = listFriend.slice().sort((a, b) => {
@@ -218,9 +205,6 @@ const Add_group = () => {
             setSelectedFriendName(selectedFriendName.filter(friendName => friendName !== name));
         }
     };
-    console.log('UID bạn bè đã chọn:', selectedFriend);
-    console.log('Tên bạn bè đã chọn:', selectedFriendName);
-
     const renderUserFriendItem = ({ item }) => (
         <View style={styles.itemContainer2}>
             <Pressable>
@@ -264,7 +248,6 @@ const Add_group = () => {
             const sortedUIDs = updatedCreateUid.sort();
             // Kiểm tra xem có ít nhất hai UID trong mảng sortedUIDs không
             if (sortedUIDs.length < 3) {
-                console.log("At least two UIDs are required to create a group.");
                 return;
             }
             let groupName = inputName_group; // Mặc định là inputName_group
@@ -302,7 +285,6 @@ const Add_group = () => {
                     UID: sortedUIDs, // Sử dụng mảng đã sắp xếp
                     UID_Chats: sortedUIDs.join("_")
                 });
-                console.log("New chat room created in Chat_group:", sortedUIDs);
             }
 
             // Tạo reference cho document trong "Chats" collection
@@ -321,7 +303,6 @@ const Add_group = () => {
                     UID: sortedUIDs, // Sử dụng mảng đã sắp xếp
                     UID_Chats: sortedUIDs.join("_")
                 });
-                console.log("New chat room created in Chats:", sortedUIDs);
             }
             navigation.navigate("Main");
         } catch (error) {

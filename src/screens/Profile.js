@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, Alert, Image, TouchableOpacity, SafeAreaView, Pressable } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { getAuth, signOut } from "firebase/auth";
-import * as ImagePicker from 'expo-image-picker';
+import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { getAuth } from "firebase/auth";
 import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
-import { set } from "date-fns";
+import { getFirestore, doc, getDoc, onSnapshot } from "firebase/firestore";
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -23,13 +20,10 @@ export default function Profile() {
     const unsubscribe = onSnapshot(userDocRef, (doc) => {
       if (doc.exists()) {
         const userData = doc.data();
-        console.log('User data:', userData);
         setUserData(userData);
         setPersonal(userData);
         setDisplayName(userData.name);
         setPhotoURL(userData.photoURL);
-      } else {
-        console.log('User not found');
       }
     });
 
@@ -86,10 +80,8 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
+    flex: 1,
+    backgroundColor: "#fff",
   },
   containerProfile: {
     flexDirection: 'row',

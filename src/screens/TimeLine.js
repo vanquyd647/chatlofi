@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -521,17 +521,14 @@ const TimeLine = () => {
           };
           
           // Send notification to post owner (only for new reactions, not toggles)
-          console.log('Reaction notification check:', { postOwnerId, currentUserId: userData.uid, shouldSend: postOwnerId && postOwnerId !== userData.uid });
           if (postOwnerId && postOwnerId !== userData.uid) {
-            console.log('Sending reaction notification...', { postId, postOwnerId, reactorId: userData.uid, reactionType });
             sendPostReactionNotification(
               postId,
               postOwnerId,
               userData.uid,
               userData.name || userData.displayName,
               reactionType
-            ).then(result => console.log('Reaction notification result:', result))
-             .catch(err => console.error('Reaction notification error:', err));
+            ).catch(err => console.error('Reaction notification error:', err));
           }
         }
 
@@ -633,26 +630,22 @@ const TimeLine = () => {
         // Send notification based on whether it's a reply or a comment
         if (replyToComment && replyToComment.userId !== userData.uid) {
           // Reply to a comment - notify comment owner
-          console.log('Sending comment reply notification...', { postId: currentPostId, commentOwnerId: replyToComment.userId });
           sendCommentReplyNotification(
             currentPostId,
             replyToComment.userId,
             userData.uid,
             currentUserInfo.name,
             commentText.trim().substring(0, 100)
-          ).then(result => console.log('Comment reply notification result:', result))
-           .catch(err => console.error('Comment reply notification error:', err));
+          ).catch(err => console.error('Comment reply notification error:', err));
         } else if (postOwnerId && postOwnerId !== userData.uid) {
           // Comment on post - notify post owner
-          console.log('Sending comment notification...', { postId: currentPostId, postOwnerId });
           sendPostCommentNotification(
             currentPostId,
             postOwnerId,
             userData.uid,
             currentUserInfo.name,
             commentText.trim().substring(0, 100)
-          ).then(result => console.log('Comment notification result:', result))
-           .catch(err => console.error('Comment notification error:', err));
+          ).catch(err => console.error('Comment notification error:', err));
         }
       }
 

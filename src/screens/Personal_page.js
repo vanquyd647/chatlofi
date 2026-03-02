@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, SafeAreaView, Pressable, ImageBackground, TouchableOpacity, Image } from 'react-native'
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 const Personal_page = () => {
@@ -23,14 +23,11 @@ const Personal_page = () => {
   const viewedUserId = friendData?.UID || friendId || userId || user.uid; // Ưu tiên friendData.UID, sau đó friendId
   const isOwnProfile = viewedUserId === user.uid; // Kiểm tra xem có phải profile của mình không
 
-  console.log("Viewing user profile:", viewedUserId, "Is own profile:", isOwnProfile)
-
   useEffect(() => {
     const userDocRef = doc(db, 'users', viewedUserId); // Sử dụng viewedUserId thay vì user.uid
     const unsubscribe = onSnapshot(userDocRef, (doc) => {
       if (doc.exists()) {
         const userData = doc.data();
-        console.log('User data:', userData);
         setUserData(userData);
         setDisplayName(userData.name);
         setPhotoURL(userData.photoURL);
@@ -38,7 +35,7 @@ const Personal_page = () => {
         setEmail(userData.email);
         setGender(userData.gender);
       } else {
-        console.log('User not found');
+        // User not found
       }
     });
 
@@ -57,11 +54,9 @@ const Personal_page = () => {
         aspect: [1, 1],
         quality: 1,
       });
-      console.log(result);
       if (!result.cancelled) {
         // Nếu người dùng chọn ảnh, tiến hành cập nhật
         const Ure = result.assets[0].uri
-        console.log("URI before fetch:", Ure);
         // Xóa ảnh hiện tại trên Firebase Storage và cập nhật URL ảnh mới
         await deletePreviousPhoto(auth.currentUser.uid);
         // Tải ảnh mới lên Firebase Storage và cập nhật URL ảnh mới
@@ -72,12 +67,11 @@ const Personal_page = () => {
           // Cập nhật trạng thái hiển thị của ảnh trên ứng dụng
           setPhotoURL(newPhotoURL);
         } else {
-          // Xử lý khi không có URL ảnh mới
-          console.log("No valid URL for the new photo.");
+          // No valid URL for the new photo
         }
       }
     } catch {
-      console.log("không thể cập nhật ảnh");
+      // Error updating photo
     }
   };
 
@@ -100,7 +94,7 @@ const Personal_page = () => {
         }
       }
     } catch (error) {
-      console.log("Error deleting previous photo: ", error);
+      // Error deleting previous photo
     }
   };
 
@@ -156,7 +150,6 @@ const Personal_page = () => {
 
       if (updateCount > 0) {
         await batch.commit();
-        console.log(`Đã cập nhật ảnh trong ${updateCount} bài post`);
       }
 
       // Cập nhật ảnh trong tất cả comments của user (trong subcollection của mỗi post)
@@ -176,11 +169,10 @@ const Personal_page = () => {
             });
           });
           await commentsBatch.commit();
-          console.log(`Đã cập nhật ảnh trong ${commentsSnapshot.size} comments của post ${postDoc.id}`);
         }
       }
     } catch (error) {
-      console.log("Lỗi khi cập nhật ảnh:", error);
+      // Error updating photo URL
     }
   };
 

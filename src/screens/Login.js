@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert, Modal, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, TextInput, SafeAreaView, TouchableOpacity, StatusBar, Alert, Modal, ActivityIndicator } from "react-native";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth"; // Update import statement
 import { auth } from "../../config/firebase";
 import { MaterialIcons } from '@expo/vector-icons';
@@ -32,7 +32,6 @@ export default function Login({ navigation, setIsLoggedIn }) {
   const saveUserToStorage = async (userData) => {
     try {
       await AsyncStorage.setItem('userData', JSON.stringify(userData));
-      console.log('User data saved to AsyncStorage successfully', userData);
     } catch (error) {
       console.error('Error saving user data to AsyncStorage:', error);
     }
@@ -47,7 +46,6 @@ export default function Login({ navigation, setIsLoggedIn }) {
       if (userDoc.exists()) {
         return userDoc.data();
       } else {
-        console.log('User document not found in Firestore', userId);
         return null;
       }
     } catch (error) {
@@ -106,10 +104,8 @@ export default function Login({ navigation, setIsLoggedIn }) {
           // SYNC: Sign in Native Firebase Auth for Realtime Database access
           try {
             await nativeAuth().signInWithEmailAndPassword(email, password);
-            console.log('✅ Native Firebase Auth synced successfully');
           } catch (nativeAuthError) {
-            console.log('⚠️ Native Firebase Auth sync failed:', nativeAuthError.message);
-            // Continue anyway - video call may not work but app works
+            // Native Firebase Auth sync failed - video call may not work
           }
 
           setIsLoading(false);

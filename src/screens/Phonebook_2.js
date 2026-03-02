@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList } from 'react-native';
 import { RadioButton } from 'react-native-paper';
-import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs } from "firebase/firestore";
 
 const Phonebook_2 = () => {
-    const navigation = useNavigation();
     const auth = getAuth();
     const [userFriendsList, setUserFriendsList] = useState([]);
     const [selectedFriend, setSelectedFriend] = useState([]);
@@ -55,7 +50,6 @@ const Phonebook_2 = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log(user);
                 fetchUserFriends(); // Fetch friends when user is authenticated
 
                 const db = getFirestore();
@@ -75,14 +69,13 @@ const Phonebook_2 = () => {
                             UID_fr: friendData.UID_fr
                         });
                     });
-                    console.log(userFriends);
                     setUserFriendsList(userFriends); // Update friends list
                 });
 
 
                 return () => unsubscribe(); // Unsubscribe when component unmounts
             } else {
-                console.log("No user signed in!");
+                console.error("No user signed in!");
             }
         });
 
@@ -139,24 +132,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    searchContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#006AF5",
-        padding: 9,
-        height: 48,
-        width: '100%',
-    },
-    searchInput: {
-        flex: 1,
-        justifyContent: "center",
-        height: 48,
-        marginLeft: 10,
-    },
-    textSearch: {
-        color: "white",
-        fontWeight: '500'
-    },
+
     itemContainer: {
         marginTop: 5,
         flex: 1,
@@ -172,15 +148,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         flex: 1,
     },
-    view1: {
-        flexDirection: 'row',
-        margin: 10,
-    },
-    text1: {
-        fontSize: 15,
-        justifyContent: "center",
-        marginLeft: 10
-    },
+
     containerProfile: {
         marginTop: 10,
         flexDirection: 'row',

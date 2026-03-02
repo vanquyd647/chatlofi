@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, Modal, TouchableOpacity, ActivityIndicator, Animated, Alert } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View, Image, FlatList, Modal, TouchableOpacity, Animated, Alert } from 'react-native';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, deleteDoc, query, where } from "firebase/firestore";
 import { useToast } from '../contextApi/ToastContext';
 
 const Friends = () => {
@@ -91,7 +91,6 @@ const Friends = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log(user);
                 fetchUserFriends(); // Fetch friends when user is authenticated
                 const db = getFirestore();
                 const userDocRef = doc(db, "users", user.uid);
@@ -110,13 +109,11 @@ const Friends = () => {
                             ID_roomChat: friendData.ID_roomChat
                         });
                     });
-                    console.log(userFriends);
                     setUserFriendsList(userFriends); // Update friends list
                 });
 
                 return () => unsubscribe(); // Unsubscribe when component unmounts
             } else {
-                console.log("No user signed in!");
             }
         });
         return unsubscribe;
@@ -144,11 +141,9 @@ const Friends = () => {
 
     // Hàm để lấy dữ liệu từ collection "users" cho tất cả các UID trong mảng userFriendsList
     const fetchUserDataForFriends = async () => {
-        console.log('fetchUserDataForFriends called, userFriendsList:', userFriendsList);
         setLoading(true);
         const updatedUserFriendsList = [];
         for (const friend of userFriendsList) {
-            console.log('Fetching data for friend:', friend);
             const userData = await fetchUserDataByUID(friend.UID_fr);
             if (userData) {
                 // Tạo một đối tượng mới với dữ liệu photoURL, name, UID_fr và ID_roomChat
@@ -163,7 +158,6 @@ const Friends = () => {
                 updatedUserFriendsList.push(updatedFriend);
             }
         }
-        console.log('Fetched friends data:', updatedUserFriendsList);
         setLoading(false);
         return updatedUserFriendsList;
     };
@@ -173,7 +167,6 @@ const Friends = () => {
         if (userFriendsList.length > 0) {
             fetchUserDataForFriends().then(updatedFriendsData => {
                 // Cập nhật danh sách bạn bè đã được cập nhật vào state listFriend
-                console.log('Updated friends data:', updatedFriendsData);
                 setListFriend(updatedFriendsData);
             });
         } else {
@@ -182,9 +175,6 @@ const Friends = () => {
         }
     }, [userFriendsList]); // Thêm userFriendsList vào dependency array
 
-    console.log('listFriend', listFriend)
-    console.log('userFriendsList', userFriendsList)
-
     // Sort userFriendsList alphabetically by name
     const sortedUserFriendsList = listFriend && listFriend.length > 0
         ? listFriend.slice().sort((a, b) => {
@@ -192,10 +182,7 @@ const Friends = () => {
         })
         : [];
 
-    console.log('sortedUserFriendsList count:', sortedUserFriendsList.length)
-
     const renderUserFriendItem = ({ item }) => {
-        console.log('Rendering friend item:', item);
         return (
             <TouchableOpacity
                 style={styles.friendItem}
@@ -216,13 +203,11 @@ const Friends = () => {
     };
 
     const setModalVisibility = (isVisible, chats) => {
-        console.log(chats)
         setModalData(chats);
         setModalVisible(isVisible);
     };
 
     const handleCancel_friend = async (friend) => {
-        console.log('friend', friend);
         Alert.alert(
             'Hủy kết bạn',
             `Bạn có chắc muốn hủy kết bạn với ${friend.name}? \n\nCuộc trò chuyện sẽ vẫn được giữ lại.`,
@@ -257,7 +242,6 @@ const Friends = () => {
                                     await Promise.all(deletePromises);
                                     showToast(`Đã hủy kết bạn với ${friend.name}`, 'success');
                                     setModalVisible(false);
-                                    console.log("Friend request canceled successfully!");
                                 } else {
                                     showToast('Lỗi tài khoản người dùng', 'error');
                                     console.error("User document does not exist!");

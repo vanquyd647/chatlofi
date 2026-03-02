@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import React from 'react';
+import { SafeAreaView, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import Friend_received from './Friend_received';
 import Friend_sent from './Friend_sent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
+const Tab = createMaterialTopTabNavigator();
+
 const FriendRequest = () => {
   const navigation = useNavigation();
-  const Tab = createMaterialTopTabNavigator();
 
   return (
     <View style={styles.container}>

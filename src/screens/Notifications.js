@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import {
   collection,
@@ -42,44 +42,13 @@ const NotificationsScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read'
 
-  // Create test notification (for debugging)
-  const createTestNotification = async () => {
-    if (!currentUser) {
-      Alert.alert('Lỗi', 'Chưa đăng nhập');
-      return;
-    }
-
-    try {
-      console.log('Creating test notification for user:', currentUser.uid);
-      const notificationsRef = collection(db, 'notifications');
-      const testNotification = {
-        recipientId: currentUser.uid,
-        type: 'message',
-        title: 'Test Notification',
-        body: 'Đây là thông báo test được tạo lúc ' + new Date().toLocaleTimeString('vi-VN'),
-        data: {},
-        read: false,
-        createdAt: serverTimestamp(),
-      };
-
-      const docRef = await addDoc(notificationsRef, testNotification);
-      console.log('Test notification created with ID:', docRef.id);
-      Alert.alert('Thành công', 'Đã tạo thông báo test. ID: ' + docRef.id);
-    } catch (error) {
-      console.error('Error creating test notification:', error);
-      Alert.alert('Lỗi', 'Không thể tạo thông báo test: ' + error.message);
-    }
-  };
-
   // Load notifications from Firestore
   useEffect(() => {
     if (!currentUser) {
-      console.log('No current user - cannot load notifications');
       setLoading(false);
       return;
     }
 
-    console.log('Loading notifications for user:', currentUser.uid);
     const notificationsRef = collection(db, 'notifications');
     // Simple query without orderBy to avoid needing composite index
     const q = query(
@@ -89,9 +58,7 @@ const NotificationsScreen = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('Notifications snapshot received:', snapshot.docs.length, 'documents');
       const notificationsList = snapshot.docs.map(doc => {
-        console.log('Notification doc:', doc.id, doc.data());
         return {
           id: doc.id,
           ...doc.data(),
@@ -104,7 +71,6 @@ const NotificationsScreen = () => {
       setLoading(false);
       setRefreshing(false);
     }, (error) => {
-      console.error('Error loading notifications:', error);
       Alert.alert('Lỗi tải thông báo', error.message);
       setLoading(false);
       setRefreshing(false);
@@ -126,7 +92,7 @@ const NotificationsScreen = () => {
       const notificationRef = doc(db, 'notifications', notificationId);
       await updateDoc(notificationRef, { read: true });
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      // Error marking notification as read
     }
   };
 
@@ -143,7 +109,6 @@ const NotificationsScreen = () => {
 
       await batch.commit();
     } catch (error) {
-      console.error('Error marking all as read:', error);
       Alert.alert('Lỗi', 'Không thể đánh dấu tất cả là đã đọc');
     }
   };
@@ -153,7 +118,6 @@ const NotificationsScreen = () => {
     try {
       await deleteDoc(doc(db, 'notifications', notificationId));
     } catch (error) {
-      console.error('Error deleting notification:', error);
       Alert.alert('Lỗi', 'Không thể xóa thông báo');
     }
   };
@@ -166,7 +130,6 @@ const NotificationsScreen = () => {
     }
 
     const { type, data } = notification;
-    console.log('Notification pressed:', type, data);
 
     switch (type) {
       case 'new_message':
@@ -195,7 +158,7 @@ const NotificationsScreen = () => {
                     senderPhoto = userData.profileImageUrl || userData.photoURL;
                   }
                 } catch (e) {
-                  console.log('Error getting user info:', e);
+                  // Error getting user info
                 }
               }
 
@@ -316,8 +279,6 @@ const NotificationsScreen = () => {
         break;
 
       default:
-        // Default: try to navigate based on available data
-        console.log('Default navigation for type:', type);
         if (data?.postId) {
           navigation.navigate('PostDetail', { postId: data.postId });
         } else if (data?.roomId) {
@@ -534,16 +495,6 @@ const NotificationsScreen = () => {
                 ? 'Không có thông báo đã đọc'
                 : 'Chưa có thông báo nào'}
           </Text>
-          {/* Test button - for debugging */}
-          <TouchableOpacity
-            style={styles.testButton}
-            onPress={createTestNotification}
-          >
-            <Text style={styles.testButtonText}>Tạo thông báo test</Text>
-          </TouchableOpacity>
-          <Text style={styles.debugText}>
-            User ID: {currentUser?.uid?.substring(0, 10)}...
-          </Text>
         </View>
       ) : (
         <FlatList
@@ -711,23 +662,6 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 16,
     textAlign: 'center',
-  },
-  testButton: {
-    marginTop: 20,
-    backgroundColor: '#006AF5',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  testButtonText: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 10,
   },
 });
 

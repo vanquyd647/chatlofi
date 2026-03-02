@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RadioButton } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, where, updateDoc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, where, setDoc } from "firebase/firestore";
 
 const Add_mem_gr = () => {
     const navigation = useNavigation();
@@ -26,14 +26,10 @@ const Add_mem_gr = () => {
     const [UID_A, setUID_A] = useState([]);
     const [RoomID_A] = useState(RoomID1);
 
-    console.log('ChatData_props2', ChatData_props2)
-    console.log('UID', UID_A)
-    console.log('roomIDA', RoomID_A)
-
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (!user) {
-                console.log("User not logged in.");
+                // User not logged in
             }
         });
         return unsubscribe;
@@ -61,11 +57,9 @@ const Add_mem_gr = () => {
 
     // Hàm kiểm tra tình trạng kết bạn
     const checkFriendshipStatus = async (UID) => {
-        console.log(UID);
         try {
             const db = getFirestore();
             const currentUser = auth.currentUser;
-            console.log(currentUser);
             const currentUserDocRef = doc(db, "users", currentUser.uid);
             const friendDataQuery = query(collection(currentUserDocRef, "friendData"), where("UID_fr", "==", UID));
             const friendDataSnapshot = await getDocs(friendDataQuery);
@@ -98,7 +92,6 @@ const Add_mem_gr = () => {
                 const currentUser = auth.currentUser;
                 userSnapshot.forEach(doc => {
                     const userData = doc.data();
-                    console.log(userData)
                     if (userData.UID !== currentUser.uid) {
                         foundFriends.push({
                             id: doc.id,
@@ -162,7 +155,6 @@ const Add_mem_gr = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                console.log(user);
                 fetchUserFriends(); // Fetch friends when user is authenticated
                 const db = getFirestore();
                 const userDocRef = doc(db, "users", user.uid);
@@ -180,12 +172,11 @@ const Add_mem_gr = () => {
                             UID: friendData.UID_fr
                         });
                     });
-                    console.log(userFriends);
                     setUserFriendsList(userFriends);
                 });
                 return () => unsubscribe();
             } else {
-                console.log("No user signed in!");
+                // No user signed in
             }
         });
         return unsubscribe;
@@ -240,12 +231,8 @@ const Add_mem_gr = () => {
         fetchUserDataForFriends().then(updatedFriendsData => {
             // Cập nhật danh sách bạn bè đã được cập nhật vào state listFriend
             setListFriend(updatedFriendsData);
-            console.log('userFriendsList', userFriendsList)
-            console.log('listFriend', listFriend)
         });
     }, [userFriendsList]); // Thêm userFriendsList vào dependency array
-
-    console.log('listFriend', listFriend)
 
     // sắp xếp danh sách bạn bè theo tên
     const sortedUserFriendsList = listFriend.slice().sort((a, b) => {
@@ -261,7 +248,6 @@ const Add_mem_gr = () => {
             setSelectedFriend(selectedFriend.filter(friendUID => friendUID !== UID));
         }
     };
-    console.log('UID bạn bè đã chọn:', selectedFriend);
 
     const isMemberAlready = (friendUID) => {
         return UID_A.includes(friendUID);
@@ -320,7 +306,6 @@ const Add_mem_gr = () => {
                 const currentMembers = groupData.UID || [];
                 const updatedMembers = [...currentMembers, ...selectedFriend];
                 await setDoc(groupRef, { UID: updatedMembers }, { merge: true });
-                console.log("Thành viên đã được thêm vào nhóm thành công!");
             } else {
                 console.error("Tài liệu nhóm không tồn tại!");
             }
@@ -332,7 +317,6 @@ const Add_mem_gr = () => {
                 const currentChatMembers = chatData.UID || [];
                 const updatedChatMembers = [...currentChatMembers, ...selectedFriend];
                 await setDoc(chatRef, { UID: updatedChatMembers }, { merge: true });
-                console.log("Thành viên đã được thêm vào cuộc trò chuyện thành công!");
             } else {
                 console.error("Tài liệu cuộc trò chuyện không tồn tại!");
             }

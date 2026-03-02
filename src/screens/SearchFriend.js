@@ -62,7 +62,6 @@ const SearchFriend = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        console.log("User not logged in.");
         // You might want to navigate to the login screen here if not logged in
       }
     });
@@ -81,7 +80,6 @@ const SearchFriend = () => {
         let index = 0; // Bắt đầu với index = 0
         userSnapshot.forEach(doc => {
           const userData = doc.data();
-          console.log(userData)
           if (userData.UID !== currentUser.uid) {
             foundFriends.push({
               id: index++,
@@ -110,11 +108,9 @@ const SearchFriend = () => {
   }, [input, user.uid]);
 
   const checkFriendshipStatus = async (UID) => {
-    console.log(UID);
     try {
       const db = getFirestore();
       const currentUser = auth.currentUser;
-      console.log(currentUser);
       const currentUserDocRef = doc(db, "users", currentUser.uid);
       const friendDataQuery = query(collection(currentUserDocRef, "friendData"), where("UID_fr", "==", UID));
       const friendDataSnapshot = await getDocs(friendDataQuery);
@@ -180,7 +176,6 @@ const SearchFriend = () => {
       }
       return result;
     };
-    console.log("Finding or creating chat room with:", friendData)
     try {
       const db = getFirestore();
       const currentUser = auth.currentUser;
@@ -197,7 +192,6 @@ const SearchFriend = () => {
       if (!existingChatSnapshot.empty) {
         // Đã có chat room, trả về ID của room hiện có
         const existingChatDoc = existingChatSnapshot.docs[0];
-        console.log("Found existing chat room:", existingChatDoc.id);
         return existingChatDoc.id;
       }
 
@@ -211,7 +205,6 @@ const SearchFriend = () => {
         UID: sortedUIDs,
         UID_Chats: UID_Chats
       });
-      console.log("New chat room created:", chatRoomId);
       return chatRoomId;
     } catch (error) {
       console.error("Error finding or creating chat room:", error);
@@ -245,7 +238,6 @@ const SearchFriend = () => {
               };
 
               await addDoc(collection(currentUserDocRef, "friend_Sents"), friend_Sents);
-              console.log("Added friend request sent");
               const friendDocRef = doc(db, "users", friend.UID);
               const friendDocSnapshot = await getDoc(friendDocRef);
               if (friendDocSnapshot.exists()) {
@@ -258,7 +250,6 @@ const SearchFriend = () => {
                 };
                 await addDoc(collection(friendDocRef, "friend_Receiveds"), friend_Receiveds);
                 showToast(`Đã gửi lời mời kết bạn tới ${friend.name}`, 'success');
-                console.log("Friend request sent successfully");
 
                 // Cập nhật trạng thái trong list
                 setFriendsList(prev => prev.map(f =>
@@ -279,7 +270,6 @@ const SearchFriend = () => {
               }
             } else {
               showToast('Đã gửi lời mời kết bạn trước đó', 'warning');
-              console.log("Friend request already sent");
             }
           } else {
             showToast('Lỗi tài khoản người dùng', 'error');

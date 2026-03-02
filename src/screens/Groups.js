@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query , orderBy, where, updateDoc} from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, getDoc, query, where } from 'firebase/firestore';
 
 const Groups = () => {
     const navigation = useNavigation();
@@ -15,8 +13,6 @@ const Groups = () => {
     const [userData, setUserData] = useState(null);
     const [userGroups, setUserGroups] = useState([]);
 
-    console.log(userGroups)
-
  // Fetch user data
  useEffect(() => {
     const fetchUserData = async () => {
@@ -25,10 +21,7 @@ const Groups = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
-          console.log('User data:', userData);
           setUserData(userData);
-        } else {
-          console.log('User not found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);

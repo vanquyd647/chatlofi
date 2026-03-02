@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList, Modal, RefreshControl, ActivityIndicator, TouchableOpacity, Animated, Alert } from 'react-native';
 import { AntDesign, Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -160,10 +159,7 @@ const Chat = () => {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
-          console.log('User data:', userData);
           setUserData(userData);
-        } else {
-          console.log('User not found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -481,7 +477,6 @@ const Chat = () => {
   );
 
   const setModalVisibility = (isVisible, chats) => {
-    console.log(chats)
     setModalData(chats);
     setModalVisible(isVisible);
   };

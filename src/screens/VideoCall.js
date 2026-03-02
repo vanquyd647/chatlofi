@@ -102,31 +102,19 @@ const VideoCall = () => {
     // Sử dụng roomId được truyền vào hoặc tạo mới (fallback)
     const generateRoomId = () => {
         if (passedRoomId) {
-            console.log('📍 Sử dụng passedRoomId:', passedRoomId);
             return passedRoomId;
         }
         const sortedIds = [callerUid, recipientUid].sort();
         const generatedId = `call_${sortedIds[0]}_${sortedIds[1]}`; // MUST match notification server format
-        console.log('📍 Tạo roomId mới:', generatedId);
         return generatedId;
     };
 
     const roomId = generateRoomId();
     const currentUserId = isInitiator ? callerUid : recipientUid;
 
-    console.log('🎬 VideoCall params:', {
-        callerUid,
-        recipientUid,
-        callerName,
-        isInitiator,
-        passedRoomId,
-        roomId,
-        currentUserId
-    });
 
     // Reset hasStartedRef when entering VideoCall to prevent "already started" bug
     useEffect(() => {
-        console.log('🔄 Resetting refs on mount');
         hasStartedRef.current = false;
         isEndingRef.current = false;
         remoteDescriptionSetRef.current = false;
@@ -135,7 +123,6 @@ const VideoCall = () => {
 
         // Cleanup when component unmounts
         return () => {
-            console.log('🧹 Component unmounting - cleaning up');
             Vibration.cancel();
             if (callTimerRef.current) {
                 clearInterval(callTimerRef.current);
@@ -187,14 +174,12 @@ const VideoCall = () => {
                 });
             }
         } catch (error) {
-            console.log('Lỗi lấy thông tin đối tác:', error);
         }
     };
 
     // Phát nhạc chuông và vibration
     const playRingtone = async () => {
         try {
-            console.log('🔔 Phát nhạc chuông và vibration cho cuộc gọi đến');
             
             // Vibration liên tục
             Vibration.vibrate([0, 1000, 500, 1000], true);
@@ -220,19 +205,15 @@ const VideoCall = () => {
                     }
                 );
                 ringtoneRef.current = sound;
-                console.log('✅ Đang phát nhạc chuông');
             } catch (audioError) {
-                console.log('⚠️ Không thể phát nhạc chuông:', audioError.message);
                 // Vẫn tiếp tục với vibration
             }
         } catch (error) {
-            console.log('Không thể phát ringtone:', error);
         }
     };
 
     // Dừng nhạc chuông và vibration
     const stopRingtone = async () => {
-        console.log('🔕 Dừng nhạc chuông và vibration');
         Vibration.cancel();
         
         // Dừng âm thanh
@@ -241,43 +222,28 @@ const VideoCall = () => {
                 await ringtoneRef.current.stopAsync();
                 await ringtoneRef.current.unloadAsync();
                 ringtoneRef.current = null;
-                console.log('✅ Đã dừng nhạc chuông');
             } catch (error) {
-                console.log('⚠️ Lỗi dừng nhạc chuông:', error.message);
             }
         }
     };
 
     // Người gọi: Tạo cuộc gọi
     const initiateCall = async () => {
-        console.log('📞 === CALLER: initiateCall() START ===');
         try {
-            console.log('📞 Getting Firebase Realtime Database instance...');
             const db = getDatabase();
-            console.log('✅ DB instance:', !!db);
 
             const callRef = ref(db, `calls/${roomId}`);
-            console.log('✅ CallRef path:', `calls/${roomId}`);
 
             // Clean old data first (fire-and-forget to avoid hang)
-            console.log('🧹 Cleaning old call data...');
             try {
                 await Promise.race([
                     remove(callRef),
                     new Promise(resolve => setTimeout(resolve, 1000)) // 1s timeout
                 ]);
-                console.log('✅ Old data cleaned (or timeout)');
             } catch (cleanError) {
-                console.log('⚠️ Could not clean old data:', cleanError.message);
             }
 
             // Tạo call request sạch trong Firebase Realtime Database
-            console.log('📝 Creating call record with data:', {
-                callerId: callerUid,
-                callerName: callerName,
-                recipientId: recipientUid,
-                status: 'ringing'
-            });
 
             const callData = {
                 callerId: callerUid,
@@ -288,11 +254,9 @@ const VideoCall = () => {
             };
 
             // Write to Firebase using callback (Promise.await doesn't work)
-            console.log('📝 Calling set() on Firebase RTD...');
             await new Promise((resolve, reject) => {
                 set(callRef, callData)
                     .then(() => {
-                        console.log('✅✅✅ set() completed successfully');
                         resolve();
                     })
                     .catch(error => {
@@ -302,42 +266,31 @@ const VideoCall = () => {
 
                 // Fallback: If promise doesn't resolve in 3s, assume success
                 setTimeout(() => {
-                    console.log('⚠️ set() timeout - assuming success (data already written)');
                     resolve();
                 }, 3000);
             });
-            console.log('✅✅✅ Call record created in Firebase RTD');
 
             // Verify data was written
-            console.log('🔍 Verifying data was written...');
             const snapshot = await get(callRef);
-            console.log('🔍 Snapshot exists:', snapshot.exists());
             if (snapshot.exists()) {
-                console.log('🔍 Snapshot data:', snapshot.val());
             } else {
                 console.error('❌ Data was deleted immediately after write!');
             }
-            console.log('✅✅✅ Call record SUCCESSFULLY created in Firebase RTD');
 
             // NOTE: Push notification đã được gửi từ Chat_fr.js trước khi navigate
             // Không gửi duplicate ở đây để tránh callee nhận 2 notifications
 
             // Bắt đầu WebRTC ngay sau khi tạo call record
-            console.log('🎥🎥🎥 === STARTING WEBRTC FOR CALLER ===');
             await startWebRTC(true);
-            console.log('✅✅✅ WebRTC started successfully');
 
             // Timeout sau 60 giây nếu không có ai trả lời
-            console.log('⏰ Setting 60s timeout...');
             callTimeoutRef.current = setTimeout(() => {
                 if (callState === 'calling') {
-                    console.log('⏰ Call timeout - no response after 60s');
                     setConnectionStatus('Không có phản hồi');
                     handleCallEnd();
                 }
             }, 60000);
 
-            console.log('📞 === CALLER: initiateCall() COMPLETE ===');
 
         } catch (error) {
             console.error('❌❌❌ CRITICAL ERROR in initiateCall:', error);
@@ -352,22 +305,17 @@ const VideoCall = () => {
 
     // Lắng nghe trạng thái cuộc gọi
     const listenToCallStatus = () => {
-        console.log('👂 Setting up call status listener for roomId:', roomId);
         const db = getDatabase();
         const callStatusRef = ref(db, `calls/${roomId}/status`);
 
         // Listen status changes and store unsubscribe function
         const statusUnsubscribe = onValue(callStatusRef, async (snapshot) => {
             const status = snapshot.val();
-            console.log('📞 Call status changed:', status, 'isInitiator:', isInitiator);
-            console.log('📞 Snapshot exists:', snapshot.exists());
 
             // Check full call data to see if entire call was deleted
             const fullCallRef = ref(db, `calls/${roomId}`);
             const fullSnapshot = await get(fullCallRef);
-            console.log('📞 Full call data exists:', fullSnapshot.exists());
             if (fullSnapshot.exists()) {
-                console.log('📞 Full call data:', fullSnapshot.val());
             } else {
                 console.error('❌ ENTIRE CALL WAS DELETED from Firebase RTD!');
             }
@@ -377,7 +325,6 @@ const VideoCall = () => {
                     // Chỉ người gọi (initiator) cần cập nhật UI khi callee accepts
                     // WebRTC đã được start trong initiateCall(), không start lại
                     if (isInitiator) {
-                        console.log('✅ Người gọi nhận được accepted từ callee');
 
                         // Dừng ringtone và vibration
                         stopRingtone();
@@ -398,7 +345,6 @@ const VideoCall = () => {
 
                 case 'declined':
                     // Cuộc gọi bị từ chối
-                    console.log('📵 Cuộc gọi bị từ chối');
                     setConnectionStatus('Cuộc gọi bị từ chối');
                     stopRingtone();
                     Vibration.cancel();
@@ -412,7 +358,6 @@ const VideoCall = () => {
 
                 case 'cancelled':
                     // Người gọi đã hủy cuộc gọi
-                    console.log('📵 Cuộc gọi đã bị hủy bởi người gọi');
                     setConnectionStatus('Cuộc gọi đã bị hủy');
                     stopRingtone();
                     Vibration.cancel();
@@ -423,7 +368,6 @@ const VideoCall = () => {
 
                 case 'ended':
                     // Cuộc gọi kết thúc
-                    console.log('📵 Cuộc gọi đã kết thúc');
                     setConnectionStatus('Cuộc gọi đã kết thúc');
                     stopRingtone();
                     Vibration.cancel();
@@ -440,7 +384,6 @@ const VideoCall = () => {
         const endCallUnsubscribe = onValue(endCallRef, (snapshot) => {
             const endData = snapshot.val();
             if (endData && endData.endedBy !== currentUserId) {
-                console.log('📵 Cuộc gọi đã kết thúc bởi đối phương');
                 setConnectionStatus('Cuộc gọi đã kết thúc');
                 stopRingtone();
                 Vibration.cancel();
@@ -454,7 +397,6 @@ const VideoCall = () => {
 
     // Người nhận: Chấp nhận cuộc gọi
     const acceptCall = async () => {
-        console.log('✅ Người nhận chấp nhận cuộc gọi, roomId:', roomId);
         try {
             // Check if call still exists and is in valid state before accepting
             const db = getDatabase();
@@ -482,13 +424,11 @@ const VideoCall = () => {
             setCallState('connected');
             setConnectionStatus('Đang kết nối...');
 
-            console.log('📝 Đang cập nhật status thành accepted...');
 
             // Fire-and-forget (don't await runTransaction)
             runTransaction(callRef, (callData) => {
                 if (!callData) return callData;
                 if (callData.status !== 'ringing') {
-                    console.log('⚠️ Không thể accept vì status hiện tại:', callData.status);
                     return callData;
                 }
                 return {
@@ -497,19 +437,16 @@ const VideoCall = () => {
                     respondedAt: Date.now(),
                 };
             })
-                .then(() => console.log('✅ Status updated to accepted'))
+                
                 .catch(err => console.error('❌ Failed to update status:', err.message));
 
-            console.log('✅ Accept request sent (async)');
 
             // Start WebRTC only if not already started
             // NOTE: startWebRTC() has its own hasStartedRef check, so we don't set it here
             if (hasStartedRef.current) {
-                console.log('⚠️ WebRTC already started, skipping');
                 return;
             }
 
-            console.log('🎥 Người nhận bắt đầu WebRTC...');
             // DO NOT set hasStartedRef here - let startWebRTC() handle it
             await startWebRTC();
         } catch (error) {
@@ -520,7 +457,6 @@ const VideoCall = () => {
 
     // Người nhận: Từ chối cuộc gọi
     const declineCall = async () => {
-        console.log('❌ Từ chối cuộc gọi, roomId:', roomId);
         try {
             stopRingtone();
             Vibration.cancel();
@@ -530,7 +466,6 @@ const VideoCall = () => {
             runTransaction(ref(db, `calls/${roomId}`), (callData) => {
                 if (!callData) return callData;
                 if (callData.status !== 'ringing') {
-                    console.log('⚠️ Không thể decline vì status hiện tại:', callData.status);
                     return callData;
                 }
                 return {
@@ -539,15 +474,14 @@ const VideoCall = () => {
                     respondedAt: Date.now(),
                 };
             })
-                .then(() => console.log('✅ Status updated to declined'))
+                
                 .catch(err => console.error('❌ Failed to decline:', err.message));
 
             // Xóa cuộc gọi sau 2 giây (fire-and-forget)
             setTimeout(() => {
                 const callRef = ref(db, `calls/${roomId}`);
                 remove(callRef)
-                    .then(() => console.log('✅ Call deleted'))
-                    .catch(e => console.log('⚠️ Could not delete call:', e.message));
+                    .catch(e => console.error('⚠️ Could not delete call:', e.message));
             }, 2000);
 
             // Cleanup trước khi goBack để dừng vibration
@@ -561,20 +495,14 @@ const VideoCall = () => {
 
     // Bắt đầu WebRTC
     const startWebRTC = async () => {
-        console.log('🎥🎥🎥 === startWebRTC() CALLED ===');
-        console.log('🎥 isInitiator:', isInitiator);
-        console.log('🎥 hasStartedRef.current BEFORE:', hasStartedRef.current);
 
         if (hasStartedRef.current) {
-            console.log('⚠️⚠️⚠️ WebRTC ALREADY STARTED, SKIPPING...');
             return;
         }
         hasStartedRef.current = true;
-        console.log('✅ Set hasStartedRef.current = true');
 
         try {
             // Lấy local stream
-            console.log('📹📹📹 Requesting camera/mic permissions...');
             const stream = await mediaDevices.getUserMedia({
                 audio: true,
                 video: {
@@ -583,41 +511,32 @@ const VideoCall = () => {
                     height: 480,
                 },
             });
-            console.log('✅✅✅ GOT CAMERA/MIC SUCCESSFULLY');
-            console.log('📹 Stream ID:', stream.id);
-            console.log('📹 Stream tracks:', stream.getTracks().map(t => `${t.kind}(${t.id})`));
             
             // Ensure video track is enabled
             const videoTracks = stream.getVideoTracks();
             if (videoTracks.length > 0) {
                 videoTracks[0].enabled = true;
-                console.log('📹 Video track enabled:', videoTracks[0].enabled);
             }
             
             setLocalStream(stream);
             
             // Delay để RTCView render đúng (fix blank video issue)
             setTimeout(() => {
-                console.log('📹 Setting localVideoReady = true');
                 setLocalVideoReady(true);
             }, 300);
 
             // Tạo peer connection
-            console.log('🔗 Tạo RTCPeerConnection...');
             const pc = new RTCPeerConnection(configuration);
             peerConnection.current = pc;
 
             // Add local tracks to peer connection
             stream.getTracks().forEach(track => {
-                console.log('➕ Adding track:', track.kind);
                 pc.addTrack(track, stream);
             });
 
             // Handle remote stream
             pc.ontrack = (event) => {
-                console.log('📺 Received remote track:', event.track.kind);
                 if (event.streams && event.streams[0]) {
-                    console.log('✅ Setting remote stream');
                     setRemoteStream(event.streams[0]);
                     setIsConnected(true);
                     setConnectionStatus('Đã kết nối');
@@ -629,30 +548,24 @@ const VideoCall = () => {
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
                     const cand = event.candidate;
-                    console.log('🧊 Got ICE candidate');
-                    console.log('🧊 Candidate JSON:', JSON.stringify(cand.toJSON()));
                     sendIceCandidate(cand);
                 } else {
-                    console.log('🧊 ICE gathering complete');
                 }
             };
 
             // Handle ICE connection state
             pc.oniceconnectionstatechange = () => {
-                console.log('🧊 ICE connection state:', pc.iceConnectionState);
                 switch (pc.iceConnectionState) {
                     case 'checking':
                         setConnectionStatus('Đang kết nối...');
                         break;
                     case 'connected':
                     case 'completed':
-                        console.log('✅ ICE connection established');
                         break;
                     case 'failed':
                         console.error('❌ ICE connection failed - trying to restart');
                         // Try ICE restart (only initiator should restart to avoid conflicts)
                         if (peerConnection.current && isInitiator) {
-                            console.log('🔄 Initiator restarting ICE...');
                             try {
                                 peerConnection.current.restartIce();
                                 // After restartIce(), onnegotiationneeded will fire
@@ -662,29 +575,24 @@ const VideoCall = () => {
                         }
                         break;
                     case 'disconnected':
-                        console.warn('⚠️ ICE disconnected - may reconnect');
                         setConnectionStatus('Đang kết nối lại...');
                         break;
                     case 'closed':
-                        console.log('🔒 ICE connection closed');
                         break;
                 }
             };
 
             // Handle negotiation needed (for ICE restart only, not initial offer)
             pc.onnegotiationneeded = async () => {
-                console.log('🔄 Negotiation needed, initialNegotiationDone:', initialNegotiationDoneRef.current);
                 
                 // Skip if initial negotiation not done yet (createOffer handles initial case)
                 if (!initialNegotiationDoneRef.current) {
-                    console.log('⏭️ Skipping - initial negotiation will be handled by createOffer()');
                     return;
                 }
                 
                 // Only initiator should create new offer for renegotiation (ICE restart)
                 if (isInitiator && peerConnection.current) {
                     try {
-                        console.log('📤 Creating new offer for ICE restart...');
                         const offer = await peerConnection.current.createOffer({ iceRestart: true });
                         await peerConnection.current.setLocalDescription(offer);
                         
@@ -694,7 +602,6 @@ const VideoCall = () => {
                             type: offer.type,
                             sdp: offer.sdp,
                         });
-                        console.log('✅ ICE restart offer sent');
                         
                         // Reset remoteDescription flag to process new answer
                         remoteDescriptionSetRef.current = false;
@@ -706,7 +613,6 @@ const VideoCall = () => {
 
             // Handle connection state changes
             pc.onconnectionstatechange = () => {
-                console.log('🔗 Connection state:', pc.connectionState);
                 switch (pc.connectionState) {
                     case 'connected':
                         setConnectionStatus('Đã kết nối');
@@ -734,10 +640,8 @@ const VideoCall = () => {
 
             // Nếu là người gọi (initiator), tạo offer
             if (isInitiator) {
-                console.log('📤 Caller creating offer...');
                 await createOffer(pc);
             } else {
-                console.log('📥 Callee waiting for offer...');
             }
 
         } catch (error) {
@@ -757,31 +661,24 @@ const VideoCall = () => {
         // Lắng nghe offer (chỉ callee)
         if (!isInitiator) {
             const offerRef = ref(db, `calls/${roomId}/offer`);
-            console.log('👂 Callee listening for offer...');
             const offerUnsubscribe = onValue(offerRef, async (snapshot) => {
                 const data = snapshot.val();
-                console.log('📥 Offer snapshot:', data ? 'có data' : 'null');
                 
                 // Safety check: Ensure peerConnection is still valid
                 if (!peerConnection.current || peerConnection.current.connectionState === 'closed') {
-                    console.log('⚠️ Ignoring offer - connection closed');
                     return;
                 }
                 
                 if (data && pc.remoteDescription === null) {
                     try {
-                        console.log('📥 Callee nhận offer, đang setRemoteDescription...');
                         await pc.setRemoteDescription(new RTCSessionDescription(data));
-                        console.log('✅ Callee đã set remote description');
                         
                         // FIX: Mark remote description as set and process queued candidates
                         remoteDescriptionSetRef.current = true;
                         await processQueuedIceCandidates(pc);
 
-                        console.log('📤 Callee tạo answer...');
                         const answer = await pc.createAnswer();
                         await pc.setLocalDescription(answer);
-                        console.log('✅ Callee đã set local description (answer)');
 
                         // Gửi answer
                         const answerRef = ref(db, `calls/${roomId}/answer`);
@@ -789,7 +686,6 @@ const VideoCall = () => {
                             type: answer.type,
                             sdp: answer.sdp,
                         });
-                        console.log('✅ Callee đã gửi answer');
                         
                         // Mark initial negotiation as done (for ICE restart handling)
                         initialNegotiationDoneRef.current = true;
@@ -804,22 +700,17 @@ const VideoCall = () => {
         // Lắng nghe answer (chỉ caller)
         if (isInitiator) {
             const answerRef = ref(db, `calls/${roomId}/answer`);
-            console.log('👂 Caller listening for answer...');
             const answerUnsubscribe = onValue(answerRef, async (snapshot) => {
                 const data = snapshot.val();
-                console.log('📥 Answer snapshot:', data ? 'có data' : 'null');
                 
                 // Safety check: Ensure peerConnection is still valid
                 if (!peerConnection.current || peerConnection.current.connectionState === 'closed') {
-                    console.log('⚠️ Ignoring answer - connection closed');
                     return;
                 }
                 
                 if (data && pc.remoteDescription === null) {
                     try {
-                        console.log('📥 Caller nhận answer, đang setRemoteDescription...');
                         await pc.setRemoteDescription(new RTCSessionDescription(data));
-                        console.log('✅ Caller đã set remote description (answer)');
                         
                         // FIX: Mark remote description as set and process queued candidates
                         remoteDescriptionSetRef.current = true;
@@ -835,13 +726,11 @@ const VideoCall = () => {
 
         // Lắng nghe ICE candidates (cả hai bên)
         const candidatesRef = ref(db, `calls/${roomId}/candidates`);
-        console.log('👂 Listening for ICE candidates...');
         const candidatesUnsubscribe = onChildAdded(candidatesRef, async (snapshot) => {
             const data = snapshot.val();
             if (data && data.sender !== currentUserId) {
                 // Safety check: Ensure peerConnection is still valid
                 if (!peerConnection.current || peerConnection.current.connectionState === 'closed') {
-                    console.log('⚠️ Ignoring ICE candidate - connection closed');
                     return;
                 }
 
@@ -849,15 +738,12 @@ const VideoCall = () => {
                 
                 // FIX: Queue candidates if remote description not set yet
                 if (!remoteDescriptionSetRef.current) {
-                    console.log('🧊 Queuing ICE candidate (waiting for remote description)');
                     iceCandidateQueueRef.current.push(candidate);
                     return;
                 }
                 
                 try {
-                    console.log('🧊 Nhận ICE candidate từ', data.sender === callerUid ? 'caller' : 'callee');
                     await pc.addIceCandidate(candidate);
-                    console.log('✅ Đã thêm ICE candidate');
                 } catch (error) {
                     console.error('❌ Lỗi thêm ICE candidate:', error);
                 }
@@ -868,11 +754,9 @@ const VideoCall = () => {
 
     // Process queued ICE candidates after remote description is set
     const processQueuedIceCandidates = async (pc) => {
-        console.log('🧊 Processing', iceCandidateQueueRef.current.length, 'queued ICE candidates');
         while (iceCandidateQueueRef.current.length > 0) {
             // Safety check before each candidate
             if (!peerConnection.current || peerConnection.current.connectionState === 'closed') {
-                console.log('⚠️ Connection closed, stopping ICE candidate processing');
                 iceCandidateQueueRef.current = [];
                 return;
             }
@@ -880,7 +764,6 @@ const VideoCall = () => {
             const candidate = iceCandidateQueueRef.current.shift();
             try {
                 await pc.addIceCandidate(candidate);
-                console.log('✅ Đã thêm queued ICE candidate');
             } catch (error) {
                 console.error('❌ Lỗi thêm queued ICE candidate:', error);
             }
@@ -890,10 +773,8 @@ const VideoCall = () => {
     // Tạo offer
     const createOffer = async (pc) => {
         try {
-            console.log('📤 Creating offer...');
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
-            console.log('✅ Set local description (offer)');
 
             const db = getDatabase();
             const offerRef = ref(db, `calls/${roomId}/offer`);
@@ -902,16 +783,13 @@ const VideoCall = () => {
                 sdp: offer.sdp,
             };
 
-            console.log('📤 Uploading offer to Firebase...');
             // Fire-and-forget (don't await - Firebase set() doesn't resolve properly)
             set(offerRef, offerData)
                 .then(() => {
-                    console.log('✅✅ Offer uploaded to Firebase');
                     // Mark initial negotiation as done (for ICE restart handling)
                     initialNegotiationDoneRef.current = true;
                 })
                 .catch(err => console.error('❌ Failed to upload offer:', err.message));
-            console.log('✅ Offer sent (async)');
         } catch (error) {
             console.error('❌ Lỗi tạo offer:', error);
         }
@@ -921,7 +799,6 @@ const VideoCall = () => {
     const sendIceCandidate = async (candidate) => {
         try {
             const candidateJSON = candidate.toJSON();
-            console.log('🧊📤 Sending ICE candidate:', candidateJSON.candidate?.substring(0, 50) + '...');
             const db = getDatabase();
             const candidatesRef = ref(db, `calls/${roomId}/candidates`);
             const candidateData = {
@@ -931,7 +808,7 @@ const VideoCall = () => {
 
             // Fire-and-forget (don't await - Firebase push() doesn't resolve properly)
             push(candidatesRef, candidateData)
-                .then(() => console.log('✅ ICE candidate uploaded'))
+                
                 .catch(err => console.error('❌ Failed to send ICE:', err.message));
         } catch (error) {
             console.error('❌ Lỗi gửi ICE candidate:', error);
@@ -988,14 +865,12 @@ const VideoCall = () => {
     // Kết thúc cuộc gọi
     const handleCallEnd = async () => {
         if (isEndingRef.current) {
-            console.log('⏳ Đang kết thúc, bỏ qua yêu cầu lặp');
             return;
         }
         isEndingRef.current = true;
 
         // Determine correct status: 'cancelled' if call not connected yet, 'ended' if connected
         const newStatus = (callState === 'calling' || callState === 'incoming') ? 'cancelled' : 'ended';
-        console.log('🔴 Kết thúc cuộc gọi, roomId:', roomId, 'isInitiator:', isInitiator, 'callState:', callState, 'newStatus:', newStatus);
         
         try {
             const db = getDatabase();
@@ -1011,7 +886,7 @@ const VideoCall = () => {
                     endedBy: currentUserId,
                 };
             })
-                .then(() => console.log('✅ Status updated to', newStatus))
+                
                 .catch(err => console.error('❌ Failed to update status:', err.message));
 
             // Fire-and-forget endCall signal
@@ -1020,7 +895,7 @@ const VideoCall = () => {
                 endedBy: currentUserId,
                 endedAt: Date.now(),
             })
-                .then(() => console.log('✅ End call signal sent'))
+                
                 .catch(err => console.error('❌ Failed to send end signal:', err.message));
 
             // Dừng ringtone/vibration ngay lập tức
@@ -1033,8 +908,7 @@ const VideoCall = () => {
             // Xóa cuộc gọi sau 3 giây (fire-and-forget)
             setTimeout(() => {
                 remove(callRef)
-                    .then(() => console.log('✅ Call deleted'))
-                    .catch(e => console.log('⚠️ Could not delete call:', e.message));
+                    .catch(e => console.error('⚠️ Could not delete call:', e.message));
             }, 3000);
         } catch (error) {
             console.error('Lỗi kết thúc cuộc gọi:', error);
@@ -1052,7 +926,6 @@ const VideoCall = () => {
 
     // Cleanup
     const cleanup = () => {
-        console.log('🧹 Cleanup started');
 
         // Stop ringtone and vibration first
         stopRingtone();
@@ -1073,27 +946,22 @@ const VideoCall = () => {
         // IMPORTANT: Remove Firebase listeners BEFORE closing peer connection
         // to prevent race conditions where listeners try to use closed connection
         if (listenersRef.current.status) {
-            console.log('🧹 Removing status listener');
             listenersRef.current.status();
             listenersRef.current.status = null;
         }
         if (listenersRef.current.endCall) {
-            console.log('🧹 Removing endCall listener');
             listenersRef.current.endCall();
             listenersRef.current.endCall = null;
         }
         if (listenersRef.current.offer) {
-            console.log('🧹 Removing offer listener');
             listenersRef.current.offer();
             listenersRef.current.offer = null;
         }
         if (listenersRef.current.answer) {
-            console.log('🧹 Removing answer listener');
             listenersRef.current.answer();
             listenersRef.current.answer = null;
         }
         if (listenersRef.current.candidates) {
-            console.log('🧹 Removing candidates listener');
             listenersRef.current.candidates();
             listenersRef.current.candidates = null;
         }
@@ -1115,7 +983,6 @@ const VideoCall = () => {
         iceCandidateQueueRef.current = [];
         initialNegotiationDoneRef.current = false;
 
-        console.log('🧹 Cleanup complete');
     };
 
     if (!callerUid || !recipientUid) {

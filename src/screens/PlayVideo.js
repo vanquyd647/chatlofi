@@ -9,7 +9,6 @@ const PlayVideo = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isImage, setIsImage] = useState(false);
     const [error, setError] = useState(null);
-    console.log("uri", uri);
 
     useEffect(() => {
         let isMounted = true; // To track if the component is mounted
@@ -39,13 +38,8 @@ const PlayVideo = () => {
                 }
             });
 
-        // Cleanup function to set isMounted to false when unmounting
         return () => {
             isMounted = false;
-            // Cleanup uri
-            // Setting uri to an invalid or empty value to free up memory
-            // Not recommended to set it to null
-            // uri = ''; // Uncomment this line if you want to clear uri when unmounted
         };
     }, [uri]);
 

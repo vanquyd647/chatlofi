@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, TouchableOpacity } from 'react-native';
-import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, orderBy, where, updateDoc, deleteDoc, arrayRemove } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc, arrayRemove } from 'firebase/firestore';
 
 const Select_Ad = () => {
     const navigation = useNavigation();
@@ -11,7 +11,6 @@ const Select_Ad = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     const { RoomID1 } = route.params;
-    console.log('roomID', RoomID1);
     const [memberDetails, setMemberDetails] = useState([]);
     const [manager_group, setManager_group] = useState([]);
     const [admin, setAdmin] = useState('');
@@ -19,7 +18,6 @@ const Select_Ad = () => {
     const [subAdmin, setSubAdmin] = useState([]);
     const [subAdminCheck, setSubAdminCheck] = useState('');
     const [mergedUIDs, setMergedUIDs] = useState([]);
-
     useEffect(() => {
         const mergedUIDs = [];
         if (adminCheck) {
