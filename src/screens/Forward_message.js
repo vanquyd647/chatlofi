@@ -2,8 +2,8 @@ import { StyleSheet, Text, View, FlatList, Pressable, Image, TouchableOpacity, T
 import React, { useEffect, useState, useMemo } from 'react'
 import { Ionicons, AntDesign, Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getFirestore, collection, doc, addDoc, query, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { forwardMessage } from '../services/chatService';
 import { useToast } from '../contextApi/ToastContext';
 
 const Forward_message = () => {
@@ -11,7 +11,6 @@ const Forward_message = () => {
     const route = useRoute();
     const { messageData } = route.params;
     const { chats } = route.params;
-    const db = getFirestore();
     const auth = getAuth();
     const user = auth.currentUser;
     const [userData, setUserData] = useState(null);
@@ -48,18 +47,15 @@ const Forward_message = () => {
 
     // Gửi tin nhắn đến 1 chat
     const handleSend_ForwardMessage = async (item) => {
-        const chatRoomId = item.ID_room;
-        const { _id, createdAt, text, user, image, video, document } = messageData;
+        const { text, user, image, video, document } = messageData;
         try {
-            const chatMessRef = collection(db, 'Chats', chatRoomId, 'chat_mess');
-            await addDoc(chatMessRef, {
+            await forwardMessage(item.ID_room, {
                 _id: Math.random().toString(),
-                createdAt: new Date(),
                 text: text || '',
                 user,
                 image,
                 video,
-                document
+                document,
             });
             return true;
         } catch (error) {

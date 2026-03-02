@@ -375,7 +375,7 @@ function RootNavigator() {
 const StackNavigator = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" backgroundColor="black" />
+      <StatusBar barStyle="light-content" backgroundColor="#006AF5" />
       <AuthenticatedUserProvider>
         <RootNavigator />
       </AuthenticatedUserProvider>

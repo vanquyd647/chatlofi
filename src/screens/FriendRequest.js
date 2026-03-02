@@ -1,11 +1,11 @@
 import React from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import Friend_received from './Friend_received';
 import Friend_sent from './Friend_sent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import AppHeader from '../components/AppHeader';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -14,14 +14,12 @@ const FriendRequest = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <View style={styles.searchContainer}>
-          <Pressable onPress={() => navigation.navigate("Main")}>
-            <AntDesign name="arrowleft" size={20} color="white" />
-          </Pressable>
-          <Text style={styles.textSearch}>Lời mời kết bạn</Text>
-          <MaterialIcons name="settings" size={24} color="white" />
-        </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <AppHeader
+          title="Lời mời kết bạn"
+          onBack={() => navigation.navigate("Main")}
+          rightContent={<MaterialIcons name="settings" size={24} color="white" />}
+        />
         <Tab.Navigator
           screenOptions={{
             tabBarActiveTintColor: '#006AF5', // Màu của viền dưới khi tab được chọn
@@ -43,27 +41,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center'
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flex: 1,
     justifyContent: "center",
-    height: 48,
-    marginLeft: 10,
+    marginLeft: 4,
   },
   textSearch: {
     flex: 1,
     color: "white",
-    fontWeight: '500',
-    marginLeft: 20
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 8,
   },
   itemContainer: {
     marginTop: 20,

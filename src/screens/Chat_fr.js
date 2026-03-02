@@ -12,8 +12,10 @@ import { useChats } from '../contextApi/ChatContext';
 import { useNotifications } from '../contextApi/NotificationContext';
 import { useToast } from '../contextApi/ToastContext';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, addDoc, query, orderBy, getDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, addDoc, query, orderBy, getDoc } from 'firebase/firestore';
 import { getDownloadURL } from 'firebase/storage';
+import { getChatRoom, sendMessage as sendChatMessage, toggleReaction, recallMessage, deleteMessageForSelf, RECALL_TIME_LIMIT } from '../services/chatService';
+import { getUserById } from '../services/userService';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -511,29 +513,22 @@ const Chat_fr = () => {
       if (RoomID && !chatDataParam && !GroupData && !friendData2) {
         setIsLoadingChat(true);
         try {
-          const chatRef = doc(db, 'Chats', RoomID);
-          const chatSnap = await getDoc(chatRef);
+          const data = await getChatRoom(RoomID);
 
-          if (chatSnap.exists()) {
-            const data = chatSnap.data();
-
+          if (data) {
             // If this is a 1-1 chat (not group), get the other user's info
             let senderName = friendNameParam;
             let senderPhoto = friendPhoto;
 
             if (!data.Name_group && data.UID && data.UID.length === 2) {
-              // 1-1 chat: find the other user
               const otherUserId = data.UID.find(uid => uid !== user?.uid) || friendId;
-              // Cập nhật friendUID để xem trang cá nhân
               if (otherUserId) {
                 setFriendUID(otherUserId);
               }
               if (otherUserId && (!senderName || !senderPhoto)) {
                 try {
-                  const userRef = doc(db, 'users', otherUserId);
-                  const userSnap = await getDoc(userRef);
-                  if (userSnap.exists()) {
-                    const otherUserData = userSnap.data();
+                  const otherUserData = await getUserById(otherUserId);
+                  if (otherUserData) {
                     senderName = senderName || otherUserData.name;
                     senderPhoto = senderPhoto || otherUserData.profileImageUrl || otherUserData.photoURL;
                   }
@@ -549,7 +544,6 @@ const Chat_fr = () => {
               senderPhoto,
             });
             setUID(data.UID || []);
-          } else {
           }
         } catch (error) {
           console.error('Error fetching chat data:', error);
@@ -560,7 +554,7 @@ const Chat_fr = () => {
     };
 
     fetchChatDataFromRoom();
-  }, [RoomID, chatDataParam, GroupData, friendData2, db, user?.uid, friendId, friendNameParam, friendPhoto]);
+  }, [RoomID, chatDataParam, GroupData, friendData2, user?.uid, friendId, friendNameParam, friendPhoto]);
 
 
   // Avatar: try all possible sources including notification params
@@ -589,12 +583,9 @@ const Chat_fr = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        const userData = userDocSnap.data();
-        if (userDocSnap.exists()) {
-          setUserData(userData);
-        } else {
+        const data = await getUserById(user.uid);
+        if (data) {
+          setUserData(data);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -602,9 +593,9 @@ const Chat_fr = () => {
     };
     fetchUserData();
     return () => {
-      setUserData(null); // Xóa dữ liệu người dùng khi rời khỏi màn hình
+      setUserData(null);
     };
-  }, [db, user.uid]);
+  }, [user.uid]);
 
   useEffect(() => {
     const fetchChatMessages = async () => {
@@ -1132,32 +1123,8 @@ const Chat_fr = () => {
   // Thêm reaction vào tin nhắn
   const handleAddReaction = async (messageId, reaction) => {
     try {
-      const chatMessRef = doc(db, 'Chats', RoomID, 'chat_mess', messageId);
       const currentUserId = auth.currentUser?.uid;
-
-      // Lấy tin nhắn hiện tại
-      const messageSnap = await getDoc(chatMessRef);
-      if (messageSnap.exists()) {
-        const messageData = messageSnap.data();
-        const reactions = messageData.reactions || {};
-
-        // Kiểm tra nếu user đã react với emoji này
-        const userReactions = reactions[reaction] || [];
-        const hasReacted = userReactions.includes(currentUserId);
-
-        if (hasReacted) {
-          // Bỏ reaction
-          await updateDoc(chatMessRef, {
-            [`reactions.${reaction}`]: arrayRemove(currentUserId)
-          });
-        } else {
-          // Thêm reaction
-          await updateDoc(chatMessRef, {
-            [`reactions.${reaction}`]: arrayUnion(currentUserId)
-          });
-        }
-      }
-
+      await toggleReaction(RoomID, messageId, currentUserId, reaction);
       setReactionModalVisible(false);
       setSelectedMessageForReaction(null);
     } catch (error) {
@@ -1234,14 +1201,8 @@ const Chat_fr = () => {
     setReactionModalVisible(true);
   };
 
-  // Thời gian tối đa cho phép thu hồi tin nhắn (10 phút = 600000 ms)
-  const RECALL_TIME_LIMIT = 10 * 60 * 1000;
-
   const handleRecallMeseage = async (messageId, messageCreatedAt) => {
     try {
-      const chatRoomId = RoomID;
-      const chatMessRef = doc(db, 'Chats', chatRoomId, 'chat_mess', messageId);
-
       // Kiểm tra thời gian tin nhắn - lấy từ modalData nếu không có param
       let messageTime = messageCreatedAt;
       if (!messageTime && modalData) {
@@ -1274,16 +1235,12 @@ const Chat_fr = () => {
             text: 'Thu hồi',
             style: 'destructive',
             onPress: async () => {
-              await updateDoc(chatMessRef, {
-                text: "Tin nhắn đã được thu hồi!",
-                video: "",
-                image: "",
-                document: "",
-                isRecalled: true,
-                recalledAt: new Date(),
-                recalledBy: auth.currentUser?.uid,
-              });
-              showToast('Đã thu hồi tin nhắn', 'success');
+              try {
+                await recallMessage(RoomID, messageId, auth.currentUser?.uid, messageTime || new Date());
+                showToast('Đã thu hồi tin nhắn', 'success');
+              } catch (err) {
+                showToast(err.message || 'Không thể thu hồi tin nhắn', 'error');
+              }
               setModalVisible(false);
             }
           }
@@ -1298,32 +1255,10 @@ const Chat_fr = () => {
 
   const handleDeleteMeseage = async (messageId) => {
     try {
-      const chatRoomId = RoomID;
-      const timeDelete_mess = new Date();
-      const uidDelete_mess = userData.UID;
-      const chatMessRef = doc(db, 'Chats', chatRoomId, 'chat_mess', messageId);
-      // Tạo đối tượng chứa timeDelete và uidDelete
-      const deleteDetail_mess = {
-        timeDelete: timeDelete_mess,
-        uidDelete: uidDelete_mess
-      };
-      // Lấy dữ liệu hiện tại của tài liệu chatMessRef
-      const chatMessSnapshot = await getDoc(chatMessRef);
-      if (chatMessSnapshot.exists()) {
-        const chatMessData = chatMessSnapshot.data();
-        // Kiểm tra xem đã có mảng detailDelete chưa
-        const detailDelete_mess_Array = chatMessData.deleteDetail_mess || [];
-        // Thêm deleteDetail vào mảng detailDelete
-        detailDelete_mess_Array.push(deleteDetail_mess);
-        // Cập nhật tài liệu chatMessRef với mảng detailDelete mới
-        await updateDoc(chatMessRef, {
-          deleteDetail_mess: detailDelete_mess_Array
-        });
-        setModalVisible(false);
-      } else {
-      }
+      await deleteMessageForSelf(RoomID, messageId, userData.UID);
+      setModalVisible(false);
     } catch (error) {
-      console.error("Error adding timeDelete to Chat:", error);
+      console.error("Error deleting message:", error);
     }
   };
 
@@ -1449,7 +1384,7 @@ const Chat_fr = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchContainer}>
           <Pressable onPress={() => navigation.navigate("Main")}>
             <AntDesign name="arrowleft" size={20} color="white" />
@@ -1502,8 +1437,10 @@ const Chat_fr = () => {
             </View>
           )}
           messagesContainerStyle={{
-            backgroundColor: '#e6e6fa'
+            backgroundColor: '#fff',
+            paddingBottom: 8,
           }}
+          bottomOffset={0}
           textInputStyle={{
             backgroundColor: '#fff',
             borderRadius: 20,
@@ -1833,27 +1770,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flexDirection: 'row',
     flex: 1,
     alignItems: 'center',
-    height: 48,
-    marginLeft: 10,
+    marginLeft: 4,
   },
   textSearch: {
     color: "white",
-    fontWeight: '500',
-    marginLeft: 20
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 12,
   },
   centeredView: {
     flex: 1,

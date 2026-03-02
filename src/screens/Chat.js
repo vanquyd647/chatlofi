@@ -5,7 +5,9 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, query, orderBy, where, updateDoc, getDocs, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, getDoc, query, orderBy, where, getDocs } from 'firebase/firestore';
+import { subscribeToChatList, softDeleteChat, togglePinChat, toggleMuteChat } from '../services/chatService';
+import { getUserById } from '../services/userService';
 import { useChats } from '../contextApi/ChatContext';
 import { useToast } from '../contextApi/ToastContext';
 
@@ -151,15 +153,13 @@ const Chat = () => {
     return () => unsubscribe();
   }, [user, db]);
 
-  // truy xuất dữ liệu người dùng từ firestore
+  // truy xuất dữ liệu người dùng từ service
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          setUserData(userData);
+        const data = await getUserById(user.uid);
+        if (data) {
+          setUserData(data);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -168,7 +168,7 @@ const Chat = () => {
     if (user) {
       fetchUserData();
     }
-  }, [db, user]);
+  }, [user]);
 
   // truy xuất dữ liệu cuộc trò chuyện từ firestore
   // Ref để lưu trữ các unsubscribe functions
@@ -493,25 +493,9 @@ const Chat = () => {
           onPress: async () => {
             for (const chat of chats) {
               try {
-                const chatRoomId = chat.ID_room;
-                const timeDelete = new Date();
-                const uidDelete = userData.UID;
-                const chatRoomRef = doc(db, "Chats", chatRoomId);
-                const deleteDetail = {
-                  timeDelete: timeDelete,
-                  uidDelete: uidDelete
-                };
-                const chatRoomSnapshot = await getDoc(chatRoomRef);
-                if (chatRoomSnapshot.exists()) {
-                  const chatRoomData = chatRoomSnapshot.data();
-                  const detailDeleteArray = chatRoomData.detailDelete || [];
-                  detailDeleteArray.push(deleteDetail);
-                  await updateDoc(chatRoomRef, {
-                    detailDelete: detailDeleteArray
-                  });
-                  setModalVisible(false);
-                  showToast('Đã xóa cuộc trò chuyện', 'success');
-                }
+                await softDeleteChat(chat.ID_room, user.uid);
+                setModalVisible(false);
+                showToast('Đã xóa cuộc trò chuyện', 'success');
               } catch (error) {
                 console.error("Error deleting chat:", error);
                 showToast('Có lỗi xảy ra', 'error');
@@ -523,7 +507,7 @@ const Chat = () => {
     );
   };
 
-  // Ghim cuộc trò chuyện - optimistic update + Firestore sync
+  // Ghim cuộc trò chuyện - optimistic update + service call
   const handlePinChat = async (chat) => {
     const chatId = chat.ID_room;
     const isPinned = pinnedChats.includes(chatId);
@@ -532,10 +516,8 @@ const Chat = () => {
     setModalVisible(false);
 
     if (isPinned) {
-      // Bỏ ghim
       setPinnedChats(prev => prev.filter(id => id !== chatId));
     } else {
-      // Ghim mới
       if (pinnedChats.length >= 5) {
         showToast('Chỉ có thể ghim tối đa 5 cuộc trò chuyện', 'warning');
         return;
@@ -544,18 +526,8 @@ const Chat = () => {
     }
 
     try {
-      const chatDocRef = doc(db, 'Chats', chatId);
-      if (isPinned) {
-        await updateDoc(chatDocRef, {
-          pinnedBy: arrayRemove(user.uid)
-        });
-        showToast('Đã bỏ ghim cuộc trò chuyện', 'success');
-      } else {
-        await updateDoc(chatDocRef, {
-          pinnedBy: arrayUnion(user.uid)
-        });
-        showToast('Đã ghim cuộc trò chuyện', 'success');
-      }
+      await togglePinChat(chatId, user.uid, isPinned);
+      showToast(isPinned ? 'Đã bỏ ghim cuộc trò chuyện' : 'Đã ghim cuộc trò chuyện', 'success');
     } catch (error) {
       // Rollback nếu lỗi
       if (isPinned) {
@@ -568,7 +540,7 @@ const Chat = () => {
     }
   };
 
-  // Tắt thông báo cuộc trò chuyện - optimistic update + Firestore sync
+  // Tắt thông báo cuộc trò chuyện - optimistic update + service call
   const handleMuteChat = async (chat) => {
     const chatId = chat.ID_room;
     const isMuted = mutedChats.includes(chatId);
@@ -577,26 +549,14 @@ const Chat = () => {
     setModalVisible(false);
 
     if (isMuted) {
-      // Bật thông báo
       setMutedChats(prev => prev.filter(id => id !== chatId));
     } else {
-      // Tắt thông báo
       setMutedChats(prev => [...prev, chatId]);
     }
 
     try {
-      const chatDocRef = doc(db, 'Chats', chatId);
-      if (isMuted) {
-        await updateDoc(chatDocRef, {
-          mutedUsers: arrayRemove(user.uid)
-        });
-        showToast('Đã bật thông báo', 'success');
-      } else {
-        await updateDoc(chatDocRef, {
-          mutedUsers: arrayUnion(user.uid)
-        });
-        showToast('Đã tắt thông báo', 'success');
-      }
+      await toggleMuteChat(chatId, user.uid, isMuted);
+      showToast(isMuted ? 'Đã bật thông báo' : 'Đã tắt thông báo', 'success');
     } catch (error) {
       // Rollback nếu lỗi
       if (isMuted) {
@@ -648,7 +608,7 @@ const Chat = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchContainer}>
           <AntDesign name="search1" size={20} color="white" />
           <Pressable style={styles.searchInput} onPress={() => navigation.navigate("SearchFriend")}>
@@ -687,7 +647,8 @@ const Chat = () => {
           </View>
         ) : (
           <FlatList
-            contentContainerStyle={{ paddingBottom: 200 }}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 90 }}
             data={sortedChats}
             renderItem={renderItem}
             keyExtractor={(item, index) => item.ID_room.toString() + '_' + item.otherUser.UID}
@@ -828,6 +789,7 @@ const styles = StyleSheet.create({
 
   // Skeleton Loader Styles
   skeletonWrapper: {
+    flex: 1,
     backgroundColor: '#fff',
   },
   skeletonContainer: {
@@ -948,11 +910,10 @@ const styles = StyleSheet.create({
 
   // Empty State
   emptyContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 100,
     backgroundColor: '#fff',
-    height: '100%',
   },
   emptyText: {
     fontSize: 18,

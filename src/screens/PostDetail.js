@@ -19,19 +19,8 @@ import { Video } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign, Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    deleteDoc,
-    doc,
-    updateDoc,
-    query,
-    orderBy,
-    onSnapshot,
-    serverTimestamp,
-    getDoc
-} from 'firebase/firestore';
+import { subscribeToPost, togglePostReaction, addComment, toggleCommentLike, deletePost, subscribeToComments } from '../services/postService';
+import { getUserById } from '../services/userService';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -52,7 +41,6 @@ const PostDetail = () => {
     const [showReactions, setShowReactions] = useState(false);
     const [fullscreenImages, setFullscreenImages] = useState([]);
     const [fullscreenVisible, setFullscreenVisible] = useState(false);
-    const db = getFirestore();
 
     // Load user data
     useEffect(() => {
@@ -73,26 +61,18 @@ const PostDetail = () => {
     useEffect(() => {
         if (!postId) return;
 
-        const postRef = doc(db, 'posts', postId);
-        const unsubscribe = onSnapshot(postRef, async (docSnap) => {
-            if (docSnap.exists()) {
-                const postData = { id: docSnap.id, ...docSnap.data() };
-
-                // Fetch user info if not exists
-                if (!postData.userInfo && postData.userId) {
-                    const userDocRef = doc(db, 'users', postData.userId);
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (userDocSnap.exists()) {
-                        postData.userInfo = userDocSnap.data();
-                    }
+        const unsubscribe = subscribeToPost(postId, async (postData) => {
+            // Enrich with user info if missing
+            if (!postData.userInfo && postData.userId) {
+                try {
+                    const userInfo = await getUserById(postData.userId);
+                    if (userInfo) postData.userInfo = userInfo;
+                } catch (error) {
+                    console.error('Error fetching post user info:', error);
                 }
-
-                setPost(postData);
-                setIsLoading(false);
-            } else {
-                Alert.alert('Lỗi', 'Bài viết không tồn tại');
-                navigation.goBack();
             }
+            setPost(postData);
+            setIsLoading(false);
         });
 
         return () => unsubscribe();
@@ -102,31 +82,22 @@ const PostDetail = () => {
     useEffect(() => {
         if (!postId) return;
 
-        const commentsRef = collection(db, `posts/${postId}/comments`);
-        const q = query(commentsRef, orderBy('createdAt', 'asc'));
-
-        const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-            const commentsData = [];
-
-            for (const docSnap of querySnapshot.docs) {
-                const commentData = { id: docSnap.id, ...docSnap.data() };
-
-                if (!commentData.userInfo && commentData.userId) {
-                    try {
-                        const userDocRef = doc(db, 'users', commentData.userId);
-                        const userDocSnap = await getDoc(userDocRef);
-                        if (userDocSnap.exists()) {
-                            commentData.userInfo = userDocSnap.data();
+        const unsubscribe = subscribeToComments(postId, async (rawComments) => {
+            // Enrich with user info if missing
+            const enriched = await Promise.all(
+                rawComments.map(async (comment) => {
+                    if (!comment.userInfo && comment.userId) {
+                        try {
+                            const userInfo = await getUserById(comment.userId);
+                            if (userInfo) return { ...comment, userInfo };
+                        } catch (error) {
+                            console.error('Error fetching commenter info:', error);
                         }
-                    } catch (error) {
-                        console.error('Error fetching commenter info:', error);
                     }
-                }
-
-                commentsData.push(commentData);
-            }
-
-            setComments(commentsData);
+                    return comment;
+                })
+            );
+            setComments(enriched);
         });
 
         return () => unsubscribe();
@@ -137,23 +108,7 @@ const PostDetail = () => {
         if (!userData || !post) return;
 
         try {
-            const postRef = doc(db, 'posts', post.id);
-            const currentReaction = post.reactions?.[userData.uid];
-
-            if (currentReaction?.type === type) {
-                // Remove reaction
-                await updateDoc(postRef, {
-                    [`reactions.${userData.uid}`]: null
-                });
-            } else {
-                // Add/update reaction
-                await updateDoc(postRef, {
-                    [`reactions.${userData.uid}`]: {
-                        type,
-                        createdAt: serverTimestamp()
-                    }
-                });
-            }
+            await togglePostReaction(post.id, userData.uid, type);
             setShowReactions(false);
         } catch (error) {
             console.error('Error updating reaction:', error);
@@ -165,30 +120,23 @@ const PostDetail = () => {
         if (!commentText.trim() || !userData || !post) return;
 
         try {
-            const userDocRef = doc(db, 'users', userData.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            const currentUserInfo = userDocSnap.exists() ? userDocSnap.data() : {
+            const currentUserInfo = await getUserById(userData.uid) || {
                 name: userData.displayName || userData.email,
                 photoURL: userData.photoURL || null,
                 email: userData.email
             };
 
-            const commentData = {
+            await addComment(post.id, {
                 userId: userData.uid,
                 text: commentText.trim(),
-                createdAt: serverTimestamp(),
-                likes: [],
                 replyTo: replyToComment || null,
-                replies: [],
                 userInfo: {
                     name: currentUserInfo.name,
                     displayName: currentUserInfo.name,
                     photoURL: currentUserInfo.photoURL,
                     email: currentUserInfo.email
                 }
-            };
-
-            await addDoc(collection(db, `posts/${post.id}/comments`), commentData);
+            });
             setCommentText('');
             setReplyToComment(null);
         } catch (error) {
@@ -202,23 +150,7 @@ const PostDetail = () => {
         if (!userData) return;
 
         try {
-            const commentRef = doc(db, `posts/${post.id}/comments`, commentId);
-            const commentDoc = await getDoc(commentRef);
-
-            if (commentDoc.exists()) {
-                const commentData = commentDoc.data();
-                const likes = commentData.likes || [];
-
-                if (likes.includes(userData.uid)) {
-                    await updateDoc(commentRef, {
-                        likes: likes.filter(id => id !== userData.uid)
-                    });
-                } else {
-                    await updateDoc(commentRef, {
-                        likes: [...likes, userData.uid]
-                    });
-                }
-            }
+            await toggleCommentLike(post.id, commentId, userData.uid);
         } catch (error) {
             console.error('Error liking comment:', error);
         }
@@ -242,7 +174,7 @@ const PostDetail = () => {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            await deleteDoc(doc(db, 'posts', post.id));
+                            await deletePost(post.id);
                             Alert.alert('Thành công', 'Đã xóa bài viết');
                             navigation.goBack();
                         } catch (error) {
@@ -367,7 +299,7 @@ const PostDetail = () => {
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#1877f2" />
+                <ActivityIndicator size="large" color="#006AF5" />
                 <Text style={styles.loadingText}>Đang tải bài viết...</Text>
             </View>
         );
@@ -523,7 +455,7 @@ const PostDetail = () => {
                             {userReaction ? (
                                 <>
                                     {renderReactionIcon(userReaction.type, 20)}
-                                    <Text style={[styles.actionText, { color: '#1877f2' }]}>
+                                    <Text style={[styles.actionText, { color: '#006AF5' }]}>
                                         {userReaction.type === 'like' ? 'Thích' :
                                             userReaction.type === 'love' ? 'Yêu thích' :
                                                 userReaction.type === 'haha' ? 'Haha' :
@@ -631,7 +563,7 @@ const PostDetail = () => {
                             <Ionicons
                                 name="send"
                                 size={24}
-                                color={commentText.trim() ? '#1877f2' : '#ccc'}
+                                color={commentText.trim() ? '#006AF5' : '#ccc'}
                             />
                         </TouchableOpacity>
                     </View>
@@ -961,7 +893,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     commentLiked: {
-        color: '#1877f2',
+        color: '#006AF5',
     },
     commentTime: {
         fontSize: 12,

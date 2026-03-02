@@ -3,25 +3,19 @@ import { SafeAreaView, Pressable, StyleSheet, Text, View, TouchableOpacity } fro
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, deleteDoc } from 'firebase/firestore';
+import { dissolveGroup as dissolveGroupService } from '../services/groupService';
 
 const Setting_group = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { RoomID1 } = route.params;
   const { Admin_group1 } = route.params;
-  const db = getFirestore();
   const auth = getAuth();
   const user = auth.currentUser;
-  const RoomID = RoomID1;
 
-  const dissolveGroup = async () => {
+  const handleDissolveGroup = async () => {
     try {
-      // giải tán nhóm và xóa tất cả các tin nhắn trong nhóm
-      const groupDocRef = doc(db, 'Group', RoomID);
-      await deleteDoc(groupDocRef);
-      const chatDocRef = doc(db, 'Chats', RoomID);
-      await deleteDoc(chatDocRef);
+      await dissolveGroupService(RoomID1, user.uid, Admin_group1);
       navigation.navigate("Main");
     } catch (error) {
       console.error("Error dissolving group:", error);
@@ -30,7 +24,7 @@ const Setting_group = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchContainer}>
           <Pressable onPress={() => navigation.goBack()}>
             <AntDesign name="arrowleft" size={20} color="white" />
@@ -39,13 +33,13 @@ const Setting_group = () => {
             <Text style={styles.textSearch}>Tùy chọn</Text>
           </View>
         </View>
-        <View style={{ backgroundColor: '#dcdcdc', height: 5 }}></View>
-        <TouchableOpacity style={{ height: 60, justifyContent: 'center' }} onPress={dissolveGroup}>
+        <View style={{ backgroundColor: '#f5f5f5', height: 8 }}></View>
+        <TouchableOpacity style={{ height: 60, justifyContent: 'center' }} onPress={handleDissolveGroup} activeOpacity={0.7}>
           <View style={{ marginLeft: 20, flexDirection: 'row' }}>
             <Text style={{ marginLeft: 20, fontSize: 20, color: 'red' }}>Giải tán nhóm</Text>
           </View>
         </TouchableOpacity>
-        <View style={{ backgroundColor: '#dcdcdc', height: 5 }}></View>
+        <View style={{ backgroundColor: '#f5f5f5', height: 8 }}></View>
       </SafeAreaView>
     </View>
   );
@@ -55,26 +49,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flex: 1,
     justifyContent: "center",
-    height: 48,
-    marginLeft: 10,
+    marginLeft: 4,
   },
   textSearch: {
     color: "white",
-    fontWeight: '500'
+    fontWeight: '600',
+    fontSize: 16,
   },
   itemContainer: {
     marginTop: 20,

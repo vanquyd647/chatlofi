@@ -3,15 +3,14 @@ import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, TouchableOp
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useNavigation } from "@react-navigation/native";
-import { getAuth, updateProfile } from 'firebase/auth';
-import { getFirestore, onSnapshot, doc, updateDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { subscribeToUser, updateUserProfile, cascadeUpdateName } from '../services/userService';
 import { RadioButton } from 'react-native-paper';
 import moment from 'moment';
 import { useToast } from '../contextApi/ToastContext';
 
 const Edit_in4Personal = () => {
   const navigation = useNavigation();
-  const db = getFirestore();
   const auth = getAuth();
   const user = auth.currentUser;
   const [userData, setUserData] = useState(null);
@@ -23,22 +22,14 @@ const Edit_in4Personal = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribe = onSnapshot(userDocRef, (doc) => {
-      if (doc.exists()) {
-        const userData = doc.data();
-        setUserData(userData);
-        setName(userData.name);
-        setBirthdate(moment(userData.birthdate, 'DD/MM/YYYY').toDate());
-        setGender(userData.gender);
-      } else {
-        // User not found
-      }
+    const unsubscribe = subscribeToUser(user.uid, (data) => {
+      setUserData(data);
+      setName(data.name);
+      setBirthdate(moment(data.birthdate, 'DD/MM/YYYY').toDate());
+      setGender(data.gender);
     });
-    return () => {
-      unsubscribe();
-    };
-  }, [db, user]);
+    return () => unsubscribe();
+  }, [user]);
 
   const handleConfirm = (selectedDate) => {
     setBirthdate(selectedDate);
@@ -100,63 +91,16 @@ const Edit_in4Personal = () => {
 
       showToast('Đang cập nhật thông tin...', 'info', 2000);
 
-      // Cập nhật thông tin trong Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
+      // Cập nhật thông tin qua userService
+      await updateUserProfile(user.uid, {
         name: name,
         gender: gender,
         birthdate: moment(birthdate).format('DD/MM/YYYY')
       });
 
-      // Cập nhật thông tin trong Firebase Authentication
-      await updateProfile(auth.currentUser, {
-        displayName: name
-      });
-
-      // **QUAN TRỌNG: Cập nhật tất cả bài post của user để đồng bộ thông tin**
-      // Chỉ cập nhật nếu tên hoặc ảnh thay đổi
+      // Cascade cập nhật tên vào tất cả bài post và comments
       if (name !== name_default) {
-        const postsRef = collection(db, 'posts');
-        const q = query(postsRef, where('userId', '==', user.uid));
-        const querySnapshot = await getDocs(q);
-
-        // Sử dụng batch để cập nhật nhiều document cùng lúc
-        const batch = writeBatch(db);
-        let updateCount = 0;
-
-        querySnapshot.forEach((docSnapshot) => {
-          const postRef = doc(db, 'posts', docSnapshot.id);
-          batch.update(postRef, {
-            'userInfo.name': name,
-            'userInfo.displayName': name,
-          });
-          updateCount++;
-        });
-
-        if (updateCount > 0) {
-          await batch.commit();
-        }
-
-        // Cập nhật thông tin trong tất cả comments (trong subcollection của mỗi post)
-        const allPostsSnapshot = await getDocs(collection(db, 'posts'));
-
-        for (const postDoc of allPostsSnapshot.docs) {
-          const commentsRef = collection(db, `posts/${postDoc.id}/comments`);
-          const commentsQuery = query(commentsRef, where('userId', '==', user.uid));
-          const commentsSnapshot = await getDocs(commentsQuery);
-
-          if (!commentsSnapshot.empty) {
-            const commentsBatch = writeBatch(db);
-            commentsSnapshot.forEach((commentDoc) => {
-              const commentRef = doc(db, `posts/${postDoc.id}/comments`, commentDoc.id);
-              commentsBatch.update(commentRef, {
-                'userInfo.name': name,
-                'userInfo.displayName': name,
-              });
-            });
-            await commentsBatch.commit();
-          }
-        }
+        await cascadeUpdateName(user.uid, name);
       }
 
       showToast('Cập nhật thông tin thành công!', 'success');
@@ -169,7 +113,7 @@ const Edit_in4Personal = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchContainer}>
           <Pressable onPress={() => navigation.goBack()}>
             <AntDesign name="arrowleft" size={20} color="white" />
@@ -250,26 +194,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flex: 1,
     justifyContent: "center",
-    height: 48,
-    marginLeft: 10,
+    marginLeft: 4,
   },
   textSearch: {
     color: "white",
-    fontWeight: '500'
+    fontWeight: '600',
+    fontSize: 16,
   },
   itemContainer: {
     marginTop: 20,

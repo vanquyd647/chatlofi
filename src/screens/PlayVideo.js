@@ -46,7 +46,7 @@ const PlayVideo = () => {
     if (isLoading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#006AF5" />
             </View>
         );
     }

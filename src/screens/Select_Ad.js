@@ -3,7 +3,8 @@ import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList, Touch
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc, arrayRemove } from 'firebase/firestore';
+import { subscribeToGroupInfo, transferAdminAndLeave } from '../services/groupService';
+import { getUserById } from '../services/userService';
 
 const Select_Ad = () => {
     const navigation = useNavigation();
@@ -12,91 +13,23 @@ const Select_Ad = () => {
     const user = auth.currentUser;
     const { RoomID1 } = route.params;
     const [memberDetails, setMemberDetails] = useState([]);
-    const [manager_group, setManager_group] = useState([]);
-    const [admin, setAdmin] = useState('');
     const [adminCheck, setAdminCheck] = useState('');
     const [subAdmin, setSubAdmin] = useState([]);
-    const [subAdminCheck, setSubAdminCheck] = useState('');
-    const [mergedUIDs, setMergedUIDs] = useState([]);
-    useEffect(() => {
-        const mergedUIDs = [];
-        if (adminCheck) {
-            mergedUIDs.push(adminCheck);
-        }
-        mergedUIDs.push(...subAdmin);
-        setMergedUIDs(mergedUIDs);
-    }, [adminCheck, subAdmin]);
 
+    // Subscribe to group info + fetch member details via services
     useEffect(() => {
-        const fetchUserDetails = async () => {
-            const firestore = getFirestore();
-            try {
-                const groupRef = doc(firestore, "Group", RoomID1);
-                const unsubscribe = onSnapshot(groupRef, async (docSnapshot) => {
-                    if (docSnapshot.exists()) {
-                        const groupData = docSnapshot.data();
-                        const groupAdmin = groupData.Admin_group;
-                        setAdminCheck(groupAdmin);
-                        setAdmin(groupAdmin === user.uid ? groupAdmin : '');
-                        setSubAdmin(groupData.Sub_Admin || []); // Fix here
-                        setSubAdminCheck(groupData.Sub_Admin && groupData.Sub_Admin.includes(user.uid) ? user.uid : '');
-                        const UIDArray = groupData.UID || [];
-                        const promises = UIDArray.map(async (uid) => {
-                            try {
-                                const userRef = doc(firestore, 'users', uid);
-                                const userDocSnapshot = await getDoc(userRef);
-                                if (userDocSnapshot.exists()) {
-                                    return userDocSnapshot.data();
-                                }
-                            } catch (error) {
-                                console.error('Error fetching user details: ', error);
-                            }
-                        });
-                        const memberDetailsArray = await Promise.all(promises);
-                        setMemberDetails(memberDetailsArray.filter(Boolean));
-
-                    } else {
-                        console.error("Document does not exist!");
-                    }
-                });
-                return () => unsubscribe();
-            } catch (error) {
-                console.error('Error fetching group details: ', error);
-            }
-        };
-        fetchUserDetails();
+        const unsubscribe = subscribeToGroupInfo(RoomID1, async (groupData) => {
+            if (!groupData) return;
+            setAdminCheck(groupData.Admin_group);
+            setSubAdmin(groupData.Sub_Admin || []);
+            const UIDArray = groupData.UID || [];
+            const memberDetailsArray = await Promise.all(
+                UIDArray.map(uid => getUserById(uid))
+            );
+            setMemberDetails(memberDetailsArray.filter(Boolean));
+        });
+        return () => unsubscribe();
     }, [RoomID1, user.uid]);
-
-    useEffect(() => {
-        const fetchUserManager = async () => {
-            const firestore = getFirestore();
-            try {
-                const promises = mergedUIDs.map(async (uid) => {
-                    try {
-                        const userRef = doc(firestore, 'users', uid);
-                        const userDocSnapshot = await getDoc(userRef);
-                        if (userDocSnapshot.exists()) {
-                            const userData = userDocSnapshot.data();
-                            return {
-                                UID: userData.UID,
-                                birthdate: userData.birthdate,
-                                gender: userData.gender,
-                                name: userData.name,
-                                photoURL: userData.photoURL
-                            };
-                        }
-                    } catch (error) {
-                        console.error('Error fetching user details: ', error);
-                    }
-                });
-                const userDetails = await Promise.all(promises);
-                setManager_group(userDetails.filter(Boolean));
-            } catch (error) {
-                console.error('Error fetching user details: ', error);
-            }
-        };
-        fetchUserManager();
-    }, [mergedUIDs]);
 
     const renderItem = ({ item }) => (
         <View style={styles.itemContainer}>
@@ -114,75 +47,18 @@ const Select_Ad = () => {
     );
 
     const select_Admin = async (item) => {
-        const firestore = getFirestore();
-
-        //
-        const groupRef = doc(firestore, "Group", RoomID1);
         try {
-            await updateDoc(groupRef, {
-                Admin_group: item.UID
-            });
-            // Kiểm tra và xóa UID nếu nó nằm trong mảng Sub_Admin
-            const groupSnapshot = await getDoc(groupRef);
-            const groupData = groupSnapshot.data();
-            if (groupData && groupData.Sub_Admin && groupData.Sub_Admin.includes(item.UID)) {
-                const filteredSubAdmin = groupData.Sub_Admin.filter(uid => uid !== item.UID);
-                await updateDoc(groupRef, {
-                    Sub_Admin: filteredSubAdmin
-                });
-            }
-            // Thực hiện các hành động khác sau khi cập nhật thành công nếu cần
-            // Remove user's UID from the group document
-            const del_groupDocRef = doc(collection(firestore, 'Group'), RoomID1);
-            await updateDoc(del_groupDocRef, {
-                UID: arrayRemove(adminCheck)
-            });
-            //
-            const del_chatGroupDocRef = doc(collection(firestore, 'Group'), RoomID1);
-            await updateDoc(del_chatGroupDocRef, {
-                UID: arrayRemove(adminCheck)
-            });
-            //
+            await transferAdminAndLeave(RoomID1, adminCheck, item.UID);
             navigation.navigate('Main');
         } catch (error) {
-            console.error('Error updating group details: ', error);
-        }//
-        const groupChatRef = doc(firestore, "Chats", RoomID1);
-        try {
-            await updateDoc(groupChatRef, {
-                Admin_group: item.UID
-            });
-            // Kiểm tra và xóa UID nếu nó nằm trong mảng Sub_Admin
-            const groupChatSnapshot = await getDoc(groupChatRef);
-            const groupChatData = groupChatSnapshot.data();
-            if (groupChatData && groupChatData.Sub_Admin && groupChatData.Sub_Admin.includes(item.UID)) {
-                const filteredChatSubAdmin = groupChatData.Sub_Admin.filter(uid => uid !== item.UID);
-                await updateDoc(groupChatRef, {
-                    Sub_Admin: filteredChatSubAdmin
-                });
-            }
-            // Thực hiện các hành động khác sau khi cập nhật thành công nếu cần
-            // Remove user's UID from the group document
-            const del_groupChatDocRef = doc(collection(firestore, 'Chats'), RoomID1);
-            await updateDoc(del_groupChatDocRef, {
-                UID: arrayRemove(adminCheck)
-            });
-            //
-            const del_chatGroupChatDocRef = doc(collection(firestore, 'Chats'), RoomID1);
-            await updateDoc(del_chatGroupChatDocRef, {
-                UID: arrayRemove(adminCheck)
-            });
-            //
-            navigation.navigate('Main');
-        } catch (error) {
-            console.error('Error updating group details: ', error);
+            console.error('Error transferring admin:', error);
         }
     };
 
 
     return (
         <View style={styles.container}>
-            <SafeAreaView>
+            <SafeAreaView style={{ flex: 1 }}>
                 <View style={styles.searchContainer}>
                     <Pressable onPress={() => navigation.goBack()}>
                         <AntDesign name="arrowleft" size={20} color="white" />
@@ -211,20 +87,25 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
         backgroundColor: "#006AF5",
-        padding: 9,
-        height: 48,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        gap: 12,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     searchInput: {
         flex: 1,
         justifyContent: "center",
-        height: 48,
-        marginLeft: 10,
+        marginLeft: 4,
     },
     textSearch: {
         color: "white",
-        fontWeight: '500'
+        fontWeight: '600',
+        fontSize: 16,
     },
     itemContainer: {
         marginTop: 20,
@@ -277,7 +158,7 @@ const styles = StyleSheet.create({
         left: 0,
         width: '100%',
         height: 300,
-        backgroundColor: "#dcdcdc",
+        backgroundColor: "#fff",
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         shadowColor: "#000",

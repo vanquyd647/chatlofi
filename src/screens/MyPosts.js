@@ -14,15 +14,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  deleteDoc,
-  doc
-} from 'firebase/firestore';
+import { getUserPosts, deletePost } from '../services/postService';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
@@ -32,7 +24,6 @@ const MyPosts = () => {
   const [myPosts, setMyPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const db = getFirestore();
 
   // Load user data
   useEffect(() => {
@@ -53,33 +44,20 @@ const MyPosts = () => {
   useEffect(() => {
     if (!userData) return;
 
-    const postsRef = collection(db, 'posts');
-    const q = query(
-      postsRef,
-      where('userId', '==', userData.uid)
-    );
+    const fetchPosts = async () => {
+      try {
+        const postsData = await getUserPosts(userData.uid);
+        setMyPosts(postsData);
+      } catch (error) {
+        console.error('Error loading posts:', error);
+      } finally {
+        setIsLoading(false);
+        setRefreshing(false);
+      }
+    };
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const postsData = [];
-
-      querySnapshot.forEach((doc) => {
-        postsData.push({ id: doc.id, ...doc.data() });
-      });
-
-      // Sort posts by createdAt in client-side (no index needed)
-      postsData.sort((a, b) => {
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toMillis() - a.createdAt.toMillis();
-      });
-
-      setMyPosts(postsData);
-      setIsLoading(false);
-      setRefreshing(false);
-    });
-
-    return () => unsubscribe();
-  }, [userData]);
+    fetchPosts();
+  }, [userData, refreshing]);
 
   // Handle refresh
   const handleRefresh = () => {
@@ -98,7 +76,7 @@ const MyPosts = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteDoc(doc(db, 'posts', postId));
+              await deletePost(postId);
               Alert.alert('Thành công', 'Đã xóa bài viết');
             } catch (error) {
               console.error('Error deleting post:', error);
@@ -146,7 +124,7 @@ const MyPosts = () => {
               </Text>
               {item.isSharedPost && (
                 <View style={styles.sharedBadge}>
-                  <Ionicons name="repeat" size={14} color="#1877f2" />
+                  <Ionicons name="repeat" size={14} color="#006AF5" />
                   <Text style={styles.sharedText}>Đã chia sẻ</Text>
                 </View>
               )}
@@ -206,7 +184,7 @@ const MyPosts = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1877f2" />
+        <ActivityIndicator size="large" color="#006AF5" />
         <Text style={styles.loadingText}>Đang tải bài viết...</Text>
       </View>
     );
@@ -217,7 +195,7 @@ const MyPosts = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Bài viết của tôi</Text>
         <View style={{ width: 24 }} />
@@ -234,7 +212,7 @@ const MyPosts = () => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={handleRefresh}
-              colors={['#1877f2']}
+              colors={['#006AF5']}
             />
           }
           showsVerticalScrollIndicator={false}
@@ -284,15 +262,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#006AF5',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: '700',
+    color: '#fff',
     flex: 1,
     textAlign: 'center',
   },
@@ -340,7 +322,7 @@ const styles = StyleSheet.create({
   },
   sharedText: {
     fontSize: 12,
-    color: '#1877f2',
+    color: '#006AF5',
     marginLeft: 4,
     fontWeight: '600',
   },
@@ -414,7 +396,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   createButton: {
-    backgroundColor: '#1877f2',
+    backgroundColor: '#006AF5',
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 20,
@@ -438,7 +420,7 @@ const styles = StyleSheet.create({
   },
   summaryCount: {
     fontWeight: 'bold',
-    color: '#1877f2',
+    color: '#006AF5',
     fontSize: 16,
   },
 });

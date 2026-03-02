@@ -1,102 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, query, where } from 'firebase/firestore';
+import EmptyState from '../components/EmptyState';
+import { subscribeToUserGroups } from '../services/groupService';
 
 const Groups = () => {
     const navigation = useNavigation();
-    const db = getFirestore();
     const auth = getAuth();
     const user = auth.currentUser;
-    const [userData, setUserData] = useState(null);
     const [userGroups, setUserGroups] = useState([]);
 
- // Fetch user data
- useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          setUserData(userData);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-    if (user) {
-      fetchUserData();
-    }
-  }, [db, user]);
-
-// Fetch user groups data
-useEffect(() => {
-    const fetchUserGroups = async () => {
-      try {
-        if (!user) return;
-
-        const chatsCollectionRef = collection(db, 'Group');
-        const userGroupsQuery = query(chatsCollectionRef, where('UID', 'array-contains', user.uid));
-
-        // Lắng nghe sự thay đổi của truy vấn
-        const unsubscribe = onSnapshot(userGroupsQuery, (querySnapshot) => {
-          const userGroupsData = querySnapshot.docs.map(doc => doc.data());
-          // Sort the user groups alphabetically by group name
-          userGroupsData.sort((a, b) => a.Name_group.localeCompare(b.Name_group));
-          setUserGroups(userGroupsData);
-        });
-
-        return () => {
-          // Hủy lắng nghe khi component bị unmount
-          unsubscribe();
-        };
-      } catch (error) {
-        console.error('Error fetching user groups:', error);
-      }
-    };
-
-    fetchUserGroups();
-
-}, [db, user]);
+  // Subscribe to user's groups via service
+  useEffect(() => {
+    if (!user?.uid) return;
+    const unsubscribe = subscribeToUserGroups(user.uid, (groups) => {
+      setUserGroups(groups);
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
 
 
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer2}>
-        <Pressable onPress={() => navigation.navigate("Chat_fr", {GroupData:item})}>
+        <TouchableOpacity onPress={() => navigation.navigate("Chat_fr", {GroupData:item})} activeOpacity={0.7}>
         <View style={styles.containerProfile}>
             <Image source={{ uri: item.Photo_group }} style={styles.avatar} />
             <Text style={styles.text1}>{item.Name_group}</Text>
         </View>
-        </Pressable>
+        </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-            <SafeAreaView>
-                <View>
-                    <Pressable onPress={() => navigation.navigate("Add_group")}>
-                        <View style={styles.view1}>
-                            <View style={styles.iconAddgroup}>
-                            <MaterialIcons name="group-add" size={24} color="#006AF5" />
-                            </View>
-                            <Text style={styles.text1}>Tạo nhóm mới</Text>
+            <SafeAreaView style={{ flex: 1 }}>
+                <TouchableOpacity onPress={() => navigation.navigate("Add_group")} activeOpacity={0.7}>
+                    <View style={styles.view1}>
+                        <View style={styles.iconAddgroup}>
+                        <MaterialIcons name="group-add" size={24} color="#006AF5" />
                         </View>
-                    </Pressable>
-                    
-                </View>
-                <View style={{backgroundColor:'#dcdcdc', height:2}}></View>
-                <View style={{marginBottom:220}}>
+                        <Text style={styles.text1}>Tạo nhóm mới</Text>
+                    </View>
+                </TouchableOpacity>
+                <View style={{backgroundColor:'#f0f0f0', height:1}}></View>
+                {userGroups.length === 0 ? (
+                  <EmptyState
+                    icon="people-outline"
+                    title="Chưa có nhóm nào"
+                    subtitle="Tạo nhóm mới để bắt đầu trò chuyện cùng bạn bè"
+                    buttonText="Tạo nhóm"
+                    onButtonPress={() => navigation.navigate("Add_group")}
+                  />
+                ) : (
                   <FlatList
                       data={userGroups}
                       renderItem={renderItem}
-                      keyExtractor={item => item.ID_roomChat.toString()} // Assuming ID_roomChat is unique
+                      keyExtractor={item => item.ID_roomChat.toString()}
+                      contentContainerStyle={{ paddingBottom: 80 }}
                   />
-                </View>
+                )}
             </SafeAreaView>
         </View>
   )

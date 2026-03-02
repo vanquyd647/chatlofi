@@ -1,192 +1,113 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, deleteDoc, onSnapshot } from "firebase/firestore";
 import { useNotifications } from '../contextApi/NotificationContext';
+import { useToast } from '../contextApi/ToastContext';
+import Avatar from '../components/Avatar';
+import EmptyState from '../components/EmptyState';
+import { subscribeToReceivedRequests, acceptFriendRequest, declineFriendRequest } from '../services/friendService';
+import { getUserById } from '../services/userService';
 
 const Friend_received = () => {
 
   const [userFriendsList, setUserFriendsList] = useState([]);
-  const [ID_roomChat, setID_roomChat] = useState("");
+  const [loadingIds, setLoadingIds] = useState([]);
   const { sendFriendRequestAcceptedNotification } = useNotifications();
+  const { showToast } = useToast();
+  const auth = getAuth();
+  const user = auth.currentUser;
 
-
-  // Hàm lấy danh sách nhận lời mời kết bạn
-  const fetchUserFriends = async () => {
-    try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const friendsCollectionRef = collection(userDocRef, "friend_Receiveds");
-          // lắng nghe thay đổi từ firestore
-          const unsubscribe = onSnapshot(friendsCollectionRef, (snapshot) => {
-            const userFriends = [];
-            snapshot.forEach((doc) => {
-              const friend_Receiveds = doc.data();
-              setID_roomChat(friend_Receiveds.ID_roomChat);
-              userFriends.push({
-                id: doc.id,
-                name: friend_Receiveds.name_fr,
-                photoUrl: friend_Receiveds.photoURL_fr,
-                userId: friend_Receiveds.email_fr,
-                UID: friend_Receiveds.UID_fr,
-                ID_roomChat: friend_Receiveds.ID_roomChat
-              });
-            });
-            setUserFriendsList(userFriends); // cập nhật danh sách hiện thị
-          });
-          return () => unsubscribe(); // hủy việc lắng nghe
-        } else {
-          console.error("User document does not exist!");
-        }
-      } else {
-        console.error("No user signed in!");
-      }
-    } catch (error) {
-      console.error("Error fetching user friends:", error);
-    }
-  };
-
+  // Lắng nghe danh sách lời mời đã nhận real-time
   useEffect(() => {
-    fetchUserFriends();
-  }, []);
+    if (!user) return;
+    const unsubscribe = subscribeToReceivedRequests(user.uid, (requests) => {
+      const mapped = requests.map((req) => ({
+        id: req.id,
+        name: req.name_fr,
+        photoUrl: req.photoURL_fr,
+        email: req.email_fr,
+        UID: req.UID_fr,
+        ID_roomChat: req.ID_roomChat,
+      }));
+      setUserFriendsList(mapped);
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
 
-
-  // Hàm chấp nhận kết bạn
+  // Chấp nhận kết bạn — dùng friendService (atomic batch)
   const handleAddFriend = async (friend) => {
+    if (loadingIds.includes(friend.UID)) return;
+    setLoadingIds((prev) => [...prev, friend.UID]);
     try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
+      const myData = await getUserById(user.uid);
+      if (!myData) throw new Error('User data not found');
 
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
+      await acceptFriendRequest(
+        { uid: user.uid, name: myData.name, email: myData.email, photoURL: myData.photoURL },
+        { uid: friend.UID, name: friend.name, email: friend.email, photoURL: friend.photoUrl, ID_roomChat: friend.ID_roomChat }
+      );
 
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const friendData = {
-            name_fr: friend.name,
-            photoURL_fr: friend.photoUrl,
-            email_fr: friend.userId,
-            UID_fr: friend.UID,
-            ID_roomChat: friend.ID_roomChat
-          };
-          // thêm bạn bè vào friendData Firebase will automatically create a unique ID
-          await addDoc(collection(userDocRef, "friendData"), friendData);
-          // Xóa hồ sơ đã nhận 
-          const friendReceivedDocRef = doc(userDocRef, "friend_Receiveds", friend.id);
-          await deleteDoc(friendReceivedDocRef);
-          // Cập nhật bạn bè vào thông tin người gửi
-          const friendDocRef = doc(db, "users", friend.UID);
-
-          const friendDocSnapshot = await getDoc(friendDocRef);
-          if (friendDocSnapshot.exists()) {
-            const friendData = {
-              name_fr: userData.name,
-              photoURL_fr: userData.photoURL,
-              email_fr: userData.email,
-              UID_fr: userData.UID,
-              ID_roomChat: ID_roomChat
-            };
-            await addDoc(collection(friendDocRef, "friendData"), friendData);
-
-            // xóa hồ sơ dã gửi lời mời , từ người gửi
-            const friendSentCollectionRef = collection(friendDocRef, "friend_Sents");
-            const friendSentQuery = query(friendSentCollectionRef, where("UID_fr", "==", user.uid));
-            const friendSentQuerySnapshot = await getDocs(friendSentQuery);
-            friendSentQuerySnapshot.forEach(async (friendSentDoc) => {
-              await deleteDoc(friendSentDoc.ref);
-            });
-
-            // Send notification to the person who sent the friend request
-            await sendFriendRequestAcceptedNotification(
-              friend.UID,
-              user.uid,
-              userData.name
-            );
-          } else {
-            console.error("Friend document does not exist!");
-          }
-
-          // Update the friends list after adding a new friend
-          fetchUserFriends();
-        } else {
-          console.error("User document does not exist!");
-        }
-      } else {
-        console.error("No user signed in!");
-      }
+      // Gửi notification cho người gửi lời mời
+      await sendFriendRequestAcceptedNotification(friend.UID, user.uid, myData.name);
+      showToast(`Đã chấp nhận kết bạn với ${friend.name}`, 'success');
     } catch (error) {
-      console.error("Error adding friend:", error);
+      console.error("Error accepting friend:", error);
+      showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+    } finally {
+      setLoadingIds((prev) => prev.filter((id) => id !== friend.UID));
     }
   };
 
-
-  // Hàm từ chối kết bạn
+  // Từ chối kết bạn — dùng friendService (atomic batch)
   const handleCancel = async (friend) => {
+    if (loadingIds.includes(friend.UID)) return;
+    setLoadingIds((prev) => [...prev, friend.UID]);
     try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-        if (userDocSnapshot.exists()) {
-          // Xóa lời mời kết bạn ở người nhận
-          const friendSentRef = doc(db, "users", user.uid, "friend_Receiveds", friend.id);
-          await deleteDoc(friendSentRef);
-          // Thu hồi kết bạn ở người gửi 
-          const friendReceivedCollectionRef = collection(db, "users", friend.UID, "friend_Sents");
-          const q = query(friendReceivedCollectionRef, where("UID_fr", "==", user.uid));
-          const querySnapshot = await getDocs(q);
-
-          querySnapshot.forEach(async (docSnapshot) => {
-            await deleteDoc(docSnapshot.ref);
-          });
-        } else {
-          console.error("User document does not exist!");
-        }
-      } else {
-        console.error("No user signed in!");
-      }
+      await declineFriendRequest(user.uid, friend.UID);
+      showToast(`Đã từ chối lời mời của ${friend.name}`, 'success');
     } catch (error) {
-      console.error("Error canceling friend request:", error);
+      console.error("Error declining friend request:", error);
+      showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+    } finally {
+      setLoadingIds((prev) => prev.filter((id) => id !== friend.UID));
     }
   };
 
   const renderUserFriendItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.containerProfile}>
-        <Image style={styles.image} source={{ uri: item.photoUrl }} />
-        <Text style={styles.text}>{item.name}</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => handleAddFriend(item)}>
-          <Text style={styles.addButtonText}>Chấp nhận kết bạn</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={() => handleCancel(item)}>
-          <Text style={{ fontWeight: 'bold', color: 'red' }}>Từ chối</Text>
-        </TouchableOpacity>
+        <Avatar uri={item.photoUrl} name={item.name} size="medium" />
+        <View style={styles.infoContainer}>
+          <Text style={styles.text}>{item.name}</Text>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.acceptButton} onPress={() => handleAddFriend(item)} activeOpacity={0.7}>
+              <Text style={styles.acceptButtonText}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.declineButton} onPress={() => handleCancel(item)} activeOpacity={0.7}>
+              <Text style={styles.declineButtonText}>Từ chối</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <View>
-          <FlatList
-            data={userFriendsList}
-            renderItem={renderUserFriendItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
-      </SafeAreaView>
+      {userFriendsList.length === 0 ? (
+        <EmptyState
+          icon="people-outline"
+          title="Không có lời mời kết bạn"
+          subtitle="Các lời mời kết bạn mới sẽ hiển thị ở đây"
+        />
+      ) : (
+        <FlatList
+          data={userFriendsList}
+          renderItem={renderUserFriendItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
@@ -197,40 +118,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   itemContainer: {
-    marginTop: 5,
-    flex: 1,
-    margin: 5,
-  },
-  image: {
-    marginLeft: 15,
-    width: 55,
-    height: 55,
-    borderRadius: 35,
-    borderWidth: 2,  // Độ rộng của khung viền
-    borderColor: '#006AF5',  // Màu sắc của khung viền, bạn có thể thay đổi màu tùy ý
-  },
-  text: {
-    marginLeft: 20,
-    fontSize: 20,
-    flex: 1,
-  },
-  addButton: {
-    marginLeft: 20,
-    backgroundColor: '#006AF5',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   containerProfile: {
-    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    height: 60,
+  },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 8,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  acceptButton: {
+    backgroundColor: '#006AF5',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  acceptButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  declineButton: {
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  declineButtonText: {
+    color: '#666',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
 

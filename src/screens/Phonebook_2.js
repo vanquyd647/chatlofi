@@ -114,7 +114,7 @@ const Phonebook_2 = () => {
 
     return (
         <View style={styles.container}>
-            <SafeAreaView>
+            <SafeAreaView style={{ flex: 1 }}>
                 <View>
                     <FlatList
                         data={sortedUserFriendsList}

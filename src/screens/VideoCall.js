@@ -22,7 +22,6 @@ import { Audio } from 'expo-av';
 const { width, height } = Dimensions.get('window');
 
 // WebRTC Configuration với STUN/TURN servers
-// For production, use your own TURN server (coturn) for reliability
 const configuration = {
     iceServers: [
         // Google STUN servers
@@ -31,27 +30,9 @@ const configuration = {
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
         { urls: 'stun:stun4.l.google.com:19302' },
-        // Additional public STUN servers for better connectivity
-        { urls: 'stun:stun.stunprotocol.org:3478' },
-        { urls: 'stun:stun.voip.blackberry.com:3478' },
-        // TURN servers for NAT traversal (when STUN fails)
-        // Option 1: Open Relay TURN (free, limited)
-        {
-            urls: 'turn:openrelay.metered.ca:80',
-            username: 'openrelayproject',
-            credential: 'openrelayproject',
-        },
-        {
-            urls: 'turn:openrelay.metered.ca:443',
-            username: 'openrelayproject',
-            credential: 'openrelayproject',
-        },
-        {
-            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-            username: 'openrelayproject',
-            credential: 'openrelayproject',
-        },
-        // Option 2: ExpressTurn (backup)
+        // Cloudflare STUN (free, no credentials needed)
+        { urls: 'stun:stun.cloudflare.com:3478' },
+        // TURN servers for NAT traversal
         {
             urls: 'turn:relay1.expressturn.com:3478',
             username: 'efoca',
@@ -536,11 +517,15 @@ const VideoCall = () => {
 
             // Handle remote stream
             pc.ontrack = (event) => {
+                console.log('🎥 ontrack fired:', event.track?.kind);
                 if (event.streams && event.streams[0]) {
+                    console.log('✅ Setting remote stream, url:', event.streams[0].toURL());
                     setRemoteStream(event.streams[0]);
-                    setIsConnected(true);
-                    setConnectionStatus('Đã kết nối');
-                    startCallTimer();
+                    if (event.track?.kind === 'video') {
+                        setIsConnected(true);
+                        setConnectionStatus('Đã kết nối');
+                        startCallTimer();
+                    }
                 }
             };
 
@@ -555,12 +540,14 @@ const VideoCall = () => {
 
             // Handle ICE connection state
             pc.oniceconnectionstatechange = () => {
+                console.log('🧊 ICE connection state:', pc.iceConnectionState);
                 switch (pc.iceConnectionState) {
                     case 'checking':
                         setConnectionStatus('Đang kết nối...');
                         break;
                     case 'connected':
                     case 'completed':
+                        console.log('✅ ICE connected/completed');
                         break;
                     case 'failed':
                         console.error('❌ ICE connection failed - trying to restart');
@@ -613,18 +600,26 @@ const VideoCall = () => {
 
             // Handle connection state changes
             pc.onconnectionstatechange = () => {
+                console.log('🔗 Connection state:', pc.connectionState);
                 switch (pc.connectionState) {
                     case 'connected':
                         setConnectionStatus('Đã kết nối');
                         setIsConnected(true);
                         break;
                     case 'disconnected':
-                        setConnectionStatus('Đã ngắt kết nối');
+                        setConnectionStatus('Đang kết nối lại...');
                         break;
                     case 'failed':
-                        setConnectionStatus('Kết nối thất bại');
                         console.error('❌ WebRTC connection failed');
-                        setTimeout(() => handleCallEnd(), 2000);
+                        setConnectionStatus('Kết nối thất bại');
+                        // DO NOT auto-disconnect - let ICE restart or user manually end
+                        if (peerConnection.current && isInitiator) {
+                            try {
+                                peerConnection.current.restartIce();
+                            } catch (e) {
+                                console.error('❌ ICE restart from connectionState failed:', e);
+                            }
+                        }
                         break;
                     case 'closed':
                         setConnectionStatus('Cuộc gọi đã kết thúc');
@@ -1053,7 +1048,6 @@ const VideoCall = () => {
             {/* Remote Video - Full screen */}
             {remoteStream ? (
                 <RTCView
-                    key={`remote-${remoteStream.id}`}
                     streamURL={remoteStream.toURL()}
                     style={styles.remoteVideo}
                     objectFit="cover"
@@ -1078,7 +1072,6 @@ const VideoCall = () => {
             {localStream && localVideoReady && !isVideoOff && (
                 <View style={styles.localVideoContainer}>
                     <RTCView
-                        key={`local-${localStream.id}`}
                         streamURL={localStream.toURL()}
                         style={styles.localVideo}
                         objectFit="cover"
@@ -1211,8 +1204,7 @@ const styles = StyleSheet.create({
     // Styles cho cuộc gọi đang diễn ra
     remoteVideo: {
         flex: 1,
-        width: '100%',
-        height: '100%',
+        backgroundColor: '#000',
     },
     remoteVideoPlaceholder: {
         flex: 1,

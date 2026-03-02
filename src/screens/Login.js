@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, SafeAreaView, TouchableOpacity, StatusBar, Alert, Modal, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, TextInput, SafeAreaView, TouchableOpacity, Alert, Modal, ActivityIndicator } from "react-native";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth"; // Update import statement
 import { auth } from "../../config/firebase";
 import { MaterialIcons } from '@expo/vector-icons';
 // Native Firebase Auth for syncing with Realtime Database
 import nativeAuth from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Thêm import AsyncStorage
-import { getFirestore, doc, getDoc } from "firebase/firestore"; // Thêm import Firestore
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserById } from '../services/userService';
 import { useNotifications } from '../contextApi/NotificationContext';
 
 export default function Login({ navigation, setIsLoggedIn }) {
@@ -18,8 +18,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showVerifyModal, setShowVerifyModal] = useState(false); // Modal xác minh email
   const [unverifiedUser, setUnverifiedUser] = useState(null); // Lưu user chưa xác minh
-  const [resendCooldown, setResendCooldown] = useState(0); // Cooldown gửi lại email
-  const db = getFirestore(); // Khởi tạo Firestore
+  const [resendCooldown, setResendCooldown] = useState(0);
   const { fcmToken, savePushToken } = useNotifications();
 
   const validateEmail = (email) => {
@@ -37,19 +36,12 @@ export default function Login({ navigation, setIsLoggedIn }) {
     }
   };
 
-  // Hàm lấy thông tin người dùng từ Firestore
+  // Hàm lấy thông tin người dùng từ service
   const getUserData = async (userId) => {
     try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        return userDoc.data();
-      } else {
-        return null;
-      }
+      return await getUserById(userId);
     } catch (error) {
-      console.error('Error fetching user data from Firestore:', error);
+      console.error('Error fetching user data:', error);
       return null;
     }
   };
@@ -269,7 +261,7 @@ export default function Login({ navigation, setIsLoggedIn }) {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <StatusBar barStyle="light-content" />
+
 
       {/* Modal Quên mật khẩu */}
       <Modal visible={showModal} transparent={true} animationType="slide">

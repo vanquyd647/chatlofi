@@ -5,14 +5,15 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, deleteDoc, query, where } from "firebase/firestore";
 import { useToast } from '../contextApi/ToastContext';
+import { subscribeToFriends, unfriend } from '../services/friendService';
+import { getUserById } from '../services/userService';
 
 const Friends = () => {
     const navigation = useNavigation();
     const { showToast } = useToast();
     const auth = getAuth();
-    const [userFriendsList, setUserFriendsList] = useState([]);
+    const user = auth.currentUser;
     const [listFriend, setListFriend] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalData, setModalData] = useState(null);
@@ -52,130 +53,43 @@ const Friends = () => {
         );
     };
 
-    const fetchUserFriends = async () => {
+    const fetchUserFriends = async (rawFriends) => {
+        setLoading(true);
         try {
-            const db = getFirestore();
-            const auth = getAuth();
-            const user = auth.currentUser;
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnapshot = await getDoc(userDocRef);
-                if (userDocSnapshot.exists()) {
-                    const userData = userDocSnapshot.data();
-                    const friendsCollectionRef = collection(userDocRef, "friendData");
-                    const friendsSnapshot = await getDocs(friendsCollectionRef);
-                    const userFriends = [];
-                    friendsSnapshot.forEach((doc) => {
-                        const friendData = doc.data();
-                        userFriends.push({
-                            id: doc.id,
-                            name: friendData.name_fr,
-                            photoUrl: friendData.photoURL_fr,
-                            userId: friendData.email_fr,
-                            UID_fr: friendData.UID_fr,
-                            ID_roomChat: friendData.ID_roomChat
-                        });
-                    });
-                    setUserFriendsList(userFriends);
-                } else {
-                    console.error("User document does not exist!");
-                }
-            } else {
-                console.error("No user signed in!");
-            }
+            const enriched = await Promise.all(
+                rawFriends.map(async (friend) => {
+                    const userData = await getUserById(friend.UID_fr);
+                    return {
+                        id: friend.id,
+                        UID_fr: friend.UID_fr,
+                        ID_roomChat: friend.ID_roomChat,
+                        photoUrl: userData?.photoURL || friend.photoURL_fr,
+                        name: userData?.name || friend.name_fr,
+                    };
+                })
+            );
+            setListFriend(enriched);
         } catch (error) {
-            console.error("Error fetching user friends:", error);
+            console.error("Error fetching friend details:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                fetchUserFriends(); // Fetch friends when user is authenticated
-                const db = getFirestore();
-                const userDocRef = doc(db, "users", user.uid);
-                const friendsCollectionRef = collection(userDocRef, "friendData");
-                const unsubscribe = onSnapshot(friendsCollectionRef, (snapshot) => {
-                    const userFriends = [];
-                    let index = 0; // Bắt đầu với index = 0
-                    snapshot.forEach((doc) => {
-                        const friendData = doc.data();
-                        userFriends.push({
-                            id: index++, // Gán ID bằng index và tăng index sau mỗi lần sử dụng
-                            name: friendData.name_fr,
-                            photoUrl: friendData.photoURL_fr,
-                            userId: friendData.email_fr,
-                            UID_fr: friendData.UID_fr,
-                            ID_roomChat: friendData.ID_roomChat
-                        });
-                    });
-                    setUserFriendsList(userFriends); // Update friends list
-                });
-
-                return () => unsubscribe(); // Unsubscribe when component unmounts
+        if (!user) return;
+        const unsubscribe = subscribeToFriends(user.uid, (friends) => {
+            if (friends.length > 0) {
+                fetchUserFriends(friends);
             } else {
+                setLoading(false);
+                setListFriend([]);
             }
         });
-        return unsubscribe;
-    }, []);
+        return () => unsubscribe();
+    }, [user?.uid]);
 
-    // Tạo hàm để truy vấn dữ liệu từ collection "users" dựa trên UID
-    const fetchUserDataByUID = async (UID) => {
-        try {
-            const db = getFirestore();
-            const userDocRef = doc(db, "users", UID);
-            const userDocSnapshot = await getDoc(userDocRef);
-
-            if (userDocSnapshot.exists()) {
-                const userData = userDocSnapshot.data();
-                return { photoURL: userData.photoURL, name: userData.name };
-            } else {
-                console.error(`User document does not exist for UID ${UID}`);
-                return null;
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            return null;
-        }
-    };
-
-    // Hàm để lấy dữ liệu từ collection "users" cho tất cả các UID trong mảng userFriendsList
-    const fetchUserDataForFriends = async () => {
-        setLoading(true);
-        const updatedUserFriendsList = [];
-        for (const friend of userFriendsList) {
-            const userData = await fetchUserDataByUID(friend.UID_fr);
-            if (userData) {
-                // Tạo một đối tượng mới với dữ liệu photoURL, name, UID_fr và ID_roomChat
-                const updatedFriend = {
-                    id: friend.id,
-                    UID_fr: friend.UID_fr,
-                    ID_roomChat: friend.ID_roomChat,
-                    photoUrl: userData.photoURL,
-                    name: userData.name
-                };
-
-                updatedUserFriendsList.push(updatedFriend);
-            }
-        }
-        setLoading(false);
-        return updatedUserFriendsList;
-    };
-
-    useEffect(() => {
-        // Gọi hàm fetchUserDataForFriends để lấy thông tin của bạn bè từ collection "users"
-        if (userFriendsList.length > 0) {
-            fetchUserDataForFriends().then(updatedFriendsData => {
-                // Cập nhật danh sách bạn bè đã được cập nhật vào state listFriend
-                setListFriend(updatedFriendsData);
-            });
-        } else {
-            setLoading(false);
-            setListFriend([]);
-        }
-    }, [userFriendsList]); // Thêm userFriendsList vào dependency array
-
-    // Sort userFriendsList alphabetically by name
+    // Sort friends alphabetically by name
     const sortedUserFriendsList = listFriend && listFriend.length > 0
         ? listFriend.slice().sort((a, b) => {
             return (a.name || '').localeCompare(b.name || '');
@@ -218,41 +132,12 @@ const Friends = () => {
                     style: 'destructive',
                     onPress: async () => {
                         try {
-                            const db = getFirestore();
-                            const auth = getAuth();
-                            const user = auth.currentUser;
-                            if (user) {
-                                const userDocRef = doc(db, "users", user.uid);
-                                const userDocSnapshot = await getDoc(userDocRef);
-                                if (userDocSnapshot.exists()) {
-                                    // Xóa bạn bè ở người dùng hiện tại 
-                                    const friendDataCollectionRef = collection(db, "users", user.uid, "friendData");
-                                    const friendQuery = query(friendDataCollectionRef, where("UID_fr", "==", friend.UID_fr));
-                                    const friendQuerySnapshot = await getDocs(friendQuery);
-
-                                    const deleteCurrentUserPromises = friendQuerySnapshot.docs.map(docSnapshot => deleteDoc(docSnapshot.ref));
-                                    await Promise.all(deleteCurrentUserPromises);
-
-                                    // Xóa bạn bè ở người bạn bè
-                                    const friendReceivedCollectionRef = collection(db, "users", friend.UID_fr, "friendData");
-                                    const q = query(friendReceivedCollectionRef, where("UID_fr", "==", user.uid));
-                                    const querySnapshot = await getDocs(q);
-
-                                    const deletePromises = querySnapshot.docs.map(docSnapshot => deleteDoc(docSnapshot.ref));
-                                    await Promise.all(deletePromises);
-                                    showToast(`Đã hủy kết bạn với ${friend.name}`, 'success');
-                                    setModalVisible(false);
-                                } else {
-                                    showToast('Lỗi tài khoản người dùng', 'error');
-                                    console.error("User document does not exist!");
-                                }
-                            } else {
-                                showToast('Vui lòng đăng nhập lại', 'error');
-                                console.error("No user signed in!");
-                            }
+                            await unfriend(user.uid, friend.UID_fr);
+                            showToast(`Đã hủy kết bạn với ${friend.name}`, 'success');
+                            setModalVisible(false);
                         } catch (error) {
                             showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
-                            console.error("Error canceling friend request:", error);
+                            console.error("Error canceling friend:", error);
                         }
                     }
                 }

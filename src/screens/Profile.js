@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Pressable } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { AntDesign, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { getFirestore, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { subscribeToUser } from '../services/userService';
+import Avatar from '../components/Avatar';
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -12,30 +13,22 @@ export default function Profile() {
   const auth = getAuth();
   const user = auth.currentUser;
   const [userData, setUserData] = useState(null);
-  const db = getFirestore();
   const [personal, setPersonal] = useState('');
 
   useEffect(() => {
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribe = onSnapshot(userDocRef, (doc) => {
-      if (doc.exists()) {
-        const userData = doc.data();
-        setUserData(userData);
-        setPersonal(userData);
-        setDisplayName(userData.name);
-        setPhotoURL(userData.photoURL);
-      }
+    const unsubscribe = subscribeToUser(user.uid, (data) => {
+      setUserData(data);
+      setPersonal(data);
+      setDisplayName(data.name);
+      setPhotoURL(data.photoURL);
     });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [db, user]);
+    return () => unsubscribe();
+  }, [user]);
 
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.searchContainer}>
           <AntDesign name="search1" size={20} color="white" />
           <Pressable style={styles.searchInput} onPress={() => navigation.navigate("SearchFriend")}>
@@ -45,12 +38,10 @@ export default function Profile() {
             <Feather name="settings" size={30} color="white" />
           </TouchableOpacity>
         </View>
-        <View style={{ marginBottom: 600 }}>
+        <View style={{ flex: 1 }}>
           <Pressable onPress={() => navigation.navigate("Personal_page", { userId: user.uid })}>
             <View style={styles.containerProfile}>
-              <TouchableOpacity >
-                <Image source={{ uri: photoURL }} style={styles.avatar} />
-              </TouchableOpacity>
+              <Avatar uri={photoURL} name={displayName} size="large" />
               <View style={{ flex: 1 }}>
                 <Text style={styles.title}>{displayName}</Text>
                 <Text style={styles.title2}>Xem trang cá nhân</Text>
@@ -64,7 +55,7 @@ export default function Profile() {
             onPress={() => navigation.navigate("MyPosts")}
           >
             <View style={styles.menuIconContainer}>
-              <MaterialCommunityIcons name="post-outline" size={24} color="#1877f2" />
+              <MaterialCommunityIcons name="post-outline" size={24} color="#006AF5" />
             </View>
             <View style={styles.menuContent}>
               <Text style={styles.menuTitle}>Bài viết của tôi</Text>
@@ -89,6 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
     height: 90,
+    paddingHorizontal: 15,
   },
   title: {
     fontSize: 24,
@@ -132,19 +124,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#006AF5",
-    padding: 9,
-    height: 48,
-    width: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flex: 1,
-    justifyContent: "center",
-    height: 48,
-    marginLeft: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
   },
   textSearch: {
-    color: "white",
-    fontWeight: '500'
+    color: "rgba(255,255,255,0.9)",
+    fontWeight: '500',
+    fontSize: 15,
   },
   menuItem: {
     flexDirection: 'row',

@@ -12,29 +12,19 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc,
-  writeBatch,
-  getDoc,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  limit,
-  getFirestore
-} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import {
+  subscribeToNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+  removeNotification,
+  toggleNotificationReadStatus
+} from '../services/notificationService';
+import { getUserById } from '../services/userService';
 
 const NotificationsScreen = () => {
   const navigation = useNavigation();
   const auth = getAuth();
-  const db = getFirestore();
   const currentUser = auth.currentUser;
 
   const [notifications, setNotifications] = useState([]);
@@ -49,32 +39,19 @@ const NotificationsScreen = () => {
       return;
     }
 
-    const notificationsRef = collection(db, 'notifications');
-    // Simple query without orderBy to avoid needing composite index
-    const q = query(
-      notificationsRef,
-      where('recipientId', '==', currentUser.uid),
-      limit(100)
+    const unsubscribe = subscribeToNotifications(
+      currentUser.uid,
+      (notificationsList) => {
+        setNotifications(notificationsList);
+        setLoading(false);
+        setRefreshing(false);
+      },
+      (error) => {
+        Alert.alert('Lỗi tải thông báo', error.message);
+        setLoading(false);
+        setRefreshing(false);
+      }
     );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notificationsList = snapshot.docs.map(doc => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date(),
-        };
-      });
-      // Sort by createdAt on client side
-      notificationsList.sort((a, b) => b.createdAt - a.createdAt);
-      setNotifications(notificationsList);
-      setLoading(false);
-      setRefreshing(false);
-    }, (error) => {
-      Alert.alert('Lỗi tải thông báo', error.message);
-      setLoading(false);
-      setRefreshing(false);
-    });
 
     return () => unsubscribe();
   }, [currentUser]);
@@ -89,8 +66,7 @@ const NotificationsScreen = () => {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      const notificationRef = doc(db, 'notifications', notificationId);
-      await updateDoc(notificationRef, { read: true });
+      await markNotificationRead(notificationId);
     } catch (error) {
       // Error marking notification as read
     }
@@ -99,15 +75,8 @@ const NotificationsScreen = () => {
   // Mark all as read
   const markAllAsRead = async () => {
     try {
-      const batch = writeBatch(db);
       const unreadNotifications = notifications.filter(n => !n.read);
-
-      unreadNotifications.forEach(notification => {
-        const notificationRef = doc(db, 'notifications', notification.id);
-        batch.update(notificationRef, { read: true });
-      });
-
-      await batch.commit();
+      await markAllNotificationsRead(unreadNotifications);
     } catch (error) {
       Alert.alert('Lỗi', 'Không thể đánh dấu tất cả là đã đọc');
     }
@@ -116,7 +85,7 @@ const NotificationsScreen = () => {
   // Delete notification
   const deleteNotification = async (notificationId) => {
     try {
-      await deleteDoc(doc(db, 'notifications', notificationId));
+      await removeNotification(notificationId);
     } catch (error) {
       Alert.alert('Lỗi', 'Không thể xóa thông báo');
     }
@@ -137,50 +106,31 @@ const NotificationsScreen = () => {
         // Navigate to chat
         if (data?.roomId) {
           try {
-            // Get chat room info from Chats collection
-            const chatRef = doc(db, 'Chats', data.roomId);
-            const chatSnap = await getDoc(chatRef);
+            let senderName = data.senderName || notification.title;
+            let senderPhoto = data.senderPhoto;
 
-            if (chatSnap.exists()) {
-              const chatData = chatSnap.data();
-              // Get sender info
-              let senderName = data.senderName || notification.title;
-              let senderPhoto = data.senderPhoto;
-
-              // If no sender photo, try to get from users collection
-              if (!senderPhoto && data.senderId) {
-                try {
-                  const userRef = doc(db, 'users', data.senderId);
-                  const userSnap = await getDoc(userRef);
-                  if (userSnap.exists()) {
-                    const userData = userSnap.data();
-                    senderName = userData.name || senderName;
-                    senderPhoto = userData.profileImageUrl || userData.photoURL;
-                  }
-                } catch (e) {
-                  // Error getting user info
+            // If no sender photo, try to get from users collection
+            if (!senderPhoto && data.senderId) {
+              try {
+                const senderData = await getUserById(data.senderId);
+                if (senderData) {
+                  senderName = senderData.name || senderName;
+                  senderPhoto = senderData.profileImageUrl || senderData.photoURL;
                 }
+              } catch (e) {
+                // Error getting user info
               }
-
-              navigation.navigate('Chat_fr', {
-                friendId: data.senderId,
-                friendName: senderName,
-                friendPhoto: senderPhoto,
-                roomId: data.roomId,
-                RoomID: data.roomId,
-              });
-            } else {
-              // Fallback: navigate without room data
-              navigation.navigate('Chat_fr', {
-                friendId: data.senderId,
-                friendName: data.senderName || notification.title,
-                roomId: data.roomId,
-                RoomID: data.roomId,
-              });
             }
+
+            navigation.navigate('Chat_fr', {
+              friendId: data.senderId,
+              friendName: senderName,
+              friendPhoto: senderPhoto,
+              roomId: data.roomId,
+              RoomID: data.roomId,
+            });
           } catch (error) {
             console.error('Error navigating to chat:', error);
-            // Fallback navigation
             navigation.navigate('Chat_fr', {
               friendId: data.senderId,
               friendName: data.senderName || notification.title,
@@ -365,10 +315,7 @@ const NotificationsScreen = () => {
               { text: 'Hủy', style: 'cancel' },
               {
                 text: isUnread ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc',
-                onPress: async () => {
-                  const notificationRef = doc(db, 'notifications', item.id);
-                  await updateDoc(notificationRef, { read: !isUnread });
-                }
+                onPress: () => toggleNotificationReadStatus(item.id, !isUnread)
               },
               {
                 text: 'Xóa',
@@ -443,7 +390,7 @@ const NotificationsScreen = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Thông báo</Text>
         {unreadCount > 0 && (
@@ -451,7 +398,7 @@ const NotificationsScreen = () => {
             style={styles.markAllButton}
             onPress={markAllAsRead}
           >
-            <Ionicons name="checkmark-done" size={24} color="#006AF5" />
+            <Ionicons name="checkmark-done" size={24} color="#fff" />
           </TouchableOpacity>
         )}
       </View>
@@ -519,32 +466,36 @@ const NotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f5f5f5',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f5f5f5',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 50,
-    paddingBottom: 16,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#006AF5',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   backButton: {
     padding: 8,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+    flex: 1,
+    textAlign: 'center',
   },
   markAllButton: {
     padding: 8,

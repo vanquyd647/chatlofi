@@ -28,33 +28,20 @@ import { useNavigation } from '@react-navigation/native';
 import {
   getFirestore,
   collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
   query,
   orderBy,
   onSnapshot,
   serverTimestamp,
-  getDoc,
   limit,
-  startAfter,
-  getDocs
 } from 'firebase/firestore';
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from 'firebase/storage';
+import { createPost, getPost, getPosts, deletePost, updatePost, sharePost, togglePostReaction, addComment, toggleCommentLike, subscribeToComments, POSTS_PER_PAGE } from '../services/postService';
+import { getUserById, subscribeToUser } from '../services/userService';
+import { uploadPostMedia } from '../services/storageService';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useNotifications } from '../contextApi/NotificationContext';
 
 const { width, height } = Dimensions.get('window');
-const POSTS_PER_PAGE = 10;
 
 const TimeLine = () => {
   const navigation = useNavigation();
@@ -74,7 +61,6 @@ const TimeLine = () => {
   const soundRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const db = getFirestore();
-  const storage = getStorage();
   const [fullscreenMedia, setFullscreenMedia] = useState(null);
   const [fullscreenModalVisible, setFullscreenModalVisible] = useState(false);
   const fullscreenVideoRef = useRef(null);
@@ -133,17 +119,10 @@ const TimeLine = () => {
           
           // Lắng nghe thay đổi real-time từ Firestore để cập nhật thông tin user
           if (parsedUserData.uid) {
-            const userDocRef = doc(db, 'users', parsedUserData.uid);
-            const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
-              if (docSnap.exists()) {
-                const updatedUserData = {
-                  ...parsedUserData,
-                  ...docSnap.data()
-                };
-                setUserData(updatedUserData);
-                // Cập nhật lại AsyncStorage để lần sau load nhanh hơn
-                AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
-              }
+            const unsubscribe = subscribeToUser(parsedUserData.uid, (updatedData) => {
+              const merged = { ...parsedUserData, ...updatedData };
+              setUserData(merged);
+              AsyncStorage.setItem('userData', JSON.stringify(merged));
             });
             
             // Cleanup listener khi component unmount
@@ -178,11 +157,8 @@ const TimeLine = () => {
         // Chỉ fetch từ users collection nếu chưa có userInfo
         if (!postData.userInfo && postData.userId) {
           try {
-            const userDocRef = doc(db, 'users', postData.userId);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-              postData.userInfo = userDocSnap.data();
-            }
+            const userInfo = await getUserById(postData.userId);
+            if (userInfo) postData.userInfo = userInfo;
           } catch (error) {
             console.error('Error fetching user info:', error);
           }
@@ -216,32 +192,22 @@ const TimeLine = () => {
   // Sửa trong useEffect lấy comments
   useEffect(() => {
     if (currentPostId) {
-      const commentsRef = collection(db, `posts/${currentPostId}/comments`);
-      const q = query(commentsRef, orderBy('createdAt', 'asc'));
-
-      const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-        const commentsData = [];
-
-        for (const docSnap of querySnapshot.docs) {
-          const commentData = { id: docSnap.id, ...docSnap.data() };
-
-          // Ưu tiên sử dụng userInfo đã lưu trong comment (đã được đồng bộ)
-          if (!commentData.userInfo && commentData.userId) {
-            try {
-              const userDocRef = doc(db, 'users', commentData.userId);
-              const userDocSnap = await getDoc(userDocRef);
-              if (userDocSnap.exists()) {
-                commentData.userInfo = userDocSnap.data();
+      const unsubscribe = subscribeToComments(currentPostId, async (rawComments) => {
+        // Enrich with user info if missing
+        const enriched = await Promise.all(
+          rawComments.map(async (comment) => {
+            if (!comment.userInfo && comment.userId) {
+              try {
+                const userInfo = await getUserById(comment.userId);
+                if (userInfo) return { ...comment, userInfo };
+              } catch (error) {
+                console.error('Error fetching commenter info:', error);
               }
-            } catch (error) {
-              console.error('Error fetching commenter info:', error);
             }
-          }
-
-          commentsData.push(commentData);
-        }
-
-        setComments(commentsData);
+            return comment;
+          })
+        );
+        setComments(enriched);
       });
 
       return () => unsubscribe();
@@ -336,16 +302,7 @@ const TimeLine = () => {
   // Enhanced media upload with progress
   const uploadMedia = async (uri) => {
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const fileExtension = uri.split('.').pop();
-      const fileName = `${Date.now()}.${fileExtension}`;
-      const storageRef = ref(storage, `posts/${userData.uid}/${fileName}`);
-
-      const uploadTask = uploadBytes(storageRef, blob);
-      
-      // Simulate progress (Firebase uploadBytes doesn't provide progress)
+      // Simulate progress (uploadPostMedia doesn't provide progress)
       let progress = 0;
       const interval = setInterval(() => {
         progress += 10;
@@ -353,11 +310,9 @@ const TimeLine = () => {
         if (progress >= 90) clearInterval(interval);
       }, 200);
 
-      await uploadTask;
+      const downloadURL = await uploadPostMedia(userData.uid, uri);
       clearInterval(interval);
       setUploadProgress(100);
-
-      const downloadURL = await getDownloadURL(storageRef);
       setTimeout(() => setUploadProgress(0), 500);
 
       return downloadURL;
@@ -391,33 +346,26 @@ const TimeLine = () => {
         }
       }
 
-      // Lấy thông tin user mới nhất từ Firestore
-      const userDocRef = doc(db, 'users', userData.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      const currentUserInfo = userDocSnap.exists() ? userDocSnap.data() : {
+      // Lấy thông tin user mới nhất
+      const currentUserInfo = await getUserById(userData.uid) || {
         name: userData.displayName || userData.email,
         photoURL: userData.photoURL || null,
         email: userData.email
       };
 
-      const postData = {
+      await createPost({
         userId: userData.uid,
         text: newPostText.trim(),
-        mediaUrl: mediaUrl,
+        mediaUrl,
         mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
         mediaType: selectedImages.length > 0 ? 'images' : mediaType,
-        reactions: {},
-        shares: 0,
-        createdAt: serverTimestamp(),
         userInfo: {
           name: currentUserInfo.name,
           displayName: currentUserInfo.name,
           photoURL: currentUserInfo.photoURL,
           email: currentUserInfo.email
         }
-      };
-
-      await addDoc(collection(db, 'posts'), postData);
+      });
 
       setNewPostText('');
       setSelectedMedia(null);
@@ -438,46 +386,33 @@ const TimeLine = () => {
 
     setLoadingMore(true);
     try {
-      const postsRef = collection(db, 'posts');
-      const q = query(
-        postsRef,
-        orderBy('createdAt', 'desc'),
-        startAfter(lastVisible),
-        limit(POSTS_PER_PAGE)
-      );
-
-      const querySnapshot = await getDocs(q);
+      const { posts: newPosts, lastDoc: newLastDoc } = await getPosts(lastVisible, POSTS_PER_PAGE);
       
-      if (querySnapshot.empty) {
+      if (newPosts.length === 0) {
         setHasMore(false);
         setLoadingMore(false);
         return;
       }
 
-      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setLastVisible(newLastDoc);
       
-      const newPosts = [];
-      for (const docSnap of querySnapshot.docs) {
-        const postData = { id: docSnap.id, ...docSnap.data() };
-
-        // Ưu tiên sử dụng userInfo đã lưu trong post
-        if (!postData.userInfo && postData.userId) {
-          try {
-            const userDocRef = doc(db, 'users', postData.userId);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-              postData.userInfo = userDocSnap.data();
+      // Enrich with user info if missing
+      const enrichedPosts = await Promise.all(
+        newPosts.map(async (postData) => {
+          if (!postData.userInfo && postData.userId) {
+            try {
+              const userInfo = await getUserById(postData.userId);
+              if (userInfo) postData.userInfo = userInfo;
+            } catch (error) {
+              console.error('Error fetching user info:', error);
             }
-          } catch (error) {
-            console.error('Error fetching user info:', error);
           }
-        }
+          postData.commentCount = 0;
+          return postData;
+        })
+      );
 
-        postData.commentCount = 0;
-        newPosts.push(postData);
-      }
-
-      setPosts(prevPosts => [...prevPosts, ...newPosts]);
+      setPosts(prevPosts => [...prevPosts, ...enrichedPosts]);
     } catch (error) {
       console.error('Error loading more posts:', error);
     } finally {
@@ -501,26 +436,13 @@ const TimeLine = () => {
     setShowReactions(null);
 
     try {
-      const postRef = doc(db, 'posts', postId);
-      const postDoc = await getDoc(postRef);
-
-      if (postDoc.exists()) {
-        const postData = postDoc.data();
-        const reactions = postData.reactions || {};
-        const userReaction = reactions[userData.uid];
-        const postOwnerId = postData.userId;
-
-        // If same reaction, remove it (toggle off)
-        if (userReaction && userReaction.type === reactionType) {
-          delete reactions[userData.uid];
-        } else {
-          // Add or change reaction
-          reactions[userData.uid] = {
-            type: reactionType,
-            timestamp: new Date().getTime()
-          };
-          
-          // Send notification to post owner (only for new reactions, not toggles)
+      const result = await togglePostReaction(postId, userData.uid, reactionType);
+      
+      // Send notification to post owner (only for new reactions, not toggles)
+      if (result.added) {
+        const postData = await getPost(postId);
+        if (postData) {
+          const postOwnerId = postData.userId;
           if (postOwnerId && postOwnerId !== userData.uid) {
             sendPostReactionNotification(
               postId,
@@ -531,8 +453,6 @@ const TimeLine = () => {
             ).catch(err => console.error('Reaction notification error:', err));
           }
         }
-
-        await updateDoc(postRef, { reactions });
       }
     } catch (error) {
       console.error('Error adding reaction:', error);
@@ -594,42 +514,32 @@ const TimeLine = () => {
     }
 
     try {
-      // Lấy thông tin user mới nhất từ Firestore
-      const userDocRef = doc(db, 'users', userData.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      const currentUserInfo = userDocSnap.exists() ? userDocSnap.data() : {
+      // Lấy thông tin user mới nhất
+      const currentUserInfo = await getUserById(userData.uid) || {
         name: userData.displayName || userData.email,
         photoURL: userData.photoURL || null,
         email: userData.email
       };
 
-      const commentData = {
+      await addComment(currentPostId, {
         userId: userData.uid,
         text: commentText.trim(),
-        createdAt: serverTimestamp(),
-        likes: [],
         replyTo: replyToComment || null,
-        replies: [],
         userInfo: {
           name: currentUserInfo.name,
           displayName: currentUserInfo.name,
           photoURL: currentUserInfo.photoURL,
           email: currentUserInfo.email
         }
-      };
-
-      await addDoc(collection(db, `posts/${currentPostId}/comments`), commentData);
+      });
 
       // Get post data to send notification to post owner
-      const postRef = doc(db, 'posts', currentPostId);
-      const postDoc = await getDoc(postRef);
-      if (postDoc.exists()) {
-        const postData = postDoc.data();
+      const postData = await getPost(currentPostId);
+      if (postData) {
         const postOwnerId = postData.userId;
         
         // Send notification based on whether it's a reply or a comment
         if (replyToComment && replyToComment.userId !== userData.uid) {
-          // Reply to a comment - notify comment owner
           sendCommentReplyNotification(
             currentPostId,
             replyToComment.userId,
@@ -638,7 +548,6 @@ const TimeLine = () => {
             commentText.trim().substring(0, 100)
           ).catch(err => console.error('Comment reply notification error:', err));
         } else if (postOwnerId && postOwnerId !== userData.uid) {
-          // Comment on post - notify post owner
           sendPostCommentNotification(
             currentPostId,
             postOwnerId,
@@ -670,34 +579,21 @@ const TimeLine = () => {
     if (!userData || !currentPostId) return;
 
     try {
-      const commentRef = doc(db, `posts/${currentPostId}/comments`, commentId);
-      const commentDoc = await getDoc(commentRef);
-
-      if (commentDoc.exists()) {
-        const commentData = commentDoc.data();
-        const likes = commentData.likes || [];
-        const isLiked = likes.includes(userData.uid);
-
-        if (isLiked) {
-          await updateDoc(commentRef, {
-            likes: arrayRemove(userData.uid)
-          });
-        } else {
-          await updateDoc(commentRef, {
-            likes: arrayUnion(userData.uid)
-          });
-          
-          // Send notification to comment owner when liking (not unliking)
-          const commentOwnerId = commentData.userId;
-          if (commentOwnerId && commentOwnerId !== userData.uid) {
-            sendCommentLikeNotification(
-              currentPostId,
-              commentId,
-              commentOwnerId,
-              userData.uid,
-              userData.displayName || userData.name || 'Người dùng'
-            );
-          }
+      await toggleCommentLike(currentPostId, commentId, userData.uid);
+      
+      // Find comment to check if we need to send notification
+      const comment = comments.find(c => c.id === commentId);
+      if (comment) {
+        const commentOwnerId = comment.userId;
+        const isLiked = comment.likes?.includes(userData.uid);
+        if (!isLiked && commentOwnerId && commentOwnerId !== userData.uid) {
+          sendCommentLikeNotification(
+            currentPostId,
+            commentId,
+            commentOwnerId,
+            userData.uid,
+            userData.displayName || userData.name || 'Người dùng'
+          );
         }
       }
     } catch (error) {
@@ -714,19 +610,13 @@ const TimeLine = () => {
   // Chia sẻ bài viết
   const handleShare = async (postId) => {
     try {
-      const postRef = doc(db, 'posts', postId);
-      const postDoc = await getDoc(postRef);
+      const postData = await getPost(postId);
 
-      if (postDoc.exists()) {
-        const postData = { id: postId, ...postDoc.data() };
-        
-        // Lấy thông tin người đăng bài gốc
-        if (postData.userId) {
-          const userDocRef = doc(db, 'users', postData.userId);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            postData.userInfo = userDocSnap.data();
-          }
+      if (postData) {
+        // Enrich with user info if missing
+        if (!postData.userInfo && postData.userId) {
+          const userInfo = await getUserById(postData.userId);
+          if (userInfo) postData.userInfo = userInfo;
         }
         
         setSharePostData(postData);
@@ -743,17 +633,14 @@ const TimeLine = () => {
     
     setIsLoading(true);
     try {
-      // Lấy thông tin user mới nhất từ Firestore
-      const userDocRef = doc(db, 'users', userData.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      const currentUserInfo = userDocSnap.exists() ? userDocSnap.data() : {
+      // Lấy thông tin user mới nhất
+      const currentUserInfo = await getUserById(userData.uid) || {
         name: userData.displayName || userData.email,
         photoURL: userData.photoURL || null,
         email: userData.email
       };
 
       // Nếu đang share một bài đã được share, lấy originalPost từ bài đó
-      // Nếu không, tạo originalPost từ bài hiện tại
       const originalPostData = sharePostData.isSharedPost && sharePostData.originalPost 
         ? sharePostData.originalPost 
         : {
@@ -768,29 +655,17 @@ const TimeLine = () => {
             createdAt: sharePostData.createdAt
           };
 
-      // Tạo bài đăng chia sẻ mới
-      const sharedPostData = {
+      await sharePost({
         userId: userData.uid,
-        text: shareText.trim() || '',
-        isSharedPost: true,
+        sourcePostId: sharePostData.id,
+        text: shareText.trim(),
         originalPost: originalPostData,
-        reactions: {},
-        shares: 0,
-        createdAt: serverTimestamp(),
         userInfo: {
           name: currentUserInfo.name,
           displayName: currentUserInfo.name,
           photoURL: currentUserInfo.photoURL,
           email: currentUserInfo.email
         }
-      };
-
-      await addDoc(collection(db, 'posts'), sharedPostData);
-
-      // Cập nhật số lượt chia sẻ của bài viết gốc (hoặc bài được share)
-      const postRef = doc(db, 'posts', sharePostData.id);
-      await updateDoc(postRef, {
-        shares: (sharePostData.shares || 0) + 1
       });
 
       // Send notification to original post owner
@@ -885,7 +760,7 @@ const TimeLine = () => {
           onPress: async () => {
             try {
               setIsLoading(true);
-              await deleteDoc(doc(db, 'posts', postId));
+              await deletePost(postId);
               setShowPostOptions(null);
               Alert.alert("Thành công", "Đã xóa bài viết");
             } catch (error) {
@@ -938,7 +813,7 @@ const TimeLine = () => {
         }
       }
 
-      await updateDoc(doc(db, 'posts', editPostId), updatedData);
+      await updatePost(editPostId, updatedData);
 
       setEditModalVisible(false);
       setEditPostId(null);

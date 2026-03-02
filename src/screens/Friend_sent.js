@@ -1,135 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Pressable, StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc, deleteDoc, writeBatch, onSnapshot } from "firebase/firestore";
+import { useToast } from '../contextApi/ToastContext';
+import Avatar from '../components/Avatar';
+import EmptyState from '../components/EmptyState';
+import { subscribeToSentRequests, cancelFriendRequest } from '../services/friendService';
 
 const Friend_sents = () => {
 
   const [userFriendsList, setUserFriendsList] = useState([]);
+  const [loadingIds, setLoadingIds] = useState([]);
+  const { showToast } = useToast();
+  const auth = getAuth();
+  const user = auth.currentUser;
 
+  // Lắng nghe danh sách lời mời đã gửi real-time
   useEffect(() => {
-    const fetchUserFriends = async () => {
-      try {
-        const db = getFirestore();
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (user) {
-          const userDocRef = doc(db, "users", user.uid);
-          const unsubscribe = onSnapshot(userDocRef, async (userDocSnapshot) => {
-            if (userDocSnapshot.exists()) {
-              const userData = userDocSnapshot.data();
-              // Thực hiện truy vấn để lấy danh sách gửi lời mời kết bạn
-              const friendsCollectionRef = collection(db, "users", user.uid, "friend_Sents");
-              const friendsQuery = query(friendsCollectionRef);
+    if (!user) return;
+    const unsubscribe = subscribeToSentRequests(user.uid, (requests) => {
+      const mapped = requests.map((req) => ({
+        id: req.id,
+        name: req.name_fr,
+        photoUrl: req.photoURL_fr,
+        email: req.email_fr,
+        UID: req.UID_fr,
+        ID_roomChat: req.ID_roomChat,
+      }));
+      setUserFriendsList(mapped);
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
 
-              const unsubscribeFriends = onSnapshot(friendsQuery, async (friendsSnapshot) => {
-                const userFriends = [];
-                const batch = writeBatch(db);
-                for (const friendDoc of friendsSnapshot.docs) {
-                  const friend_Sents = friendDoc.data();
-                  const friendUID = friend_Sents.UID_fr;
-
-                  // truy cập dữ liệu firestore của friendData
-                  const friendDataRef = collection(db, "users", user.uid, "friendData");
-                  const friendDataQuery = query(friendDataRef, where("UID_fr", "==", friendUID));
-                  const friendDataSnapshot = await getDocs(friendDataQuery);
-                  if (!friendDataSnapshot.empty) {
-                    // Nếu UID_fr tồn tại trong friendData, xóa nó từ friend_Sents
-                    batch.delete(friendDoc.ref);
-                  } else {
-                    // Nếu không, thêm vào mảng userFriends
-                    userFriends.push({
-                      id: friendDoc.id,
-                      name: friend_Sents.name_fr,
-                      photoUrl: friend_Sents.photoURL_fr,
-                      userId: friend_Sents.email_fr,
-                      UID: friend_Sents.UID_fr,
-                      ID_roomChat: friend_Sents.ID_roomChat
-                    });
-                  }
-                }
-                // Thực hiện các thao tác ghi trong batch
-                await batch.commit();
-                setUserFriendsList(userFriends);
-              });
-              return () => {
-                unsubscribeFriends();
-              };
-            } else {
-              console.error("User document does not exist!");
-            }
-          });
-          return () => unsubscribe();
-        } else {
-          console.error("No user signed in!");
-        }
-      } catch (error) {
-        console.error("Error fetching user friends:", error);
-      }
-    };
-
-    fetchUserFriends();
-  }, []);
-
-
-  // Hàm hủy lời mời kết bạn
+  // Hủy lời mời kết bạn — dùng friendService (atomic batch)
   const handleCancel = async (friend) => {
+    if (loadingIds.includes(friend.UID)) return;
+    setLoadingIds((prev) => [...prev, friend.UID]);
     try {
-      const db = getFirestore();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-        if (userDocSnapshot.exists()) {
-          // Xóa lời mời kết bạn ở người gửi
-          const friendSentRef = doc(db, "users", user.uid, "friend_Sents", friend.id);
-          await deleteDoc(friendSentRef);
-          // Thu hồi kết bạn ở người nhận
-          const friendReceivedCollectionRef = collection(db, "users", friend.UID, "friend_Receiveds");
-          const q = query(friendReceivedCollectionRef, where("UID_fr", "==", user.uid));
-          const querySnapshot = await getDocs(q);
-          // Loop through the documents and delete each one
-          querySnapshot.forEach(async (docSnapshot) => {
-            await deleteDoc(docSnapshot.ref);
-          });
-        } else {
-          console.error("User document does not exist!");
-        }
-      } else {
-        console.error("No user signed in!");
-      }
+      await cancelFriendRequest(user.uid, friend.UID);
+      showToast(`Đã hủy lời mời kết bạn với ${friend.name}`, 'success');
     } catch (error) {
       console.error("Error canceling friend request:", error);
+      showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+    } finally {
+      setLoadingIds((prev) => prev.filter((id) => id !== friend.UID));
     }
   };
 
-  // Hàm render mỗi item trong danh sách bạn bè
+  // Hàm render mỗi item trong danh sách
   const renderUserFriendItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Pressable>
-        <View style={styles.containerProfile}>
-          <Image style={styles.image} source={{ uri: item.photoUrl }} />
+      <View style={styles.containerProfile}>
+        <Avatar uri={item.photoUrl} name={item.name} size="medium" />
+        <View style={styles.infoContainer}>
           <Text style={styles.text}>{item.name}</Text>
-          <TouchableOpacity style={styles.addButton} onPress={() => handleCancel(item)}>
-            <Text style={styles.addButtonText}>Hủy lời mời</Text>
-          </TouchableOpacity>
         </View>
-      </Pressable>
+        <TouchableOpacity
+          style={[styles.cancelButton, loadingIds.includes(item.UID) && styles.cancelButtonDisabled]}
+          onPress={() => handleCancel(item)}
+          disabled={loadingIds.includes(item.UID)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.cancelButtonText}>
+            {loadingIds.includes(item.UID) ? 'Đang hủy...' : 'Hủy lời mời'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <View>
-          <FlatList
-            data={userFriendsList}
-            renderItem={renderUserFriendItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
-      </SafeAreaView>
+      {userFriendsList.length === 0 ? (
+        <EmptyState
+          icon="paper-plane-outline"
+          title="Không có lời mời đã gửi"
+          subtitle="Các lời mời kết bạn bạn đã gửi sẽ hiển thị ở đây"
+        />
+      ) : (
+        <FlatList
+          data={userFriendsList}
+          renderItem={renderUserFriendItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
@@ -139,43 +93,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  itemContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
   containerProfile: {
-    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    height: 60,
   },
-
-  itemContainer: {
-    marginTop: 5,
+  infoContainer: {
     flex: 1,
-    margin: 5,
-  },
-  image: {
-    marginLeft: 15,
-    width: 55,
-    height: 55,
-    borderRadius: 35,
-    borderWidth: 2,  // Độ rộng của khung viền
-    borderColor: '#006AF5',  // Màu sắc của khung viền, bạn có thể thay đổi màu tùy ý
+    marginLeft: 12,
   },
   text: {
-    marginLeft: 20,
-    fontSize: 20,
-    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
   },
-
-  addButton: {
-    marginLeft: 20,
+  cancelButton: {
     backgroundColor: '#006AF5',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
-  addButtonText: {
+  cancelButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  cancelButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
 

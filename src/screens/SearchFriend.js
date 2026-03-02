@@ -2,19 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, FlatList, ActivityIndicator, TouchableOpacity, Animated, Alert } from 'react-native';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
-import { getFirestore, collection, query, where, getDocs, doc, setDoc, getDoc, addDoc, deleteDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { useToast } from '../contextApi/ToastContext';
 import { useNotifications } from '../contextApi/NotificationContext';
+import {
+  searchUsersWithStatus,
+  sendFriendRequest,
+  cancelFriendRequest,
+  acceptFriendRequest,
+} from '../services/friendService';
 
 const SearchFriend = () => {
   const navigation = useNavigation();
   const [input, setInput] = useState("");
   const [friendsList, setFriendsList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingIds, setLoadingIds] = useState({});
   const auth = getAuth();
   const user = auth.currentUser;
-  const [ID_roomChat, setID_roomChat] = useState("");
   const { showToast } = useToast();
   const { sendFriendRequestNotification } = useNotifications();
 
@@ -59,234 +64,69 @@ const SearchFriend = () => {
     setInput(text);
   };
 
+  // Search users with friendship status via service
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        // You might want to navigate to the login screen here if not logged in
-      }
-    });
-    return unsubscribe;
-  }, []);
+    if (!input || !user?.uid) {
+      setFriendsList([]);
+      return;
+    }
 
-  useEffect(() => {
     const handleSearch = async () => {
       try {
-        setLoading(true); // Set loading state to true while fetching data
-        const db = getFirestore();
-        const userQuery = query(collection(db, "users"), where("name", "==", input));
-        const userSnapshot = await getDocs(userQuery);
-        const foundFriends = [];
-        const currentUser = auth.currentUser;
-        let index = 0; // Bắt đầu với index = 0
-        userSnapshot.forEach(doc => {
-          const userData = doc.data();
-          if (userData.UID !== currentUser.uid) {
-            foundFriends.push({
-              id: index++,
-              name: userData.name,
-              photoUrl: userData.photoURL,
-              email: userData.email,
-              UID: userData.UID,
-              ID_roomChat: ID_roomChat
-            });
-          }
-        });
-        const updatedFriendsList = [];
-        for (const friend of foundFriends) {
-          const isFriend = await checkFriendshipStatus(friend.UID);
-          const pendingStatus = await checkPendingFriendRequest(friend.UID);
-          updatedFriendsList.push({ ...friend, isFriend, ...pendingStatus });
-        }
-        setFriendsList(updatedFriendsList);
+        setLoading(true);
+        const results = await searchUsersWithStatus(input, user.uid);
+        const mapped = results.map((u, idx) => ({
+          id: idx,
+          name: u.name,
+          photoUrl: u.photoURL,
+          email: u.email,
+          UID: u.UID,
+          isFriend: u.friendStatus.status === 'friend',
+          hasSentRequest: u.friendStatus.status === 'sent',
+          hasReceivedRequest: u.friendStatus.status === 'received',
+          sentRequestId: u.friendStatus.status === 'sent' ? u.friendStatus.docId : null,
+          receivedRequestId: u.friendStatus.status === 'received' ? u.friendStatus.docId : null,
+          receivedRequestData: u.friendStatus.status === 'received' ? u.friendStatus.data : null,
+        }));
+        setFriendsList(mapped);
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Error searching users:", error);
       } finally {
-        setLoading(false); // Set loading state back to false
+        setLoading(false);
       }
     };
     handleSearch();
-  }, [input, user.uid]);
+  }, [input, user?.uid]);
 
-  const checkFriendshipStatus = async (UID) => {
+  // Guard helper for preventing double-taps
+  const withLoading = async (uid, fn) => {
+    if (loadingIds[uid]) return;
+    setLoadingIds(prev => ({ ...prev, [uid]: true }));
     try {
-      const db = getFirestore();
-      const currentUser = auth.currentUser;
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-      const friendDataQuery = query(collection(currentUserDocRef, "friendData"), where("UID_fr", "==", UID));
-      const friendDataSnapshot = await getDocs(friendDataQuery);
-      return !friendDataSnapshot.empty; // Trả về true nếu có dữ liệu, ngược lại trả về false
-    } catch (error) {
-      console.error("Error checking friendship status:", error);
-      return false; // Trả về false nếu có lỗi xảy ra
+      await fn();
+    } finally {
+      setLoadingIds(prev => ({ ...prev, [uid]: false }));
     }
   };
 
-  // Kiểm tra xem đã gửi lời mời kết bạn chưa hoặc đã nhận lời mời chưa
-  const checkPendingFriendRequest = async (UID) => {
-    try {
-      const db = getFirestore();
-      const currentUser = auth.currentUser;
-      const currentUserDocRef = doc(db, "users", currentUser.uid);
-
-      // Kiểm tra đã gửi lời mời chưa
-      const friendSentsQuery = query(collection(currentUserDocRef, "friend_Sents"), where("UID_fr", "==", UID));
-      const friendSentsSnapshot = await getDocs(friendSentsQuery);
-
-      if (!friendSentsSnapshot.empty) {
-        const sentDoc = friendSentsSnapshot.docs[0];
-        return {
-          hasSentRequest: true,
-          hasReceivedRequest: false,
-          sentRequestId: sentDoc.id,
-          sentRequestData: sentDoc.data()
-        };
-      }
-
-      // Kiểm tra đã nhận lời mời chưa
-      const friendReceivedsQuery = query(collection(currentUserDocRef, "friend_Receiveds"), where("UID_fr", "==", UID));
-      const friendReceivedsSnapshot = await getDocs(friendReceivedsQuery);
-
-      if (!friendReceivedsSnapshot.empty) {
-        const receivedDoc = friendReceivedsSnapshot.docs[0];
-        return {
-          hasSentRequest: false,
-          hasReceivedRequest: true,
-          receivedRequestId: receivedDoc.id,
-          receivedRequestData: receivedDoc.data()
-        };
-      }
-
-      return { hasSentRequest: false, hasReceivedRequest: false };
-    } catch (error) {
-      console.error("Error checking pending friend request:", error);
-      return { hasSentRequest: false, hasReceivedRequest: false };
-    }
-  };
-
-  // Tìm hoặc tạo chat room - KHÔNG tạo mới nếu đã có
-
-  // Tìm hoặc tạo chat room - KHÔNG tạo mới nếu đã có
-  const findOrCreateChatRoom = async (friendData) => {
-    const generateRandomId = () => {
-      const characters = 'abcdef0123456789';
-      let result = '0x';
-      const charactersLength = characters.length;
-      for (let i = 0; i < 12; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-    };
-    try {
-      const db = getFirestore();
-      const currentUser = auth.currentUser;
-
-      // Sắp xếp UID của hai người dùng theo thứ tự từ điển
-      const sortedUIDs = [currentUser.uid, friendData.UID].sort();
-      const UID_Chats = sortedUIDs.join("_");
-
-      // Kiểm tra xem đã có chat room giữa 2 user chưa
-      const chatsRef = collection(db, "Chats");
-      const existingChatQuery = query(chatsRef, where("UID_Chats", "==", UID_Chats));
-      const existingChatSnapshot = await getDocs(existingChatQuery);
-
-      if (!existingChatSnapshot.empty) {
-        // Đã có chat room, trả về ID của room hiện có
-        const existingChatDoc = existingChatSnapshot.docs[0];
-        return existingChatDoc.id;
-      }
-
-      // Chưa có chat room, tạo mới
-      const chatRoomId = generateRandomId();
-      setID_roomChat(chatRoomId);
-
-      const chatRoomRef = doc(db, "Chats", chatRoomId);
-      await setDoc(chatRoomRef, {
-        ID_roomChat: chatRoomId,
-        UID: sortedUIDs,
-        UID_Chats: UID_Chats
-      });
-      return chatRoomId;
-    } catch (error) {
-      console.error("Error finding or creating chat room:", error);
-      return null;
-    }
-  };
-
-
-  // nút thêm bạn
+  // Gửi lời mời kết bạn
   const handleAddFriend = async (friend) => {
-    try {
-      // Find or create chat room (không tạo mới nếu đã có)
-      const chatRoomId = await findOrCreateChatRoom(friend);
-      if (chatRoomId) {
-        const db = getFirestore();
-        const currentUser = auth.currentUser;
-        if (currentUser) {
-          const currentUserDocRef = doc(db, "users", currentUser.uid);
-          const currentUserDocSnapshot = await getDoc(currentUserDocRef);
-          if (currentUserDocSnapshot.exists()) {
-            const currentUserData = currentUserDocSnapshot.data();
-            const friendSentsQuery = query(collection(currentUserDocRef, "friend_Sents"), where("email_fr", "==", friend.email));
-            const friendSentsSnapshot = await getDocs(friendSentsQuery);
-            if (friendSentsSnapshot.empty) {
-              const friend_Sents = {
-                name_fr: friend.name,
-                photoURL_fr: friend.photoUrl,
-                email_fr: friend.email,
-                UID_fr: friend.UID,
-                ID_roomChat: chatRoomId
-              };
-
-              await addDoc(collection(currentUserDocRef, "friend_Sents"), friend_Sents);
-              const friendDocRef = doc(db, "users", friend.UID);
-              const friendDocSnapshot = await getDoc(friendDocRef);
-              if (friendDocSnapshot.exists()) {
-                const friend_Receiveds = {
-                  name_fr: currentUserData.name,
-                  photoURL_fr: currentUserData.photoURL,
-                  email_fr: currentUserData.email,
-                  UID_fr: currentUserData.UID,
-                  ID_roomChat: chatRoomId
-                };
-                await addDoc(collection(friendDocRef, "friend_Receiveds"), friend_Receiveds);
-                showToast(`Đã gửi lời mời kết bạn tới ${friend.name}`, 'success');
-
-                // Cập nhật trạng thái trong list
-                setFriendsList(prev => prev.map(f =>
-                  f.UID === friend.UID
-                    ? { ...f, hasSentRequest: true }
-                    : f
-                ));
-
-                // Send push notification to friend
-                await sendFriendRequestNotification(
-                  friend.UID,
-                  currentUser.uid,
-                  currentUserData.name
-                );
-              } else {
-                showToast('Không tìm thấy người dùng', 'error');
-                console.error("Friend document does not exist!");
-              }
-            } else {
-              showToast('Đã gửi lời mời kết bạn trước đó', 'warning');
-            }
-          } else {
-            showToast('Lỗi tài khoản người dùng', 'error');
-            console.error("User document does not exist!");
-          }
-        } else {
-          showToast('Vui lòng đăng nhập lại', 'error');
-          console.error("No user signed in!");
-        }
-      } else {
-        showToast('Không thể tạo phòng chat', 'error');
-        console.error("Chat room creation failed");
+    withLoading(friend.UID, async () => {
+      try {
+        const userDoc = { uid: user.uid, name: user.displayName, email: user.email, photoURL: user.photoURL };
+        const friendDoc = { uid: friend.UID, name: friend.name, email: friend.email, photoURL: friend.photoUrl };
+        await sendFriendRequest(userDoc, friendDoc);
+        showToast(`Đã gửi lời mời kết bạn tới ${friend.name}`, 'success');
+        setFriendsList(prev => prev.map(f =>
+          f.UID === friend.UID ? { ...f, hasSentRequest: true } : f
+        ));
+        // Push notification
+        await sendFriendRequestNotification(friend.UID, user.uid, user.displayName);
+      } catch (error) {
+        showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        console.error("Error adding friend:", error);
       }
-    } catch (error) {
-      showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
-      console.error("Error adding friend:", error);
-    }
+    });
   };
 
   // Hủy lời mời kết bạn đã gửi
@@ -299,112 +139,45 @@ const SearchFriend = () => {
         {
           text: 'Hủy lời mời',
           style: 'destructive',
-          onPress: async () => {
+          onPress: () => withLoading(friend.UID, async () => {
             try {
-              const db = getFirestore();
-              const currentUser = auth.currentUser;
-
-              if (currentUser) {
-                // Xóa từ friend_Sents của current user
-                if (friend.sentRequestId) {
-                  const friendSentRef = doc(db, "users", currentUser.uid, "friend_Sents", friend.sentRequestId);
-                  await deleteDoc(friendSentRef);
-                }
-
-                // Xóa từ friend_Receiveds của người kia
-                const friendReceivedCollectionRef = collection(db, "users", friend.UID, "friend_Receiveds");
-                const q = query(friendReceivedCollectionRef, where("UID_fr", "==", currentUser.uid));
-                const querySnapshot = await getDocs(q);
-
-                const deletePromises = querySnapshot.docs.map(docSnapshot => deleteDoc(docSnapshot.ref));
-                await Promise.all(deletePromises);
-
-                showToast(`Đã hủy lời mời kết bạn với ${friend.name}`, 'success');
-
-                // Cập nhật trạng thái trong list
-                setFriendsList(prev => prev.map(f =>
-                  f.UID === friend.UID
-                    ? { ...f, hasSentRequest: false, sentRequestId: null }
-                    : f
-                ));
-              }
+              await cancelFriendRequest(user.uid, friend.UID);
+              showToast(`Đã hủy lời mời kết bạn với ${friend.name}`, 'success');
+              setFriendsList(prev => prev.map(f =>
+                f.UID === friend.UID ? { ...f, hasSentRequest: false, sentRequestId: null } : f
+              ));
             } catch (error) {
               showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
               console.error("Error canceling friend request:", error);
             }
-          }
+          })
         }
       ]
     );
   };
 
-  // Chấp nhận lời mời kết bạn từ người khác
+  // Chấp nhận lời mời kết bạn
   const handleAcceptFriendRequest = async (friend) => {
-    try {
-      const db = getFirestore();
-      const currentUser = auth.currentUser;
-
-      if (currentUser && friend.receivedRequestData) {
-        const userDocRef = doc(db, "users", currentUser.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-
-          // Thêm vào friendData của current user
-          const friendData = {
-            name_fr: friend.name,
-            photoURL_fr: friend.photoUrl,
-            email_fr: friend.email,
-            UID_fr: friend.UID,
-            ID_roomChat: friend.receivedRequestData.ID_roomChat
-          };
-          await addDoc(collection(userDocRef, "friendData"), friendData);
-
-          // Xóa từ friend_Receiveds
-          const friendReceivedDocRef = doc(userDocRef, "friend_Receiveds", friend.receivedRequestId);
-          await deleteDoc(friendReceivedDocRef);
-
-          // Thêm vào friendData của người gửi
-          const friendDocRef = doc(db, "users", friend.UID);
-          const senderFriendData = {
-            name_fr: userData.name,
-            photoURL_fr: userData.photoURL,
-            email_fr: userData.email,
-            UID_fr: userData.UID,
-            ID_roomChat: friend.receivedRequestData.ID_roomChat
-          };
-          await addDoc(collection(friendDocRef, "friendData"), senderFriendData);
-
-          // Xóa từ friend_Sents của người gửi
-          const friendSentCollectionRef = collection(friendDocRef, "friend_Sents");
-          const friendSentQuery = query(friendSentCollectionRef, where("UID_fr", "==", currentUser.uid));
-          const friendSentQuerySnapshot = await getDocs(friendSentQuery);
-          const deletePromises = friendSentQuerySnapshot.docs.map(doc => deleteDoc(doc.ref));
-          await Promise.all(deletePromises);
-
-          showToast(`Đã chấp nhận kết bạn với ${friend.name}`, 'success');
-
-          // Cập nhật trạng thái trong list
-          setFriendsList(prev => prev.map(f =>
-            f.UID === friend.UID
-              ? { ...f, isFriend: true, hasReceivedRequest: false }
-              : f
-          ));
-        }
+    withLoading(friend.UID, async () => {
+      try {
+        const myInfo = { uid: user.uid, name: user.displayName, email: user.email, photoURL: user.photoURL };
+        const friendInfo = {
+          uid: friend.UID,
+          name: friend.name,
+          email: friend.email,
+          photoURL: friend.photoUrl,
+          ID_roomChat: friend.receivedRequestData?.ID_roomChat || '',
+        };
+        await acceptFriendRequest(myInfo, friendInfo);
+        showToast(`Đã chấp nhận kết bạn với ${friend.name}`, 'success');
+        setFriendsList(prev => prev.map(f =>
+          f.UID === friend.UID ? { ...f, isFriend: true, hasReceivedRequest: false } : f
+        ));
+      } catch (error) {
+        showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        console.error("Error accepting friend request:", error);
       }
-    } catch (error) {
-      showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
-      console.error("Error accepting friend request:", error);
-    }
-  };
-
-  // Function to generate a random 6-digit ID
-
-
-  const handleFriendAction = async (friendData) => {
-    // Call both functions here
-    await handleAddFriend(friendData);
+    });
   };
 
   const renderFriendItem = ({ item }) => (
@@ -458,7 +231,8 @@ const SearchFriend = () => {
       {!item.isFriend && !item.hasSentRequest && !item.hasReceivedRequest && (
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => handleFriendAction(item)}
+          onPress={() => handleAddFriend(item)}
+          disabled={loadingIds[item.UID]}
           activeOpacity={0.8}
         >
           <Ionicons name="person-add" size={18} color="#fff" />

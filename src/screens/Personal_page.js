@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, SafeAreaView, Pressable, ImageBackground, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, ImageBackground, TouchableOpacity, ScrollView } from 'react-native'
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
+import { subscribeToUser, updateUserPhoto, cascadeUpdatePhoto } from '../services/userService';
+import { uploadProfilePhoto, deleteOldProfilePhotos } from '../services/storageService';
+import Avatar from '../components/Avatar';
 const Personal_page = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -17,37 +18,26 @@ const Personal_page = () => {
   const auth = getAuth();
   const user = auth.currentUser;
   const [userData, setUserData] = useState(null);
-  const db = getFirestore();
   // Hỗ trợ cả userId (cách cũ), friendData.UID (từ Option_chat), và friendId (từ Friends.js)
   const { userId, friendData, friendId } = route.params || {};
   const viewedUserId = friendData?.UID || friendId || userId || user.uid; // Ưu tiên friendData.UID, sau đó friendId
   const isOwnProfile = viewedUserId === user.uid; // Kiểm tra xem có phải profile của mình không
 
   useEffect(() => {
-    const userDocRef = doc(db, 'users', viewedUserId); // Sử dụng viewedUserId thay vì user.uid
-    const unsubscribe = onSnapshot(userDocRef, (doc) => {
-      if (doc.exists()) {
-        const userData = doc.data();
-        setUserData(userData);
-        setDisplayName(userData.name);
-        setPhotoURL(userData.photoURL);
-        setBirthdate(userData.birthdate);
-        setEmail(userData.email);
-        setGender(userData.gender);
-      } else {
-        // User not found
-      }
+    const unsubscribe = subscribeToUser(viewedUserId, (data) => {
+      setUserData(data);
+      setDisplayName(data.name);
+      setPhotoURL(data.photoURL);
+      setBirthdate(data.birthdate);
+      setEmail(data.email);
+      setGender(data.gender);
     });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [db, user]);
+    return () => unsubscribe();
+  }, [viewedUserId]);
 
   // Cập nhật ảnh đại diện
   const handleUpdatePhoto = async () => {
     try {
-      // Chọn ảnh mới từ thư viện ảnh trên thiết bị
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -55,184 +45,78 @@ const Personal_page = () => {
         quality: 1,
       });
       if (!result.cancelled) {
-        // Nếu người dùng chọn ảnh, tiến hành cập nhật
-        const Ure = result.assets[0].uri
-        // Xóa ảnh hiện tại trên Firebase Storage và cập nhật URL ảnh mới
-        await deletePreviousPhoto(auth.currentUser.uid);
-        // Tải ảnh mới lên Firebase Storage và cập nhật URL ảnh mới
-        const newPhotoURL = await uploadImageAsync(Ure, auth.currentUser.uid);
+        const uri = result.assets[0].uri;
+        const userId = auth.currentUser.uid;
+
+        // Xóa ảnh cũ
+        await deleteOldProfilePhotos(userId);
+
+        // Tải ảnh mới lên và cập nhật URL
+        const newPhotoURL = await uploadProfilePhoto(userId, uri);
         if (newPhotoURL) {
-          // Cập nhật URL ảnh mới vào Firestore chỉ khi có giá trị hợp lệ
-          await updatePhotoURL(newPhotoURL, auth.currentUser.uid);
-          // Cập nhật trạng thái hiển thị của ảnh trên ứng dụng
+          await updateUserPhoto(userId, newPhotoURL);
+          await cascadeUpdatePhoto(userId, newPhotoURL);
           setPhotoURL(newPhotoURL);
-        } else {
-          // No valid URL for the new photo
-        }
-      }
-    } catch {
-      // Error updating photo
-    }
-  };
-
-  // xóa ảnh đã setup trước đó
-  const deletePreviousPhoto = async (userId) => {
-    try {
-      // Lấy URL ảnh hiện tại từ Firestore
-      const userRef = doc(db, 'users', userId);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        const currentPhotoURL = userData.photoURL;
-        // Nếu có URL ảnh hiện tại, xóa ảnh đó trên Firebase Storage
-        if (currentPhotoURL) {
-          const storage = getStorage();
-          const photoRef = ref(storage, currentPhotoURL);
-          await deleteObject(photoRef);
-          // Xóa URL ảnh trong tài liệu của người dùng trong Firestore
-          await setDoc(userRef, { photoURL: null }, { merge: true });
         }
       }
     } catch (error) {
-      // Error deleting previous photo
-    }
-  };
-
-  // Method tải ảnh lên storage
-  const uploadImageAsync = async (ure, userId) => {
-    try {
-      if (!ure) {
-        throw new Error("URI của hình ảnh không xác định hoặc là null");
-      }
-      const storage = getStorage();
-      const filename = `photos/${userId}/${Date.now()}`;
-      // Lấy dữ liệu hình ảnh
-      const response = await fetch(ure);
-      if (!response.ok) {
-        throw new Error("Không thể lấy dữ liệu hình ảnh");
-      }
-      // Chuyển đổi dữ liệu hình ảnh thành blob
-      const blob = await response.blob();
-      // Tải blob lên Firebase Storage
-      const photoRef = ref(storage, filename);
-      await uploadBytes(photoRef, blob);
-      // Lấy URL của hình ảnh đã tải lên
-      const downloadURL = await getDownloadURL(photoRef);
-      return downloadURL;
-    } catch (error) {
-      console.error("Lỗi khi tải lên hình ảnh: ", error);
-      throw error; // Ném lỗi ra ngoài
-    }
-  };
-
-  // Method cập nhật đường dẫn ảnh mới vào firestore và đồng bộ vào tất cả bài post
-  const updatePhotoURL = async (newURL, userId) => {
-    try {
-      // Cập nhật URL ảnh mới vào Firestore
-      const userRef = doc(db, 'users', userId);
-      await setDoc(userRef, { photoURL: newURL }, { merge: true });
-
-      // Cập nhật ảnh trong tất cả bài post của user
-      const postsRef = collection(db, 'posts');
-      const q = query(postsRef, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-
-      const batch = writeBatch(db);
-      let updateCount = 0;
-
-      querySnapshot.forEach((docSnapshot) => {
-        const postRef = doc(db, 'posts', docSnapshot.id);
-        batch.update(postRef, {
-          'userInfo.photoURL': newURL,
-        });
-        updateCount++;
-      });
-
-      if (updateCount > 0) {
-        await batch.commit();
-      }
-
-      // Cập nhật ảnh trong tất cả comments của user (trong subcollection của mỗi post)
-      const allPostsSnapshot = await getDocs(collection(db, 'posts'));
-
-      for (const postDoc of allPostsSnapshot.docs) {
-        const commentsRef = collection(db, `posts/${postDoc.id}/comments`);
-        const commentsQuery = query(commentsRef, where('userId', '==', userId));
-        const commentsSnapshot = await getDocs(commentsQuery);
-
-        if (!commentsSnapshot.empty) {
-          const commentsBatch = writeBatch(db);
-          commentsSnapshot.forEach((commentDoc) => {
-            const commentRef = doc(db, `posts/${postDoc.id}/comments`, commentDoc.id);
-            commentsBatch.update(commentRef, {
-              'userInfo.photoURL': newURL,
-            });
-          });
-          await commentsBatch.commit();
-        }
-      }
-    } catch (error) {
-      // Error updating photo URL
+      console.error('Error updating photo:', error);
     }
   };
 
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} bounces={false}>
         <View style={styles.PersonalContainer}>
           <ImageBackground source={require('../../assets/img/per1.png')} style={styles.background}>
             <Pressable onPress={() => navigation.goBack()} style={{ margin: 20 }}>
               <AntDesign name="arrowleft" size={20} color="white" />
             </Pressable>
             <View style={styles.containerProfile}>
-              <TouchableOpacity onPress={isOwnProfile ? handleUpdatePhoto : null} disabled={!isOwnProfile}>
-                {photoURL ? (
-                  <Image source={{ uri: photoURL }} style={styles.avatar} />
-                ) : (
-                  <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarPlaceholderText}>{isOwnProfile ? 'Tap to add photo' : 'No photo'}</Text>
-                  </View>
-                )}
+              <TouchableOpacity onPress={isOwnProfile ? handleUpdatePhoto : null} disabled={!isOwnProfile} style={{ marginLeft: 15 }}>
+                <Avatar uri={photoURL} name={displayName} size="large" bordered borderColor="white" />
               </TouchableOpacity>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, marginLeft: 12 }}>
                 <Text style={styles.title}>{displayName}</Text>
               </View>
             </View>
           </ImageBackground>
         </View>
         <View>
-          <View style={{ margin: 20 }}>
-            <Text style={{ fontWeight: "bold" }}>Thông tin cá nhân</Text>
+          <View style={{ margin: 20, marginBottom: 12 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>Thông tin cá nhân</Text>
           </View>
-          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 20 }}>
+          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 16, alignItems: 'center' }}>
             <View style={{ width: 120 }}>
-              <Text>Giới tính</Text>
+              <Text style={{ color: '#666', fontSize: 15 }}>Giới tính</Text>
             </View>
-            <Text>{gender}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '500' }}>{gender}</Text>
           </View>
-          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 20 }}>
+          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 16, alignItems: 'center' }}>
             <View style={{ width: 120 }}>
-              <Text>Ngày sinh</Text>
+              <Text style={{ color: '#666', fontSize: 15 }}>Ngày sinh</Text>
             </View>
-            <Text>{birthdate}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '500' }}>{birthdate}</Text>
           </View>
-          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 20 }}>
+          <View style={{ flexDirection: "row", marginLeft: 20, marginBottom: 16, alignItems: 'center' }}>
             <View style={{ width: 120 }}>
-              <Text>Email</Text>
+              <Text style={{ color: '#666', fontSize: 15 }}>Email</Text>
             </View>
-            <Text>{email}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '500' }}>{email}</Text>
           </View>
         </View>
         {isOwnProfile && (
           <View style={{ margin: 20 }}>
-            <TouchableOpacity onPress={() => navigation.navigate("Edit_in4Personal")}>
-              <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: "#a9a9a9", height: 50, borderRadius: 20 }}>
-                <Text style={{ fontWeight: 'bold' }}>Chỉnh sửa</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Edit_in4Personal")} activeOpacity={0.7}>
+              <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: "#006AF5", height: 50, borderRadius: 12 }}>
+                <Text style={{ fontWeight: '600', color: '#fff', fontSize: 16 }}>Chỉnh sửa</Text>
               </View>
             </TouchableOpacity>
           </View>
         )}
+        </ScrollView>
       </SafeAreaView>
     </View>
   )
@@ -252,11 +136,12 @@ const styles = StyleSheet.create({
     resizeMode: 'cover', // hoặc 'contain' tùy thuộc vào yêu cầu của bạn
   },
   containerProfile: {
-    marginTop: 20,
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    height: 90,
+    paddingHorizontal: 5,
+    paddingBottom: 15,
   },
   avatar: {
     marginLeft: 15,
@@ -280,9 +165,12 @@ const styles = StyleSheet.create({
     color: "#8E8E93",
   },
   title: {
-    fontSize: 24,
-    marginLeft: 10,
-    color: 'white'
+    fontSize: 22,
+    fontWeight: '700',
+    color: 'white',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
 });
 export default Personal_page

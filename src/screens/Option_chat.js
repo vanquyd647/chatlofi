@@ -3,7 +3,9 @@ import { SafeAreaView, Pressable, StyleSheet, Text, View, TextInput, Image, Flat
 import { AntDesign, MaterialCommunityIcons, Feather, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, orderBy, where, updateDoc, arrayRemove, arrayUnion, deleteDoc } from 'firebase/firestore';
+import { subscribeToChatRoom, toggleMuteChat, togglePinChat, getMediaCount, searchMessages, clearChatHistory } from '../services/chatService';
+import { getUserById } from '../services/userService';
+import { leaveGroup } from '../services/groupService';
 import { useToast } from '../contextApi/ToastContext';
 
 const Option_chat = () => {
@@ -17,7 +19,6 @@ const Option_chat = () => {
   const ChatData_props1 = ChatData_props;
   const auth = getAuth();
   const user = auth.currentUser;
-  const db = getFirestore();
   const { showToast } = useToast();
 
   const [isMuted, setIsMuted] = useState(false);
@@ -45,10 +46,9 @@ const Option_chat = () => {
     const fetchFriendData = async () => {
       if (!Admin_group1 && calculatedFriendUID) {
         try {
-          const userDocRef = doc(db, 'users', calculatedFriendUID);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            setFriendUserData({ UID: calculatedFriendUID, ...userDocSnap.data() });
+          const userData = await getUserById(calculatedFriendUID);
+          if (userData) {
+            setFriendUserData({ UID: calculatedFriendUID, ...userData });
           }
         } catch (error) {
           console.error('Error fetching friend data:', error);
@@ -60,98 +60,45 @@ const Option_chat = () => {
 
   // Load trạng thái mute/pin real-time với onSnapshot
   useEffect(() => {
-    const chatDocRef = doc(db, 'Chats', RoomID1);
-
-    // Sử dụng onSnapshot để sync real-time với Chat.js
-    const unsubscribe = onSnapshot(chatDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const chatData = docSnap.data();
-        // Kiểm tra user có trong danh sách muted không
-        const muted = chatData.mutedUsers?.includes(user.uid) || false;
-        const pinned = chatData.pinnedBy?.includes(user.uid) || false;
-
-        setIsMuted(muted);
-        setIsPinned(pinned);
-      }
-    }, (error) => {
-      console.error('Error listening to chat settings:', error);
+    // Sử dụng subscribeToChatRoom để sync real-time với Chat.js
+    const unsubscribe = subscribeToChatRoom(RoomID1, (chatData) => {
+      const muted = chatData.mutedUsers?.includes(user.uid) || false;
+      const pinned = chatData.pinnedBy?.includes(user.uid) || false;
+      setIsMuted(muted);
+      setIsPinned(pinned);
     });
 
-    const loadMediaCount = async () => {
-      try {
-        const messagesRef = collection(db, 'Chats', RoomID1, 'chat_mess');
-        const messagesSnap = await getDocs(messagesRef);
-        let images = 0, videos = 0, files = 0;
-        messagesSnap.forEach((doc) => {
-          const data = doc.data();
-          if (data.image) images++;
-          if (data.video) videos++;
-          if (data.document) files++;
-        });
-        setMediaCount({ images, videos, files });
-      } catch (error) {
-        console.error('Error loading media count:', error);
-      }
-    };
-
-    loadMediaCount();
+    // Load media count
+    getMediaCount(RoomID1)
+      .then(setMediaCount)
+      .catch(error => console.error('Error loading media count:', error));
 
     // Cleanup listener khi unmount
     return () => unsubscribe();
   }, [RoomID1, user.uid]);
 
-  // Toggle mute - optimistic update + Firestore sync
+  // Toggle mute - optimistic update + service call
   const toggleMute = async () => {
     const newMutedState = !isMuted;
-    // Optimistic update - UI phản hồi ngay lập tức
     setIsMuted(newMutedState);
-
     try {
-      const chatDocRef = doc(db, 'Chats', RoomID1);
-      if (!newMutedState) {
-        // Đang bật thông báo (unmute)
-        await updateDoc(chatDocRef, {
-          mutedUsers: arrayRemove(user.uid)
-        });
-        showToast('Đã bật thông báo', 'success');
-      } else {
-        // Đang tắt thông báo (mute)
-        await updateDoc(chatDocRef, {
-          mutedUsers: arrayUnion(user.uid)
-        });
-        showToast('Đã tắt thông báo', 'success');
-      }
+      await toggleMuteChat(RoomID1, user.uid, isMuted);
+      showToast(newMutedState ? 'Đã tắt thông báo' : 'Đã bật thông báo', 'success');
     } catch (error) {
-      // Rollback nếu lỗi
       setIsMuted(isMuted);
       console.error('Error toggling mute:', error);
       showToast('Có lỗi xảy ra', 'error');
     }
   };
 
-  // Toggle pin - optimistic update + Firestore sync
+  // Toggle pin - optimistic update + service call
   const togglePin = async () => {
     const newPinnedState = !isPinned;
-    // Optimistic update - UI phản hồi ngay lập tức
     setIsPinned(newPinnedState);
-
     try {
-      const chatDocRef = doc(db, 'Chats', RoomID1);
-      if (!newPinnedState) {
-        // Đang bỏ ghim
-        await updateDoc(chatDocRef, {
-          pinnedBy: arrayRemove(user.uid)
-        });
-        showToast('Đã bỏ ghim', 'success');
-      } else {
-        // Đang ghim
-        await updateDoc(chatDocRef, {
-          pinnedBy: arrayUnion(user.uid)
-        });
-        showToast('Đã ghim cuộc trò chuyện', 'success');
-      }
+      await togglePinChat(RoomID1, user.uid, isPinned);
+      showToast(newPinnedState ? 'Đã ghim cuộc trò chuyện' : 'Đã bỏ ghim', 'success');
     } catch (error) {
-      // Rollback nếu lỗi
       setIsPinned(isPinned);
       console.error('Error toggling pin:', error);
       showToast('Có lỗi xảy ra', 'error');
@@ -183,24 +130,7 @@ const Option_chat = () => {
 
     setIsSearching(true);
     try {
-      const messagesRef = collection(db, 'Chats', RoomID1, 'chat_mess');
-      const messagesSnap = await getDocs(messagesRef);
-      const results = [];
-      const queryLower = searchQuery.toLowerCase();
-
-      messagesSnap.forEach((doc) => {
-        const data = doc.data();
-        if (data.text && data.text.toLowerCase().includes(queryLower)) {
-          results.push({
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt)
-          });
-        }
-      });
-
-      // Sắp xếp theo thời gian mới nhất
-      results.sort((a, b) => b.createdAt - a.createdAt);
+      const results = await searchMessages(RoomID1, searchQuery);
       setSearchResults(results);
     } catch (error) {
       console.error('Error searching messages:', error);
@@ -222,13 +152,7 @@ const Option_chat = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              const messagesRef = collection(db, 'Chats', RoomID1, 'chat_mess');
-              const messagesSnap = await getDocs(messagesRef);
-              const deletePromises = [];
-              messagesSnap.forEach((doc) => {
-                deletePromises.push(deleteDoc(doc.ref));
-              });
-              await Promise.all(deletePromises);
+              await clearChatHistory(RoomID1);
               showToast('Đã xóa lịch sử trò chuyện', 'success');
             } catch (error) {
               console.error('Error clearing history:', error);
@@ -251,37 +175,10 @@ const Option_chat = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              if (Admin_group1 === user.uid) {
+              const result = await leaveGroup(RoomID1, user.uid, Admin_group1);
+              if (result.needsAdminTransfer) {
                 navigation.navigate("Select_Ad", { RoomID1 });
               } else {
-                const groupDocRef = doc(collection(db, 'Group'), RoomID1);
-                const groupDocSnapshot = await getDoc(groupDocRef);
-                const subAdminArray = groupDocSnapshot.data().Sub_Admin;
-
-                if (subAdminArray && subAdminArray.includes(user.uid)) {
-                  await updateDoc(groupDocRef, {
-                    Sub_Admin: arrayRemove(user.uid)
-                  });
-                }
-
-                await updateDoc(groupDocRef, {
-                  UID: arrayRemove(user.uid)
-                });
-
-                const groupChatDocRef = doc(collection(db, 'Chats'), RoomID1);
-                const groupChatDocSnapshot = await getDoc(groupChatDocRef);
-                const subChatAdminArray = groupChatDocSnapshot.data().Sub_Admin;
-
-                if (subChatAdminArray && subChatAdminArray.includes(user.uid)) {
-                  await updateDoc(groupChatDocRef, {
-                    Sub_Admin: arrayRemove(user.uid)
-                  });
-                }
-
-                await updateDoc(groupChatDocRef, {
-                  UID: arrayRemove(user.uid)
-                });
-
                 showToast('Đã rời khỏi nhóm', 'success');
                 navigation.navigate("Main");
               }
@@ -543,7 +440,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#006AF5",
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchInput: {
     flex: 1,

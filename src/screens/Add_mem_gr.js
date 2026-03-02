@@ -4,7 +4,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RadioButton } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs, query, where, setDoc } from "firebase/firestore";
+import { subscribeToFriends, searchUsersByName } from '../services/friendService';
+import { getUserById } from '../services/userService';
+import { addMembers, getGroupInfo } from '../services/groupService';
 
 const Add_mem_gr = () => {
     const navigation = useNavigation();
@@ -13,226 +15,79 @@ const Add_mem_gr = () => {
     const user = auth.currentUser;
     const { ChatData_props1 } = route.params;
     const { RoomID1 } = route.params;
-    const [inputName_group, setInputName_group] = useState("");
     const [search, setSearch] = useState("");
     const [friendsList, setFriendsList] = useState([]);
     const [listFriend, setListFriend] = useState([]);
-    const [userFriendsList, setUserFriendsList] = useState([]);
     const [selectedFriend, setSelectedFriend] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showTabs, setShowTabs] = useState(true);
-    const [isInputEmpty, setIsInputEmpty] = useState(false);
-    const ChatData_props2 = ChatData_props1;
     const [UID_A, setUID_A] = useState([]);
-    const [RoomID_A] = useState(RoomID1);
 
+    // Fetch group members to check who is already in group
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (!user) {
-                // User not logged in
-            }
-        });
-        return unsubscribe;
-    }, []);
-
-    useEffect(() => {
-        const fetchGroupUID = async () => {
+        const fetchGroup = async () => {
             try {
-                const db = getFirestore();
-                const groupRef = doc(db, "Group", RoomID_A);
-                const groupDocSnapshot = await getDoc(groupRef);
-                if (groupDocSnapshot.exists()) {
-                    const groupData = groupDocSnapshot.data();
-                    const groupUID = groupData.UID || [];
-                    setUID_A(groupUID);
-                } else {
-                    console.error("Group document does not exist!");
+                const groupData = await getGroupInfo(RoomID1);
+                if (groupData) {
+                    setUID_A(groupData.UID || []);
                 }
             } catch (error) {
-                console.error("Error fetching group UID:", error);
+                console.error("Error fetching group:", error);
             }
         };
-        fetchGroupUID();
-    }, []);
+        fetchGroup();
+    }, [RoomID1]);
 
-    // Hàm kiểm tra tình trạng kết bạn
-    const checkFriendshipStatus = async (UID) => {
-        try {
-            const db = getFirestore();
-            const currentUser = auth.currentUser;
-            const currentUserDocRef = doc(db, "users", currentUser.uid);
-            const friendDataQuery = query(collection(currentUserDocRef, "friendData"), where("UID_fr", "==", UID));
-            const friendDataSnapshot = await getDocs(friendDataQuery);
-            return !friendDataSnapshot.empty; // Trả về true nếu có dữ liệu, ngược lại trả về false
-        } catch (error) {
-            console.error("Error checking friendship status:", error);
-            return false; // Trả về false nếu có lỗi xảy ra
-        }
-    };
-    //
-    const handleInputChange2 = (text) => {
-        setSearch(text);
-        if (text.trim() === "") {
-            setIsInputEmpty(true);
-            setShowTabs(true);
-        } else {
-            setIsInputEmpty(false);
-            setShowTabs(false);
-        }
-    };
-    // tìm kiếm bạn bè
+    // Subscribe to friends list with user data
     useEffect(() => {
+        if (!user?.uid) return;
+        const unsubscribe = subscribeToFriends(user.uid, async (friends) => {
+            const enriched = await Promise.all(
+                friends.map(async (f) => {
+                    const userData = await getUserById(f.UID_fr);
+                    return userData ? {
+                        id: f.id,
+                        UID: f.UID_fr,
+                        photoUrl: userData.photoURL,
+                        name: userData.name,
+                    } : null;
+                })
+            );
+            setListFriend(enriched.filter(Boolean));
+        });
+        return () => unsubscribe();
+    }, [user?.uid]);
+
+    // Search users
+    useEffect(() => {
+        if (!search || !user?.uid) {
+            setFriendsList([]);
+            return;
+        }
         const handleSearch = async () => {
             try {
                 setLoading(true);
-                const db = getFirestore();
-                const userQuery = query(collection(db, "users"), where("name", "==", search));
-                const userSnapshot = await getDocs(userQuery);
-                const foundFriends = [];
-                const currentUser = auth.currentUser;
-                userSnapshot.forEach(doc => {
-                    const userData = doc.data();
-                    if (userData.UID !== currentUser.uid) {
-                        foundFriends.push({
-                            id: doc.id,
-                            name: userData.name,
-                            photoUrl: userData.photoURL,
-                            email: userData.email,
-                            UID: userData.UID
-                        });
-                    }
-                });
-                const updatedFriendsList = [];
-                for (const friend of foundFriends) {
-                    const isFriend = await checkFriendshipStatus(friend.UID);
-                    updatedFriendsList.push({ ...friend, isFriend });
-                }
-                setFriendsList(updatedFriendsList);
+                const results = await searchUsersByName(search, user.uid);
+                setFriendsList(results.map(u => ({
+                    id: u.id,
+                    name: u.name,
+                    photoUrl: u.photoURL,
+                    email: u.email,
+                    UID: u.UID,
+                })));
             } catch (error) {
-                console.error("Error fetching user:", error);
+                console.error("Error searching users:", error);
             } finally {
                 setLoading(false);
             }
         };
         handleSearch();
-    }, [search, user.uid]);
+    }, [search, user?.uid]);
 
-    const fetchUserFriends = async () => {
-        try {
-            const db = getFirestore();
-            const auth = getAuth();
-            const user = auth.currentUser;
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnapshot = await getDoc(userDocRef);
-                if (userDocSnapshot.exists()) {
-                    const userData = userDocSnapshot.data();
-                    const friendsCollectionRef = collection(userDocRef, "friendData");
-                    const friendsSnapshot = await getDocs(friendsCollectionRef);
-                    const userFriends = [];
-                    friendsSnapshot.forEach((doc) => {
-                        const friendData = doc.data();
-                        userFriends.push({
-                            id: doc.id,
-                            name: friendData.name_fr,
-                            photoUrl: friendData.photoURL_fr,
-                            email: friendData.email_fr,
-                            UID: friendData.UID_fr
-                        });
-                    });
-                    setUserFriendsList(userFriends);
-                } else {
-                    console.error("User document does not exist!");
-                }
-            } else {
-                console.error("No user signed in!");
-            }
-        } catch (error) {
-            console.error("Error fetching user friends:", error);
-        }
+    const handleInputChange2 = (text) => {
+        setSearch(text);
+        setShowTabs(text.trim() === "");
     };
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                fetchUserFriends(); // Fetch friends when user is authenticated
-                const db = getFirestore();
-                const userDocRef = doc(db, "users", user.uid);
-                const friendsCollectionRef = collection(userDocRef, "friendData");
-                const unsubscribe = onSnapshot(friendsCollectionRef, (snapshot) => {
-                    const userFriends = [];
-                    let index = 0; // Bắt đầu với index = 0
-                    snapshot.forEach((doc) => {
-                        const friendData = doc.data();
-                        userFriends.push({
-                            id: doc.id, // Gán ID bằng index và tăng index sau mỗi lần sử dụng
-                            name: friendData.name_fr,
-                            photoUrl: friendData.photoURL_fr,
-                            email: friendData.email_fr,
-                            UID: friendData.UID_fr
-                        });
-                    });
-                    setUserFriendsList(userFriends);
-                });
-                return () => unsubscribe();
-            } else {
-                // No user signed in
-            }
-        });
-        return unsubscribe;
-    }, []);
-
-    // Tạo hàm để truy vấn dữ liệu từ collection "users" dựa trên UID
-    const fetchUserDataByUID = async (UID) => {
-        try {
-            const db = getFirestore();
-            const userDocRef = doc(db, "users", UID);
-            const userDocSnapshot = await getDoc(userDocRef);
-
-            if (userDocSnapshot.exists()) {
-                const userData = userDocSnapshot.data();
-                return { photoURL: userData.photoURL, name: userData.name };
-            } else {
-                console.error(`User document does not exist for UID ${UID}`);
-                return null;
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            return null;
-        }
-    };
-
-    // Hàm để lấy dữ liệu từ collection "users" cho tất cả các UID trong mảng userFriendsList
-    const fetchUserDataForFriends = async () => {
-        const updatedUserFriendsList = [];
-
-        for (const friend of userFriendsList) {
-            const userData = await fetchUserDataByUID(friend.UID);
-
-            if (userData) {
-                // Tạo một đối tượng mới với dữ liệu photoURL, name, UID_fr và ID_roomChat
-                const updatedFriend = {
-                    id: friend.id,
-                    UID: friend.UID,
-                    photoUrl: userData.photoURL,
-                    name: userData.name
-                };
-
-                updatedUserFriendsList.push(updatedFriend);
-            }
-        }
-
-        return updatedUserFriendsList;
-    };
-
-
-    useEffect(() => {
-        // Gọi hàm fetchUserDataForFriends để lấy thông tin của bạn bè từ collection "users"
-        fetchUserDataForFriends().then(updatedFriendsData => {
-            // Cập nhật danh sách bạn bè đã được cập nhật vào state listFriend
-            setListFriend(updatedFriendsData);
-        });
-    }, [userFriendsList]); // Thêm userFriendsList vào dependency array
 
     // sắp xếp danh sách bạn bè theo tên
     const sortedUserFriendsList = listFriend.slice().sort((a, b) => {
@@ -297,42 +152,18 @@ const Add_mem_gr = () => {
 
     const addMemberToGroup = async () => {
         try {
-            const db = getFirestore();
-            // Thêm thành viên vào collection Group
-            const groupRef = doc(db, "Group", RoomID_A);
-            const groupDocSnapshot = await getDoc(groupRef);
-            if (groupDocSnapshot.exists()) {
-                const groupData = groupDocSnapshot.data();
-                const currentMembers = groupData.UID || [];
-                const updatedMembers = [...currentMembers, ...selectedFriend];
-                await setDoc(groupRef, { UID: updatedMembers }, { merge: true });
-            } else {
-                console.error("Tài liệu nhóm không tồn tại!");
-            }
-            // Thêm thành viên vào collection Chats
-            const chatRef = doc(db, "Chats", RoomID_A);
-            const chatDocSnapshot = await getDoc(chatRef);
-            if (chatDocSnapshot.exists()) {
-                const chatData = chatDocSnapshot.data();
-                const currentChatMembers = chatData.UID || [];
-                const updatedChatMembers = [...currentChatMembers, ...selectedFriend];
-                await setDoc(chatRef, { UID: updatedChatMembers }, { merge: true });
-            } else {
-                console.error("Tài liệu cuộc trò chuyện không tồn tại!");
-            }
-            // Reset danh sách các bạn được chọn
-
+            await addMembers(RoomID1, selectedFriend);
             setSelectedFriend([]);
             navigation.goBack();
         } catch (error) {
-            console.error("Lỗi khi thêm thành viên vào nhóm hoặc cuộc trò chuyện:", error);
+            console.error("Error adding members to group:", error);
         }
     };
 
 
     return (
         <View style={styles.container}>
-            <SafeAreaView>
+            <SafeAreaView style={{ flex: 1 }}>
                 <View style={styles.searchContainer}>
                     <Pressable onPress={() => navigation.goBack()}>
                         <View style={{ marginLeft: 10 }}>
@@ -417,14 +248,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center'
     },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#006AF5",
-        height: 48,
-        width: '100%',
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        gap: 12,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     searchContainer2: {
         flexDirection: "row",
@@ -437,7 +273,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#dcdcdc",
+        backgroundColor: "#f0f0f0",
         height: 48,
         borderRadius: 12,
         marginLeft: 10,
@@ -548,7 +384,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         right: -5,
-        backgroundColor: '#dcdcdc',
+        backgroundColor: '#e0e0e0',
         borderRadius: 10,
         width: 20,
         height: 20,
