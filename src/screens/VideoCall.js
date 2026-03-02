@@ -17,6 +17,7 @@ import { RTCPeerConnection, RTCView, mediaDevices, RTCSessionDescription, RTCIce
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, onValue, push, remove, onChildAdded, serverTimestamp, runTransaction, get } from '@react-native-firebase/database';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { Audio } from 'expo-av';
 
 const { width, height } = Dimensions.get('window');
 
@@ -83,6 +84,7 @@ const VideoCall = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [callState, setCallState] = useState(isInitiator ? 'calling' : 'incoming'); // calling, incoming, connected, ended
     const [partnerInfo, setPartnerInfo] = useState({ name: recipientName || callerName, avatar: recipientAvatar });
+    const [localVideoReady, setLocalVideoReady] = useState(false); // Delay render để fix RTCView blank issue
 
     // Refs
     const peerConnection = useRef(null);
@@ -95,6 +97,7 @@ const VideoCall = () => {
     const iceCandidateQueueRef = useRef([]); // Queue ICE candidates until remote description is set
     const remoteDescriptionSetRef = useRef(false); // Track if remote description has been set
     const initialNegotiationDoneRef = useRef(false); // Track if initial negotiation is done (for ICE restart)
+    const ringtoneRef = useRef(null); // Ringtone sound ref
 
     // Sử dụng roomId được truyền vào hoặc tạo mới (fallback)
     const generateRoomId = () => {
@@ -188,22 +191,61 @@ const VideoCall = () => {
         }
     };
 
-    // Phát nhạc chuông (chỉ sử dụng vibration)
+    // Phát nhạc chuông và vibration
     const playRingtone = async () => {
         try {
-            console.log('🔔 Phát vibration cho cuộc gọi đến');
-            // Sử dụng vibration liên tục như nhạc chuông
-            // Pattern: chờ 0ms, rung 1000ms, nghỉ 500ms, rung 1000ms - lặp lại
+            console.log('🔔 Phát nhạc chuông và vibration cho cuộc gọi đến');
+            
+            // Vibration liên tục
             Vibration.vibrate([0, 1000, 500, 1000], true);
+            
+            // Phát âm thanh chuông
+            try {
+                // Cấu hình audio mode
+                await Audio.setAudioModeAsync({
+                    allowsRecordingIOS: false,
+                    staysActiveInBackground: true,
+                    playsInSilentModeIOS: true,
+                    shouldDuckAndroid: false,
+                    playThroughEarpieceAndroid: false,
+                });
+                
+                // Tạo và phát âm thanh chuông từ URL (free ringtone)
+                const { sound } = await Audio.Sound.createAsync(
+                    { uri: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3' },
+                    { 
+                        isLooping: true,
+                        volume: 1.0,
+                        shouldPlay: true,
+                    }
+                );
+                ringtoneRef.current = sound;
+                console.log('✅ Đang phát nhạc chuông');
+            } catch (audioError) {
+                console.log('⚠️ Không thể phát nhạc chuông:', audioError.message);
+                // Vẫn tiếp tục với vibration
+            }
         } catch (error) {
-            console.log('Không thể phát vibration:', error);
+            console.log('Không thể phát ringtone:', error);
         }
     };
 
-    // Dừng vibration
-    const stopRingtone = () => {
-        console.log('🔕 Dừng vibration');
+    // Dừng nhạc chuông và vibration
+    const stopRingtone = async () => {
+        console.log('🔕 Dừng nhạc chuông và vibration');
         Vibration.cancel();
+        
+        // Dừng âm thanh
+        if (ringtoneRef.current) {
+            try {
+                await ringtoneRef.current.stopAsync();
+                await ringtoneRef.current.unloadAsync();
+                ringtoneRef.current = null;
+                console.log('✅ Đã dừng nhạc chuông');
+            } catch (error) {
+                console.log('⚠️ Lỗi dừng nhạc chuông:', error.message);
+            }
+        }
     };
 
     // Người gọi: Tạo cuộc gọi
@@ -435,7 +477,7 @@ const VideoCall = () => {
                 return;
             }
 
-            stopRingtone();
+            stopRingtone(); // fire-and-forget, don't await
             Vibration.cancel();
             setCallState('connected');
             setConnectionStatus('Đang kết nối...');
@@ -544,7 +586,21 @@ const VideoCall = () => {
             console.log('✅✅✅ GOT CAMERA/MIC SUCCESSFULLY');
             console.log('📹 Stream ID:', stream.id);
             console.log('📹 Stream tracks:', stream.getTracks().map(t => `${t.kind}(${t.id})`));
+            
+            // Ensure video track is enabled
+            const videoTracks = stream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                videoTracks[0].enabled = true;
+                console.log('📹 Video track enabled:', videoTracks[0].enabled);
+            }
+            
             setLocalStream(stream);
+            
+            // Delay để RTCView render đúng (fix blank video issue)
+            setTimeout(() => {
+                console.log('📹 Setting localVideoReady = true');
+                setLocalVideoReady(true);
+            }, 300);
 
             // Tạo peer connection
             console.log('🔗 Tạo RTCPeerConnection...');
@@ -1130,10 +1186,12 @@ const VideoCall = () => {
             {/* Remote Video - Full screen */}
             {remoteStream ? (
                 <RTCView
+                    key={`remote-${remoteStream.id}`}
                     streamURL={remoteStream.toURL()}
                     style={styles.remoteVideo}
                     objectFit="cover"
                     mirror={false}
+                    zOrder={0}
                 />
             ) : (
                 <View style={styles.remoteVideoPlaceholder}>
@@ -1150,13 +1208,15 @@ const VideoCall = () => {
             )}
 
             {/* Local Video - Picture in Picture */}
-            {localStream && !isVideoOff && (
+            {localStream && localVideoReady && !isVideoOff && (
                 <View style={styles.localVideoContainer}>
                     <RTCView
+                        key={`local-${localStream.id}`}
                         streamURL={localStream.toURL()}
                         style={styles.localVideo}
                         objectFit="cover"
                         mirror={true}
+                        zOrder={1}
                     />
                 </View>
             )}

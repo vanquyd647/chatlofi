@@ -30,11 +30,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-.env
-.env.*
-*.env
-env.txt
-src/navigation/env.txt
 
 # typescript
 *.tsbuildinfo
@@ -42,7 +37,3 @@ src/navigation/env.txt
 # Firebase Service Account
 config/service-account/service-account-key.json
 service-account-key.json
-
-# Sensitive config files
-google-services.json
-firebase.json
